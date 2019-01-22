@@ -1,0 +1,19 @@
+project Due is
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Main use ("main.adb");
+   for Target use "arm-eabi";
+   for Runtime ("ada") use "ravenscar-sfp-sam3x8e";
+   for Exec_Dir use ".";
+
+   package Builder is
+      for Switches ("ada") use ("-j4", "-s");
+   end Builder;
+
+   package Compiler is
+      for Switches ("ada") use ("-gnat12");
+   end Compiler;
+
+end Due;
+

@@ -1,0 +1,26 @@
+To setup the environment to do the build:
+
+
+To build the runtimes, use:
+$ gprbuild -P build/BSPs/ravenscar_sfp_sam3x8e.gpr
+$ gprbuild -P build/BSPs/zfp_sam3x8e.gpr
+
+To install, use:
+$ gprinstall -f -p -P build/BSPs/ravenscar_sfp_sam3x8e.gpr --prefix=./runtimes
+$ gprinstall -f -p -P build/BSPs/zfp_sam3x8e.gpr --prefix=./runtimes
+
+
+After Ada code is compiled use the following commands to prepare and load the binary:
+
+Convert the Ada binary into a binary that can be loaded onto the board:
+
+$ /opt/local/arm-elf/bin/objcopy -O binary main main.bin
+
+Press the erase button on the board to erase the flash memory.  The press the reset
+button and enter the following command to load the binary onto the board:
+
+$ ./bossac -p cu.usbmodem145150 -U false -e -w -v -b main.bin -R
+
+Notes:
+1. objcopy can be installed from MacPorts in the arm-elf-binutils.
+2. bossac can be obtained from the Arduino IDE installation.

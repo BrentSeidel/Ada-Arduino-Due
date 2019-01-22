@@ -1,3 +1,9 @@
+# Object directory
+obj/
+
+# Binary for bossac - Arduino Due software loaded
+bossac
+
 # Object file
 *.o
 
