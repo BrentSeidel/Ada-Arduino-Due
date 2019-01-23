@@ -76,6 +76,24 @@ package body serial.int is
    --
    protected body buffer is
       --
+      --  Functions to return status about the buffer
+      function tx_buffer_full return Boolean is
+      begin
+           return not tx_buff_not_full;
+      end;
+      --
+      function tx_complete return Boolean is
+      begin
+         return tx_buff_empty and (channel(channel_id).port.SR.TXEMPTY = 1);
+      end;
+      --
+      --  rx is not yet implemented
+      --
+      function rx_buffer_empty return Boolean is
+      begin
+         return true;
+      end;
+      --
       --  Add a character to the buffer.  Disable interrupts, add the character
       --  to the buffer and update the pointers, then renable interrupts.
       --
@@ -84,7 +102,7 @@ package body serial.int is
          channel(channel_id).port.IDR.TXRDY := 1;
          tx_buff(tx_fill) := Character'Pos(c);
          tx_fill := tx_fill + 1;
-         tx_buff_Not_full := (tx_fill + 1) /= tx_empty;
+         tx_buff_not_full := (tx_fill + 1) /= tx_empty;
          channel(channel_id).port.IER.TXRDY := 1;
       end;
       --
@@ -95,6 +113,9 @@ package body serial.int is
       --
       procedure int_handler is
       begin
+         --
+         --  Check for transmitter ready.
+         --
          if channel(channel_id).port.SR.TXRDY = 1 then
             channel(channel_id).port.THR.TXCHR := tx_buff(tx_empty);
             tx_empty := tx_empty + 1;
@@ -102,7 +123,11 @@ package body serial.int is
             if tx_buff_empty then
                channel(channel_id).port.IDR.TXRDY := 1;
             end if;
+            tx_buff_not_full := True;
          end if;
+         --
+         --  Check for receiver ready
+         --
          if channel(channel_id).port.SR.RXRDY = 1 then
             null;  --  Receive is not yet implemented.
          end if;

@@ -5,7 +5,7 @@ pragma Warnings (On);
 
 with SAM3x8e.PMC;
 with SAM3x8e.PIO;
-with pio;
+--with pio;
 with serial.polled;
 package body serial is
    --
@@ -94,30 +94,30 @@ package body serial is
       --
       --  PER
       --  PDR
-      channel(chan_num).pio.PDR.Val := pins;
+      channel(chan_num).pioc.PDR.Val := pins;
       --  OER
       --  ODR
-      channel(chan_num).pio.ODR.Val := pins;
+      channel(chan_num).pioc.ODR.Val := pins;
       --  IFER
       --  IFDR
-      channel(chan_num).pio.IFDR.Val := pins;
+      channel(chan_num).pioc.IFDR.Val := pins;
       --  SODR
       --  CODR
       --  IER
       --  IDR
-      channel(chan_num).pio.IDR.Val := pins;
+      channel(chan_num).pioc.IDR.Val := pins;
       --  MDER
       --  MDDR
-      channel(chan_num).pio.MDDR.Val := pins;
+      channel(chan_num).pioc.MDDR.Val := pins;
       --  PUDR
       --  PUER
-      channel(chan_num).pio.PUER.Val := pins;
+      channel(chan_num).pioc.PUER.Val := pins;
       --  ABSR
-      channel(chan_num).pio.ABSR.Arr(Integer(channel(chan_num).tx_pin)) := channel(chan_num).tx_absel;
-      channel(chan_num).pio.ABSR.Arr(Integer(channel(chan_num).rx_pin)) := channel(chan_num).rx_absel;
+      channel(chan_num).pioc.ABSR.Arr(Integer(channel(chan_num).tx_pin)) := channel(chan_num).tx_absel;
+      channel(chan_num).pioc.ABSR.Arr(Integer(channel(chan_num).rx_pin)) := channel(chan_num).rx_absel;
       --  OWER
       --  OWDR
-      channel(chan_num).pio.OWDR.Val := pins;
+      channel(chan_num).pioc.OWDR.Val := pins;
       --
       -- Reset UART receive and transmit
       --

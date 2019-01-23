@@ -1,23 +1,27 @@
 package body pio is
-   procedure config_out(port : in out SAM3x8e.PIO.PIO_Peripheral; pin : Integer) is
-   begin
-      port.PER.Arr(pin) := 1;
-      port.OER.Arr(pin) := 1;
-   end;
    --
-   procedure config_out(pin : pins.digital_pin_rec) is
+   procedure config(pin : digital_pin_rec; dir : direction) is
    begin
       pin.ctrl.PER.Arr(pin.bit) := 1;
-      pin.ctrl.OER.Arr(pin.bit) := 1;
+      if dir = output then
+         pin.ctrl.OER.Arr(pin.bit) := 1;
+      else
+         pin.ctrl.ODR.Arr(pin.bit) := 1;
+      end if;
    end;
    --
-   procedure set(pin : pins.digital_pin_rec) is
+   procedure set(pin : digital_pin_rec; val : SAM3x8e.Bit) is
    begin
-      pin.ctrl.SODR.Arr(pin.bit) := 1;
+      if val = 1 then
+         pin.ctrl.SODR.Arr(pin.bit) := 1;
+      else
+         pin.ctrl.CODR.Arr(pin.bit) := 1;
+      end if;
    end;
    --
-   procedure clear(pin : pins.digital_pin_rec) is
+   function get(pin : digital_pin_rec) return SAM3x8e.Bit is
    begin
-      pin.ctrl.CODR.Arr(pin.bit) := 1;
+      return pin.ctrl.PDSR.Arr(pin.bit);
    end;
+   --
 end pio;

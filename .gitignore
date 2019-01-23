@@ -9,3 +9,6 @@ bossac
 
 # Ada Library Information
 *.ali
+main
+main
+*.bin

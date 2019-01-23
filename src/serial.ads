@@ -3,7 +3,7 @@ with SAM3x8e;
 use type SAM3x8e.Bit;
 use type SAM3x8e.Byte;
 use type SAM3x8e.UInt32;
-with pins;
+--with pins;
 with dev;
 with pio;
 with Ada.Interrupts;
@@ -96,7 +96,7 @@ private
    type channel_info_rec is record
       dev_id   : SAM3x8e.Byte;    --  UART device ID
       port     : serial_access;   --  Access to UART registers
-      pio      : pins.pio_access; --  PIO controlling pins
+      pioc     : pio.pio_access; --  PIO controlling pins
       tx_pin   : SAM3x8e.Byte;    --  Transmit pin on PIO
       rx_pin   : SAM3x8e.Byte;    --  Receive pin on PIO
       tx_absel : SAM3x8e.Bit;     --  A/B selection on PIO for transmit
@@ -115,16 +115,16 @@ private
    --  3 - USART3
    --
    channel : constant array (port_id'Range) of channel_info_rec :=
-     ((dev_id => dev.UART_ID, port => Serial'Access, pio => pio.PIOA'Access,
+     ((dev_id => dev.UART_ID, port => Serial'Access, pioc => pio.PIOA'Access,
        tx_pin => 9, rx_pin => 8, tx_absel => 0, rx_absel => 0,
        int_id => Ada.Interrupts.Names.UART_Interrupt),    --  Serial 0 works
-      (dev_id => dev.USART0_ID, port => Serial0'Access, pio => pio.PIOA'Access,
+      (dev_id => dev.USART0_ID, port => Serial0'Access, pioc => pio.PIOA'Access,
        tx_pin => 11, rx_pin => 10, tx_absel => 0, rx_absel => 0,
        int_id => Ada.Interrupts.Names.USART0_Interrupt),  --  Serial 1 works
-      (dev_id => dev.USART1_ID, port => Serial1'Access, pio => pio.PIOA'Access,
+      (dev_id => dev.USART1_ID, port => Serial1'Access, pioc => pio.PIOA'Access,
        tx_pin => 13, rx_pin => 12, tx_absel => 0, rx_absel => 0,
        int_id => Ada.Interrupts.Names.USART1_Interrupt),  --  Serial 2 works
-      (dev_id => dev.USART3_ID, port => Serial3'Access, pio => pio.PIOD'Access,
+      (dev_id => dev.USART3_ID, port => Serial3'Access, pioc => pio.PIOD'Access,
        tx_pin => 4, rx_pin => 5, tx_absel => 1, rx_absel => 1,
        int_id => Ada.Interrupts.Names.USART3_Interrupt)); --  Serial 3 works
 end serial;

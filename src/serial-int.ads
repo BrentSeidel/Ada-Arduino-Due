@@ -1,4 +1,5 @@
 with Ada.Interrupts.Names;
+with System;
 with SAM3x8e;
 use type SAM3x8e.Bit;
 use type SAM3x8e.Byte;
@@ -48,13 +49,17 @@ private
    --
    protected type buffer(chan : port_id) is
       entry add_buffer(c : Character);
+      function tx_buffer_full return Boolean;
+      function tx_complete return Boolean;
+      function rx_buffer_empty return Boolean;
    private
       procedure int_handler;
       pragma Attach_Handler (int_handler, channel(chan).int_id);
+      pragma Interrupt_Priority(System.Interrupt_Priority'First);
 
       channel_id       : port_id := chan;
       tx_buff_empty    : Boolean := True;
-      tx_buff_Not_full : Boolean := True;
+      tx_buff_not_full : Boolean := True;
       tx_fill          : tx_buff_ptr := 0;
       tx_empty         : tx_buff_ptr := 0;
       tx_buff          : tx_buff_type;
