@@ -32,6 +32,11 @@ package serial.int is
    --
    procedure put_line(s : string);
    procedure put_line(chan : port_id; s : string);
+   --
+   --  Procedure to enable RS-485 mode on an I/O channel.  It requires an
+   --  initialized digital I/O pin record.
+   --
+   procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access);
 
 private
 
@@ -41,6 +46,12 @@ private
    --
    type tx_buff_ptr is mod 2**8;
    type tx_buff_type is array (tx_buff_ptr'Range) of SAM3x8e.Byte;
+   --
+   --  Declare types for the receive buffers.  This size can be adjusted as
+   --  needed.
+   --
+   type rx_buff_ptr is mod 2**8;
+   type rx_buff_type is array (rx_buff_ptr'Range) of SAM3x8e.Byte;
 
    --
    --  A protected type defining the transmit and receive (not yet implemented)
@@ -52,12 +63,16 @@ private
       function tx_buffer_full return Boolean;
       function tx_complete return Boolean;
       function rx_buffer_empty return Boolean;
+      procedure enable_rs485(d : pio.digital_pin_rec_access);
    private
       procedure int_handler;
       pragma Attach_Handler (int_handler, channel(chan).int_id);
       pragma Interrupt_Priority(System.Interrupt_Priority'First);
 
       channel_id       : port_id := chan;
+      rs485_mode       : Boolean := False;
+      rs485_pin        : pio.digital_pin_rec_access;
+
       tx_buff_empty    : Boolean := True;
       tx_buff_not_full : Boolean := True;
       tx_fill          : tx_buff_ptr := 0;

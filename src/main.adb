@@ -4,19 +4,8 @@ use type Ada.Real_Time.Time_Span;
 with serial.polled;
 with serial.int;
 with pio;
---with pins;
 with SAM3x8e.CHIPID;
---
---  This is a simple Ada program to flash the LED on an Arduino Due.  Its
---  primary purpose is to test the tool chain to ensure that a binary can
---  be built and loaded.
---
 
---
---  From the Arduino Due schematic, it appears that the LED is a yellow LED
---  attached to microcontroller pin PB27.  This is parallel I/O controller B,
---  bit 27.
---
 procedure Main is
    count : Integer;
    --
@@ -50,7 +39,9 @@ procedure Main is
 
 begin
    pio.config(pio.LED_PIN, pio.output);
+   pio.config(pio.rs485_pin, pio.output);
    serial.init(0, 115_200);
+   serial.int.enable_rs485(0, pio.rs485_pin);
    serial.init(1, 115_200);
    serial.init(2, 115_200);
    serial.init(3, 115_200);
