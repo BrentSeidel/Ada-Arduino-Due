@@ -1,4 +1,5 @@
 with Ada.Interrupts.Names;
+with Ada.Synchronous_Task_Control;
 with System;
 with SAM3x8e;
 use type SAM3x8e.Bit;
@@ -37,6 +38,27 @@ package serial.int is
    --  initialized digital I/O pin record.
    --
    procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access);
+   --
+   --  Wait until transmit buffer is empty.  Since the Ravenscar profile doesn't
+   --  allow more than one entry in a protected object, look into using
+   --  suspension_objects from Ada.Synchronous_Task_Control.
+   --
+   procedure flush(chan : port_id);
+   --
+   --  Enable or disable rx interrupt.
+   --
+   procedure rx_enable(chan : port_id; b : Boolean);
+   --
+   --  Check to see if characters are available in the buffer
+   --
+   function rx_ready return Boolean;
+   function rx_ready(chan : port_id) return Boolean;
+   --
+   --  Read a character from the buffer.
+   --
+   function get return Character;
+   function get(chan : port_id) return Character;
+
 
 private
 
@@ -59,27 +81,68 @@ private
    --  interrupt handler to communicate with the U/SART.
    --
    protected type buffer(chan : port_id) is
-      entry add_buffer(c : Character);
+      --
+      --  Functions to return statuses
+      --
       function tx_buffer_full return Boolean;
       function tx_complete return Boolean;
-      function rx_buffer_empty return Boolean;
+      --
+      --  Entry point to transmit a character.  Per Ravenscar, there can be
+      --  only one entry.
+      --
+      entry tx_write(c : Character);
+      --
+      --  Procedure to reset the receive buffer.
+      --
+      procedure rx_clear;
+      --
+      --  Procedure to read a character from the receive buffer.  Calls to this
+      --  procedure need to be synchronized using susp_rx_buff_not_empty.
+      --
+      procedure rx_read(c : out Character);
+      --
+      --  Return the next character from the buffer, but don;t remove it from
+      --  the buffer.  This also needs to be synchronized using
+      --  susp_rx_buff_not_empty.
+      --
+      procedure rx_peek(c : out Character);
+      --
+      --  Enable or disable the RX interrupt
+      --
+      procedure set_rx_int(b : Boolean);
+      --
+      --  Procedure to enable RS-485 mode.
+      --
       procedure enable_rs485(d : pio.digital_pin_rec_access);
    private
       procedure int_handler;
       pragma Attach_Handler (int_handler, channel(chan).int_id);
       pragma Interrupt_Priority(System.Interrupt_Priority'First);
 
-      channel_id       : port_id := chan;
-      rs485_mode       : Boolean := False;
-      rs485_pin        : pio.digital_pin_rec_access;
+      channel_id : port_id := chan;
+      rs485_mode : Boolean := False;
+      rs485_pin  : pio.digital_pin_rec_access;
 
       tx_buff_empty    : Boolean := True;
       tx_buff_not_full : Boolean := True;
-      tx_fill          : tx_buff_ptr := 0;
-      tx_empty         : tx_buff_ptr := 0;
+      tx_fill_ptr      : tx_buff_ptr := 0;
+      tx_empty_ptr     : tx_buff_ptr := 0;
       tx_buff          : tx_buff_type;
+
+      rx_fill_ptr       : rx_buff_ptr := 0;
+      rx_empty_ptr      : rx_buff_ptr := 0;
+      rx_buff           : rx_buff_type;
    end buffer;
 
+   --
+   --  Since the Ravenscar profile allows only one entry barrier per protected
+   --  objects, use some suspension objects to accomplish the same purpose.
+   --
+   susp_tx_buff_empty : array (port_id'Range) of
+     Ada.Synchronous_Task_Control.Suspension_Object;
+   --
+   susp_rx_buff_not_empty : array (port_id'Range) of
+     Ada.Synchronous_Task_Control.Suspension_Object;
    --
    --  Declare a buffer for each serial port
    --

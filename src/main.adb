@@ -8,6 +8,7 @@ with SAM3x8e.CHIPID;
 
 procedure Main is
    count : Integer;
+   char  : Character;
    --
    --  Turn the LED on briefly and then turn it off a given number of times.
    --
@@ -48,16 +49,21 @@ begin
    count := 1;
    serial.int.put_line(0, "Hello world from Ada!");
    cpu_info;
+   serial.int.put_line(0, "Enter some text: ");
+   serial.int.rx_enable(0, True);
    loop
-      serial.int.put_line(0, "Flashing LED " & Integer'Image(count) & " times.");
-      serial.int.put_line(1, "Hello 1 from Ada.");
-      serial.int.put_line(2, "Hello 2 from Ada.");
-      serial.int.put_line(3, "Hello 3 from Ada.");
-      flash_led(count);
-      count := count + 1;
-      if count > 4 then
-         count := 1;
-      end if;
-      delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.5);
+      char := serial.int.get(0);
+      serial.int.put_line(0, "Got character <" & char & ">, code " &
+                            Integer'Image(Character'Pos(char)));
+--      serial.int.put_line(0, "Flashing LED " & Integer'Image(count) & " times.");
+--      serial.int.put_line(1, "Hello 1 from Ada.");
+--      serial.int.put_line(2, "Hello 2 from Ada.");
+--      serial.int.put_line(3, "Hello 3 from Ada.");
+--      flash_led(count);
+--      count := count + 1;
+--      if count > 4 then
+--         count := 1;
+--      end if;
+--      delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.5);
    end loop;
 end Main;

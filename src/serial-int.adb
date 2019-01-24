@@ -1,6 +1,6 @@
 
 package body serial.int is
-   --  -----------------------------------------------------------------------
+   --
    --  Enhanced transmission to work on all channels.  If no channel is
    --  specified, default to channel 0.
    --
@@ -8,7 +8,7 @@ package body serial.int is
    --
    procedure put(chan : port_id; c : Character) is
    begin
-      buff(chan).add_buffer(c);
+      buff(chan).tx_write(c);
    end;
    --
    procedure put(c : Character) is
@@ -21,7 +21,7 @@ package body serial.int is
    procedure put(chan : port_id; s : string) is
    begin
       for i in s'Range loop
-         buff(chan).add_buffer(s(i));
+         buff(chan).tx_write(s(i));
       end loop;
    end;
    --
@@ -35,10 +35,10 @@ package body serial.int is
    procedure put_line(chan : port_id; s : string) is
    begin
       for i in s'Range loop
-         buff(chan).add_buffer(s(i));
+         buff(chan).tx_write(s(i));
       end loop;
-      buff(chan).add_buffer(CR);
-      buff(chan).add_buffer(LF);
+      buff(chan).tx_write(CR);
+      buff(chan).tx_write(LF);
    end;
    --
    procedure put_line(s : string) is
@@ -46,10 +46,54 @@ package body serial.int is
       put_line(0, s);
    end;
    --
+   --  Enables RS-485 driver control via the specified pin.
+   --
    procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access) is
    begin
       buff(chan).enable_rs485(d);
    end;
+   --
+   --  Wait until transmit buffer is empty.
+   --
+   procedure flush(chan : port_id) is
+   begin
+      Ada.Synchronous_Task_Control.Suspend_Until_True(susp_tx_buff_empty(chan));
+   end;
+   --
+   --  Enable or disable rx interrupt.
+   --
+   procedure rx_enable(chan : port_id; b : Boolean) is
+   begin
+      buff(chan).set_rx_int(b);
+   end;
+   --
+   --  Check to see if characters are available in the buffer
+   --
+   function rx_ready return Boolean is
+   begin
+      return rx_ready(0);
+   end;
+   --
+   function rx_ready(chan : port_id) return Boolean is
+   begin
+      return Ada.Synchronous_Task_Control.Current_State(susp_rx_buff_not_empty(chan));
+   end;
+   --
+   --  Read a character from the buffer.
+   --
+   function get return Character is
+   begin
+      return get(0);
+   end;
+   --
+   function get(chan : port_id) return Character is
+      c : Character;
+   begin
+      Ada.Synchronous_Task_Control.Suspend_Until_True(susp_rx_buff_not_empty(chan));
+      buff(chan).rx_read(c);
+      return c;
+   end;
+   --
    --  -----------------------------------------------------------------------
    --  Protected buffer.  This handles the low level details of transmitting
    --  characters on the serial port.
@@ -68,21 +112,12 @@ package body serial.int is
          return tx_buff_empty and (channel(channel_id).port.SR.TXEMPTY = 1);
       end;
       --
-      --  rx is not yet implemented
-      --
-      function rx_buffer_empty return Boolean is
-      begin
-         return true;
-      end;
-      --
       --  Add a character to the buffer.  Note that if the buffer is empty and
       --  the transmitter is ready, the character is written directly to the
-      --  transmitter.  This is necessary in order to trigger the interrupt
-      --  handler to start pulling additional characters in.  Otherwise,
-      --  characters are written to the buffer to wait for the interrupt
-      --  handler to process them.
+      --  transmitter.  The transmit interrupt is only enabled when transmitter
+      --  is not ready and a character is written to the buffer.
       --
-      entry add_buffer(c : Character) when tx_buff_not_full is
+      entry tx_write(c : Character) when tx_buff_not_full is
       begin
          if rs485_mode then
             pio.set(rs485_pin, 1);
@@ -91,15 +126,60 @@ package body serial.int is
          if (channel(channel_id).port.SR.TXRDY = 1) and tx_buff_empty then
             channel(channel_id).port.THR.TXCHR := Character'Pos(c);
          else
-            tx_buff(tx_fill) := Character'Pos(c);
-            tx_fill := tx_fill + 1;
-            tx_buff_not_full := (tx_fill + 1) /= tx_empty;
+            tx_buff(tx_fill_ptr) := Character'Pos(c);
+            tx_fill_ptr := tx_fill_ptr + 1;
+            tx_buff_not_full := (tx_fill_ptr + 1) /= tx_empty_ptr;
+            channel(channel_id).port.IER.TXRDY := 1;
+            tx_buff_empty := False;
+            Ada.Synchronous_Task_Control.Set_False(susp_tx_buff_empty(channel_id));
          end if;
          if rs485_mode then
             channel(channel_id).port.IER.TXEMPTY := 1;
          end if;
-         channel(channel_id).port.IER.TXRDY := 1;
-         tx_buff_empty := False;
+      end;
+      --
+      --  Procedure to read a character from the receive buffer.  Calls to this
+      --  procedure need to be synchronized using susp_rx_buff_not_empty.
+      --
+      procedure rx_read(c : out Character) is
+      begin
+         c := Character'Val(rx_buff(rx_empty_ptr));
+         rx_empty_ptr := rx_empty_ptr + 1;
+         if rx_empty_ptr = rx_fill_ptr then
+            Ada.Synchronous_Task_Control.Set_False(susp_rx_buff_not_empty(channel_id));
+         else
+            Ada.Synchronous_Task_Control.Set_True(susp_rx_buff_not_empty(channel_id));
+         end if;
+      end;
+      --
+      --  Return the next character from the buffer, but don;t remove it from
+      --  the buffer.  This also needs to be synchronized using
+      --  susp_rx_buff_not_empty.
+      --
+      procedure rx_peek(c : out Character) is
+      begin
+         c := Character'Val(rx_buff(rx_empty_ptr));
+         Ada.Synchronous_Task_Control.Set_True(susp_rx_buff_not_empty(channel_id));
+      end;
+      --
+      --  Procedure to reset the receive buffer.  Set pointers and flags to
+      --  their initial conditions.
+      --
+      procedure rx_clear is
+      begin
+         rx_fill_ptr       := 0;
+         rx_empty_ptr      := 0;
+      end;
+      --
+      --  Enable or disable the RX interrupt
+      --
+      procedure set_rx_int(b : Boolean) is
+      begin
+         if b then
+            channel(channel_id).port.IER.RXRDY := 1;
+         else
+            channel(channel_id).port.IDR.RXRDY := 1;
+         end if;
       end;
       --
       --  Procedure to enable RS-485 mode.
@@ -117,8 +197,8 @@ package body serial.int is
       --    character out of the buffer and write it to the transmitter.  Update
       --    pointers and check if that was the last character.
       --
-      --  Receiver ready:  Not yet implemented.  This will add receive characters
-      --    to the receive buffer.
+      --  Receiver ready:  Add characters to the receive buffer.  If buffer is
+      --    full, the oldest character is discarded.
       --
       --  Transmitter empty: This is triggered when the UART is finished sending
       --    data and there is no more data ready.  This is used in RS-485 mode
@@ -127,23 +207,39 @@ package body serial.int is
       procedure int_handler is
       begin
          --
-         --  Check for transmitter ready.
+         --  Check for transmitter ready.  If so, send the next character(s).
          --
-         if (channel(channel_id).port.SR.TXRDY = 1) and not tx_buff_empty then
-            channel(channel_id).port.THR.TXCHR := tx_buff(tx_empty);
-            tx_empty := tx_empty + 1;
-            tx_buff_empty := tx_empty = tx_fill;
+         while (channel(channel_id).port.SR.TXRDY = 1) and not tx_buff_empty loop
+            channel(channel_id).port.THR.TXCHR := tx_buff(tx_empty_ptr);
+            tx_empty_ptr := tx_empty_ptr + 1;
+            if tx_empty_ptr = tx_fill_ptr then
+               tx_buff_empty := True;
+               Ada.Synchronous_Task_Control.Set_True(susp_tx_buff_empty(channel_id));
+            else
+               tx_buff_empty := False;
+               Ada.Synchronous_Task_Control.Set_False(susp_tx_buff_empty(channel_id));
+            end if;
             if tx_buff_empty then
                channel(channel_id).port.IDR.TXRDY := 1;
             end if;
             tx_buff_not_full := True;
-         end if;
+         end loop;
          --
-         --  Check for receiver ready
+         --  Check for receiver ready.  If the buffer is full, discard the oldest
+         --  character in the buffer.
          --
-         if channel(channel_id).port.SR.RXRDY = 1 then
-            null;  --  Receive is not yet implemented.
-         end if;
+         while channel(channel_id).port.SR.RXRDY = 1 loop
+            rx_buff(rx_fill_ptr) := channel(channel_id).port.RHR.RXCHR;
+            rx_fill_ptr := rx_fill_ptr + 1;
+            --
+            --  Check if buffer is full.  If so, increment the rx_empty_ptr,
+            --  thus discarding the oldest entry in the buffer.
+            --
+            if (rx_fill_ptr + 1) = rx_empty_ptr then
+               rx_empty_ptr := rx_empty_ptr + 1;
+            end if;
+            Ada.Synchronous_Task_Control.Set_True(susp_rx_buff_not_empty(channel_id));
+         end loop;
          --
          --  Check for transmitter empty
          --

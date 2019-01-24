@@ -125,9 +125,10 @@ package body serial is
       ser_io.CR.RSTTX  := 1;
       ser_io.CR.RSTSTA := 1;
       --
-      --  Right now, for test purposes, just enable the transmitter.
+      --  Enable the transmitter and receiver
       --
       ser_io.CR.TXEN := 1;
+      ser_io.CR.RXEN := 1;
       --
       -- Set no parity, channel mode normal (0).
       --

@@ -7,10 +7,11 @@ package body serial.polled is
    --
    procedure put(c : Character) is
    begin
-      while not tx_ready loop
-         null;
-      end loop;
-      Serial.THR.TXCHR := Character'Pos(c);
+      put(0, c);
+--      while not tx_ready loop
+--         null;
+--      end loop;
+--      Serial.THR.TXCHR := Character'Pos(c);
    end;
    --
    procedure put(chan : port_id; c : Character) is
@@ -55,6 +56,24 @@ package body serial.polled is
       end loop;
       put(chan, CR);
       put(chan, LF);
+   end;
+   --
+   --  Read a character from serial port - wait for one to be present, if
+   --  necessary.  This is not recommended since characters can easily be lost.
+   --
+   function get return Character is
+   begin
+        return get(0);
+   end;
+   --
+   function get(chan : port_id) return Character is
+      c : Character;
+   begin
+      while not rx_ready(chan) loop
+         null;
+      end loop;
+      c := Character'Val(channel(chan).port.RHR.RXCHR);
+      return c;
    end;
 
 end serial.polled;

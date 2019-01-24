@@ -26,5 +26,11 @@ package serial.polled is
    --
    procedure put_line(s : string);
    procedure put_line(chan : port_id; s : string);
+   --
+   --  Read a character from serial port - wait for one to be present, if
+   --  necessary.
+   --
+   function get return Character;
+   function get(chan : port_id) return Character;
 
 end serial.polled;
