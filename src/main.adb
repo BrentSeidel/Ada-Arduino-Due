@@ -8,7 +8,8 @@ with SAM3x8e.CHIPID;
 
 procedure Main is
    count : Integer;
-   char  : Character;
+   s : String(1 .. 40);
+   l : Integer := 0;
    --
    --  Turn the LED on briefly and then turn it off a given number of times.
    --
@@ -42,28 +43,35 @@ begin
    pio.config(pio.LED_PIN, pio.output);
    pio.config(pio.rs485_pin, pio.output);
    serial.init(0, 115_200);
-   serial.int.enable_rs485(0, pio.rs485_pin);
    serial.init(1, 115_200);
    serial.init(2, 115_200);
    serial.init(3, 115_200);
+   serial.int.enable_rs485(1, pio.rs485_pin);
    count := 1;
    serial.int.put_line(0, "Hello world from Ada!");
    cpu_info;
    serial.int.put_line(0, "Enter some text: ");
    serial.int.rx_enable(0, True);
    loop
-      char := serial.int.get(0);
-      serial.int.put_line(0, "Got character <" & char & ">, code " &
-                            Integer'Image(Character'Pos(char)));
---      serial.int.put_line(0, "Flashing LED " & Integer'Image(count) & " times.");
+      serial.int.get_line(0, s, l);
+      serial.int.put_line("Got " & Integer'Image(l) & " characters in string.");
+      serial.int.put_line("String is <" & s(1..l) & ">");
+      if (s(1) = 'f') or (s(1) = 'F') then
+         --
+         --  Integer'Value() does not seem to be available on this runtime.
+         --
+         --         count := integer'Value(s(1..l));
+         count := Character'Pos(s(2)) - Character'Pos('0');
+      end if;
+      serial.int.put_line(0, "Flashing LED " & Integer'Image(count) & " times.");
 --      serial.int.put_line(1, "Hello 1 from Ada.");
 --      serial.int.put_line(2, "Hello 2 from Ada.");
 --      serial.int.put_line(3, "Hello 3 from Ada.");
---      flash_led(count);
---      count := count + 1;
---      if count > 4 then
---         count := 1;
---      end if;
+      flash_led(count);
+      count := count + 1;
+      if count > 4 then
+         count := 1;
+      end if;
 --      delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.5);
    end loop;
 end Main;

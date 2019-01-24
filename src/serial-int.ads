@@ -58,6 +58,11 @@ package serial.int is
    --
    function get return Character;
    function get(chan : port_id) return Character;
+   --
+   --  Return a line of text.
+   --
+   procedure get_line(s : in out String; l : out Integer);
+   procedure get_line(chan : port_id; s : in out String; l : out Integer);
 
 
 private

@@ -94,6 +94,28 @@ package body serial.int is
       return c;
    end;
    --
+   --  Return a line of text.
+   --
+   procedure get_line(s : in out String; l : out Integer) is
+   begin
+      get_line(0, s, l);
+   end;
+   --
+   procedure get_line(chan : port_id; s : in out String; l : out Integer) is
+      i : Integer := s'First;
+      c : Character;
+   begin
+      loop
+         c := get(chan);
+         exit when c = CR;
+         exit when c = LF;
+         s(i) := c;
+         i := i + 1;
+         exit when i > s'Last;
+      end loop;
+      l := i - s'First;
+   end;
+   --
    --  -----------------------------------------------------------------------
    --  Protected buffer.  This handles the low level details of transmitting
    --  characters on the serial port.
