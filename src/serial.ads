@@ -63,8 +63,10 @@ private
    --
    --  Constants for some special characters.
    --
-   CR : constant Character := Character'Val(13);
+   BS : constant Character := Character'Val(8);
    LF : constant Character := Character'Val(10);
+   CR : constant Character := Character'Val(13);
+   DEL : constant Character := Character'Val(127);
 
    Serial : aliased SAM3x8e.UART.UART_Peripheral
      with Import, Address => SAM3x8e.UART_Base;

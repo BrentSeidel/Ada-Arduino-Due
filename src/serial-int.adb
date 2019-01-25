@@ -37,13 +37,28 @@ package body serial.int is
       for i in s'Range loop
          buff(chan).tx_write(s(i));
       end loop;
-      buff(chan).tx_write(CR);
-      buff(chan).tx_write(LF);
+      for i in tx_eol'Range loop
+         buff(chan).tx_write(tx_eol(i));
+      end loop;
    end;
    --
    procedure put_line(s : string) is
    begin
       put_line(0, s);
+   end;
+   --
+   --  Procedure to write a new line to the serial port
+   --
+   procedure new_line is
+   begin
+      new_line(0);
+   end;
+   --
+   procedure new_line(chan : port_id) is
+   begin
+      for i in tx_eol'Range loop
+         buff(chan).tx_write(tx_eol(i));
+      end loop;
    end;
    --
    --  Enables RS-485 driver control via the specified pin.
@@ -91,6 +106,13 @@ package body serial.int is
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(susp_rx_buff_not_empty(chan));
       buff(chan).rx_read(c);
+      if rx_echo(chan) then
+         if c = CR then
+            new_line(chan);
+         else
+            buff(chan).tx_write(c);
+         end if;
+      end if;
       return c;
    end;
    --
@@ -107,11 +129,22 @@ package body serial.int is
    begin
       loop
          c := get(chan);
-         exit when c = CR;
-         exit when c = LF;
-         s(i) := c;
-         i := i + 1;
-         exit when i > s'Last;
+         if ((c = BS) or (c = DEL)) and rx_echo(chan) and rx_del_enable(chan) then
+            if i > s'First then
+               if c = BS then
+                  put(chan, ' ' & BS);
+               else
+                  put(chan, BS & ' ' & BS);
+               end if;
+               i := i - 1;
+            end if;
+         else
+            exit when c = CR;
+            exit when c = LF;
+            s(i) := c;
+            i := i + 1;
+            exit when i > s'Last;
+         end if;
       end loop;
       l := i - s'First;
    end;

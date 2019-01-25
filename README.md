@@ -7,8 +7,18 @@ probably migrate to either my BBS-BBB-Ada repository or to the AdaCore Ada_Drive
 repository.
 
 ## Current Status
-Right now I can flash the on-board LED.  I also have serial output working on all four
-Arduino Due serial ports in both polled and interrupt driven modes.
+
+### General Purpose I/O
+Pins can be configured as digital ouptuts or to support alternate (UART)
+functions.  Digital input should work, but hasn't yet been tested.  Since the
+on-board LED is connected to one of the GPIO pins, it can be flashed.
+
+### Serial ports
+The serial driver supports all four available serial ports on the Arduino Due.
+Transmit and Receive is supported by both polled and interrupt driven drivers.
+The interrupt driven driver also supports RS-485 mode, character echo, and
+backspace and delete keys.  This should provide the basics for both console I/O
+as well as serial communication with other devices.
 
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,

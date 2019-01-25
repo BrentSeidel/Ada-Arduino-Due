@@ -8,6 +8,7 @@ with SAM3x8e.CHIPID;
 
 procedure Main is
    count : Integer;
+--   c : Character;
    s : String(1 .. 40);
    l : Integer := 0;
    --
@@ -50,10 +51,14 @@ begin
    count := 1;
    serial.int.put_line(0, "Hello world from Ada!");
    cpu_info;
-   serial.int.put_line(0, "Enter some text: ");
-   serial.int.rx_enable(0, True);
    loop
+      Serial.int.put("Enter command: ");
+      serial.int.rx_enable(0, True);
       serial.int.get_line(0, s, l);
+--      c := serial.int.get(0);
+      serial.int.rx_enable(0, False);
+--      serial.int.put_line(0, "Got character <" & c & ">, value " &
+--                            Integer'Image(Character'Pos(c)));
       serial.int.put_line("Got " & Integer'Image(l) & " characters in string.");
       serial.int.put_line("String is <" & s(1..l) & ">");
       if (s(1) = 'f') or (s(1) = 'F') then

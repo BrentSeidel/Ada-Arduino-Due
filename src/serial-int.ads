@@ -7,6 +7,7 @@ use type SAM3x8e.Byte;
 use type SAM3x8e.UInt32;
 with SAM3x8e.UART;
 with pio;
+use type pio.pio_access;
 --
 --  This is an interrupt driven serial package that can be used to print
 --  text with reduced overhead for the user code.  Characters are written
@@ -14,6 +15,11 @@ with pio;
 --
 --  An even more processor efficient option would be to use DMA for handling
 --  the I/O.  This is left for a future project.
+--
+--  There are two goals for this driver.  The first is to provide console I/O
+--  for a person to communicate with the device.  The second is to be able to
+--  communicate with other devices.  There are many features that could be
+--  added, but it should be kept fairly simple and primitive.
 --
 package serial.int is
    --
@@ -34,10 +40,18 @@ package serial.int is
    procedure put_line(s : string);
    procedure put_line(chan : port_id; s : string);
    --
-   --  Procedure to enable RS-485 mode on an I/O channel.  It requires an
-   --  initialized digital I/O pin record.
+   --  Procedure to write a new line to the serial port
    --
-   procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access);
+   procedure new_line;
+   procedure new_line(chan : port_id);
+   --
+   --  Procedure to enable RS-485 mode on an I/O channel.  It requires an
+   --  initialized digital I/O pin record.  If d.ctrl isn't pointing to a
+   --  PIO control record, bad things can happen, so make this a precondition.
+   --
+   procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access)
+     with pre => ((d.ctrl = pio.PIOA'Access) or (d.ctrl = pio.PIOB'Access) or
+                      (d.ctrl = pio.PIOC'Access) or (d.ctrl = pio.PIOD'Access));
    --
    --  Wait until transmit buffer is empty.  Since the Ravenscar profile doesn't
    --  allow more than one entry in a protected object, look into using
@@ -66,7 +80,14 @@ package serial.int is
 
 
 private
-
+   --
+   --  Some configuration values.
+   --
+   rx_echo : constant array (port_id'Range) of Boolean := (True, False,
+                                                           False, False);
+   tx_eol  : constant String := CR & LF;
+   rx_del_enable : constant array (port_id'Range) of Boolean :=
+     (True, False, False, False);
    --
    --  Declare types for the transmit buffers.  This size can be adjusted as
    --  needed.
