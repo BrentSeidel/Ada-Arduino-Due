@@ -73,20 +73,30 @@ package serial.int is
    function get return Character;
    function get(chan : port_id) return Character;
    --
+   -- Return the next character in the receive buffer without removing it
+   --
+   function peek return Character;
+   function peek(chan : port_id) return Character;
+   --
    --  Return a line of text.
    --
    procedure get_line(s : in out String; l : out Integer);
    procedure get_line(chan : port_id; s : in out String; l : out Integer);
+   --
+   -- Procedures to control configuration settings
+   --
+   procedure set_echo(chan : port_id; b : Boolean);
+   procedure set_del(chan : port_id; b : Boolean);
 
 
 private
    --
    --  Some configuration values.
    --
-   rx_echo : constant array (port_id'Range) of Boolean := (True, False,
+   rx_echo : array (port_id'Range) of Boolean := (True, False,
                                                            False, False);
    tx_eol  : constant String := CR & LF;
-   rx_del_enable : constant array (port_id'Range) of Boolean :=
+   rx_del_enable : array (port_id'Range) of Boolean :=
      (True, False, False, False);
    --
    --  Declare types for the transmit buffers.  This size can be adjusted as

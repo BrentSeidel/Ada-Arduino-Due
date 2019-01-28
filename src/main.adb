@@ -1,3 +1,4 @@
+with Ada.Text_IO;
 with Ada.Real_Time;
 use type Ada.Real_Time.Time;
 use type Ada.Real_Time.Time_Span;
@@ -7,7 +8,7 @@ with pio;
 with SAM3x8e.CHIPID;
 
 procedure Main is
-   count : Integer;
+   count : Integer := 1;
 --   c : Character;
    s : String(1 .. 40);
    l : Integer := 0;
@@ -48,15 +49,15 @@ begin
    serial.init(2, 115_200);
    serial.init(3, 115_200);
    serial.int.enable_rs485(1, pio.rs485_pin);
-   count := 1;
+   ada.Text_IO.Put_Line("Hello from Ada.Text_IO!");
    serial.int.put_line(0, "Hello world from Ada!");
    cpu_info;
+   serial.int.rx_enable(0, True);
    loop
       Serial.int.put("Enter command: ");
-      serial.int.rx_enable(0, True);
       serial.int.get_line(0, s, l);
 --      c := serial.int.get(0);
-      serial.int.rx_enable(0, False);
+--      serial.int.rx_enable(0, False);
 --      serial.int.put_line(0, "Got character <" & c & ">, value " &
 --                            Integer'Image(Character'Pos(c)));
       serial.int.put_line("Got " & Integer'Image(l) & " characters in string.");

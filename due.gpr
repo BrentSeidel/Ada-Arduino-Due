@@ -5,15 +5,16 @@ project Due is
    for Main use ("main.adb");
    for Target use "arm-eabi";
    for Runtime ("ada") use "ravenscar-sfp-sam3x8e";
-   for Exec_Dir use ".";
-
-   package Builder is
-      for Switches ("ada") use ("-j4", "-s");
-   end Builder;
 
    package Compiler is
       for Switches ("ada") use ("-gnat12");
    end Compiler;
+
+   for Exec_Dir use ".";
+
+   package Builder is
+      for Switches ("ada") use ("-s", "-j4");
+   end Builder;
 
 end Due;
 

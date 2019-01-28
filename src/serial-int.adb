@@ -116,6 +116,21 @@ package body serial.int is
       return c;
    end;
    --
+   -- Return the next character in the receive buffer without removing it
+   --
+   function peek return Character is
+   begin
+      return peek(0);
+   end;
+   --
+   function peek(chan : port_id) return Character is
+      c : Character;
+   begin
+      Ada.Synchronous_Task_Control.Suspend_Until_True(susp_rx_buff_not_empty(chan));
+      buff(chan).rx_peek(c);
+      return c;
+   end;
+   --
    --  Return a line of text.
    --
    procedure get_line(s : in out String; l : out Integer) is
@@ -147,6 +162,18 @@ package body serial.int is
          end if;
       end loop;
       l := i - s'First;
+   end;
+   --
+   -- Procedures to control configuration settings
+   --
+   procedure set_echo(chan : port_id; b : Boolean) is
+   begin
+      rx_echo(chan) := b;
+   end;
+   --
+   procedure set_del(chan : port_id; b : Boolean) is
+   begin
+      rx_del_enable(chan) := b;
    end;
    --
    --  -----------------------------------------------------------------------
