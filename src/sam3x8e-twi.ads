@@ -9,7 +9,7 @@ pragma Style_Checks (Off);
 
 with System;
 
-package Interfaces.SAM3x8e.TWI is
+package SAM3x8e.TWI is
    pragma Preelaborate;
    pragma No_Elaboration_Code_All;
 
@@ -17,14 +17,14 @@ package Interfaces.SAM3x8e.TWI is
    -- Registers --
    ---------------
 
-   subtype TWI0_CR_START_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_STOP_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_MSEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_MSDIS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_SVEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_SVDIS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_QUICK_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_CR_SWRST_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_CR_START_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_STOP_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_MSEN_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_MSDIS_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_SVEN_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_SVDIS_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_QUICK_Field is SAM3x8e.Bit;
+   subtype TWI0_CR_SWRST_Field is SAM3x8e.Bit;
 
    --  Control Register
    type TWI0_CR_Register is record
@@ -45,7 +45,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Software Reset
       SWRST         : TWI0_CR_SWRST_Field := 16#0#;
       --  unspecified
-      Reserved_8_31 : Interfaces.SAM3x8e.UInt24 := 16#0#;
+      Reserved_8_31 : SAM3x8e.UInt24 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -79,25 +79,25 @@ package Interfaces.SAM3x8e.TWI is
       Val_2_Byte => 2,
       Val_3_Byte => 3);
 
-   subtype TWI0_MMR_MREAD_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_MMR_DADR_Field is Interfaces.SAM3x8e.UInt7;
+   subtype TWI0_MMR_MREAD_Field is SAM3x8e.Bit;
+   subtype TWI0_MMR_DADR_Field is SAM3x8e.UInt7;
 
    --  Master Mode Register
    type TWI0_MMR_Register is record
       --  unspecified
-      Reserved_0_7   : Interfaces.SAM3x8e.Byte := 16#0#;
+      Reserved_0_7   : SAM3x8e.Byte := 16#0#;
       --  Internal Device Address Size
-      IADRSZ         : MMR_IADRSZ_Field := Interfaces.SAM3x8e.TWI.None;
+      IADRSZ         : MMR_IADRSZ_Field := SAM3x8e.TWI.None;
       --  unspecified
-      Reserved_10_11 : Interfaces.SAM3x8e.UInt2 := 16#0#;
+      Reserved_10_11 : SAM3x8e.UInt2 := 16#0#;
       --  Master Read Direction
       MREAD          : TWI0_MMR_MREAD_Field := 16#0#;
       --  unspecified
-      Reserved_13_15 : Interfaces.SAM3x8e.UInt3 := 16#0#;
+      Reserved_13_15 : SAM3x8e.UInt3 := 16#0#;
       --  Device Address
       DADR           : TWI0_MMR_DADR_Field := 16#0#;
       --  unspecified
-      Reserved_23_31 : Interfaces.SAM3x8e.UInt9 := 16#0#;
+      Reserved_23_31 : SAM3x8e.UInt9 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -112,16 +112,16 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_23_31 at 0 range 23 .. 31;
    end record;
 
-   subtype TWI0_SMR_SADR_Field is Interfaces.SAM3x8e.UInt7;
+   subtype TWI0_SMR_SADR_Field is SAM3x8e.UInt7;
 
    --  Slave Mode Register
    type TWI0_SMR_Register is record
       --  unspecified
-      Reserved_0_15  : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_0_15  : SAM3x8e.UInt16 := 16#0#;
       --  Slave Address
       SADR           : TWI0_SMR_SADR_Field := 16#0#;
       --  unspecified
-      Reserved_23_31 : Interfaces.SAM3x8e.UInt9 := 16#0#;
+      Reserved_23_31 : SAM3x8e.UInt9 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -132,14 +132,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_23_31 at 0 range 23 .. 31;
    end record;
 
-   subtype TWI0_IADR_IADR_Field is Interfaces.SAM3x8e.UInt24;
+   subtype TWI0_IADR_IADR_Field is SAM3x8e.UInt24;
 
    --  Internal Address Register
    type TWI0_IADR_Register is record
       --  Internal Address
       IADR           : TWI0_IADR_IADR_Field := 16#0#;
       --  unspecified
-      Reserved_24_31 : Interfaces.SAM3x8e.Byte := 16#0#;
+      Reserved_24_31 : SAM3x8e.Byte := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -149,9 +149,9 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_24_31 at 0 range 24 .. 31;
    end record;
 
-   subtype TWI0_CWGR_CLDIV_Field is Interfaces.SAM3x8e.Byte;
-   subtype TWI0_CWGR_CHDIV_Field is Interfaces.SAM3x8e.Byte;
-   subtype TWI0_CWGR_CKDIV_Field is Interfaces.SAM3x8e.UInt3;
+   subtype TWI0_CWGR_CLDIV_Field is SAM3x8e.Byte;
+   subtype TWI0_CWGR_CHDIV_Field is SAM3x8e.Byte;
+   subtype TWI0_CWGR_CKDIV_Field is SAM3x8e.UInt3;
 
    --  Clock Waveform Generator Register
    type TWI0_CWGR_Register is record
@@ -162,7 +162,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Clock Divider
       CKDIV          : TWI0_CWGR_CKDIV_Field := 16#0#;
       --  unspecified
-      Reserved_19_31 : Interfaces.SAM3x8e.UInt13 := 16#0#;
+      Reserved_19_31 : SAM3x8e.UInt13 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -174,21 +174,21 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_19_31 at 0 range 19 .. 31;
    end record;
 
-   subtype TWI0_SR_TXCOMP_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_RXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_SVREAD_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_SVACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_GACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_OVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_NACK_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_ARBLST_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_SCLWS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_EOSACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_SR_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_SR_TXCOMP_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_RXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_TXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_SVREAD_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_SVACC_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_GACC_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_OVRE_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_NACK_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_ARBLST_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_SCLWS_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_EOSACC_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_ENDRX_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_ENDTX_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_RXBUFF_Field is SAM3x8e.Bit;
+   subtype TWI0_SR_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Status Register
    type TWI0_SR_Register is record
@@ -208,7 +208,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Read-only. Overrun Error (clear on read)
       OVRE           : TWI0_SR_OVRE_Field;
       --  unspecified
-      Reserved_7_7   : Interfaces.SAM3x8e.Bit;
+      Reserved_7_7   : SAM3x8e.Bit;
       --  Read-only. Not Acknowledged (clear on read)
       NACK           : TWI0_SR_NACK_Field;
       --  Read-only. Arbitration Lost (clear on read)
@@ -226,7 +226,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Read-only. TX Buffer Empty
       TXBUFE         : TWI0_SR_TXBUFE_Field;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16;
+      Reserved_16_31 : SAM3x8e.UInt16;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -251,20 +251,20 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_IER_TXCOMP_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_RXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_SVACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_GACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_OVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_NACK_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_ARBLST_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_SCL_WS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_EOSACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IER_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_IER_TXCOMP_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_RXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_TXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_SVACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_GACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_OVRE_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_NACK_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_ARBLST_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_SCL_WS_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_EOSACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_ENDRX_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_ENDTX_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_RXBUFF_Field is SAM3x8e.Bit;
+   subtype TWI0_IER_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Enable Register
    type TWI0_IER_Register is record
@@ -275,7 +275,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Transmit Holding Register Ready Interrupt Enable
       TXRDY          : TWI0_IER_TXRDY_Field := 16#0#;
       --  unspecified
-      Reserved_3_3   : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_3_3   : SAM3x8e.Bit := 16#0#;
       --  Write-only. Slave Access Interrupt Enable
       SVACC          : TWI0_IER_SVACC_Field := 16#0#;
       --  Write-only. General Call Access Interrupt Enable
@@ -283,7 +283,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Overrun Error Interrupt Enable
       OVRE           : TWI0_IER_OVRE_Field := 16#0#;
       --  unspecified
-      Reserved_7_7   : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_7_7   : SAM3x8e.Bit := 16#0#;
       --  Write-only. Not Acknowledge Interrupt Enable
       NACK           : TWI0_IER_NACK_Field := 16#0#;
       --  Write-only. Arbitration Lost Interrupt Enable
@@ -301,7 +301,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Transmit Buffer Empty Interrupt Enable
       TXBUFE         : TWI0_IER_TXBUFE_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -326,20 +326,20 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_IDR_TXCOMP_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_RXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_SVACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_GACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_OVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_NACK_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_ARBLST_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_SCL_WS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_EOSACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IDR_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_IDR_TXCOMP_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_RXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_TXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_SVACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_GACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_OVRE_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_NACK_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_ARBLST_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_SCL_WS_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_EOSACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_ENDRX_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_ENDTX_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_RXBUFF_Field is SAM3x8e.Bit;
+   subtype TWI0_IDR_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Disable Register
    type TWI0_IDR_Register is record
@@ -350,7 +350,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Transmit Holding Register Ready Interrupt Disable
       TXRDY          : TWI0_IDR_TXRDY_Field := 16#0#;
       --  unspecified
-      Reserved_3_3   : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_3_3   : SAM3x8e.Bit := 16#0#;
       --  Write-only. Slave Access Interrupt Disable
       SVACC          : TWI0_IDR_SVACC_Field := 16#0#;
       --  Write-only. General Call Access Interrupt Disable
@@ -358,7 +358,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Overrun Error Interrupt Disable
       OVRE           : TWI0_IDR_OVRE_Field := 16#0#;
       --  unspecified
-      Reserved_7_7   : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_7_7   : SAM3x8e.Bit := 16#0#;
       --  Write-only. Not Acknowledge Interrupt Disable
       NACK           : TWI0_IDR_NACK_Field := 16#0#;
       --  Write-only. Arbitration Lost Interrupt Disable
@@ -376,7 +376,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Transmit Buffer Empty Interrupt Disable
       TXBUFE         : TWI0_IDR_TXBUFE_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -401,20 +401,20 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_IMR_TXCOMP_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_RXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_SVACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_GACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_OVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_NACK_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_ARBLST_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_SCL_WS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_EOSACC_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_IMR_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_IMR_TXCOMP_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_RXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_TXRDY_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_SVACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_GACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_OVRE_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_NACK_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_ARBLST_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_SCL_WS_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_EOSACC_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_ENDRX_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_ENDTX_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_RXBUFF_Field is SAM3x8e.Bit;
+   subtype TWI0_IMR_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Mask Register
    type TWI0_IMR_Register is record
@@ -425,7 +425,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Read-only. Transmit Holding Register Ready Interrupt Mask
       TXRDY          : TWI0_IMR_TXRDY_Field;
       --  unspecified
-      Reserved_3_3   : Interfaces.SAM3x8e.Bit;
+      Reserved_3_3   : SAM3x8e.Bit;
       --  Read-only. Slave Access Interrupt Mask
       SVACC          : TWI0_IMR_SVACC_Field;
       --  Read-only. General Call Access Interrupt Mask
@@ -433,7 +433,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Read-only. Overrun Error Interrupt Mask
       OVRE           : TWI0_IMR_OVRE_Field;
       --  unspecified
-      Reserved_7_7   : Interfaces.SAM3x8e.Bit;
+      Reserved_7_7   : SAM3x8e.Bit;
       --  Read-only. Not Acknowledge Interrupt Mask
       NACK           : TWI0_IMR_NACK_Field;
       --  Read-only. Arbitration Lost Interrupt Mask
@@ -451,7 +451,7 @@ package Interfaces.SAM3x8e.TWI is
       --  Read-only. Transmit Buffer Empty Interrupt Mask
       TXBUFE         : TWI0_IMR_TXBUFE_Field;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16;
+      Reserved_16_31 : SAM3x8e.UInt16;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -476,14 +476,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_RHR_RXDATA_Field is Interfaces.SAM3x8e.Byte;
+   subtype TWI0_RHR_RXDATA_Field is SAM3x8e.Byte;
 
    --  Receive Holding Register
    type TWI0_RHR_Register is record
       --  Read-only. Master or Slave Receive Holding Data
       RXDATA        : TWI0_RHR_RXDATA_Field;
       --  unspecified
-      Reserved_8_31 : Interfaces.SAM3x8e.UInt24;
+      Reserved_8_31 : SAM3x8e.UInt24;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -493,14 +493,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_8_31 at 0 range 8 .. 31;
    end record;
 
-   subtype TWI0_THR_TXDATA_Field is Interfaces.SAM3x8e.Byte;
+   subtype TWI0_THR_TXDATA_Field is SAM3x8e.Byte;
 
    --  Transmit Holding Register
    type TWI0_THR_Register is record
       --  Write-only. Master or Slave Transmit Holding Data
       TXDATA        : TWI0_THR_TXDATA_Field := 16#0#;
       --  unspecified
-      Reserved_8_31 : Interfaces.SAM3x8e.UInt24 := 16#0#;
+      Reserved_8_31 : SAM3x8e.UInt24 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -510,14 +510,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_8_31 at 0 range 8 .. 31;
    end record;
 
-   subtype TWI0_RCR_RXCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype TWI0_RCR_RXCTR_Field is SAM3x8e.UInt16;
 
    --  Receive Counter Register
    type TWI0_RCR_Register is record
       --  Receive Counter Register
       RXCTR          : TWI0_RCR_RXCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -527,14 +527,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_TCR_TXCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype TWI0_TCR_TXCTR_Field is SAM3x8e.UInt16;
 
    --  Transmit Counter Register
    type TWI0_TCR_Register is record
       --  Transmit Counter Register
       TXCTR          : TWI0_TCR_TXCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -544,14 +544,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_RNCR_RXNCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype TWI0_RNCR_RXNCTR_Field is SAM3x8e.UInt16;
 
    --  Receive Next Counter Register
    type TWI0_RNCR_Register is record
       --  Receive Next Counter
       RXNCTR         : TWI0_RNCR_RXNCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -561,14 +561,14 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_TNCR_TXNCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype TWI0_TNCR_TXNCTR_Field is SAM3x8e.UInt16;
 
    --  Transmit Next Counter Register
    type TWI0_TNCR_Register is record
       --  Transmit Counter Next
       TXNCTR         : TWI0_TNCR_TXNCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -578,10 +578,10 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype TWI0_PTCR_RXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_PTCR_RXTDIS_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_PTCR_TXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_PTCR_TXTDIS_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_PTCR_RXTEN_Field is SAM3x8e.Bit;
+   subtype TWI0_PTCR_RXTDIS_Field is SAM3x8e.Bit;
+   subtype TWI0_PTCR_TXTEN_Field is SAM3x8e.Bit;
+   subtype TWI0_PTCR_TXTDIS_Field is SAM3x8e.Bit;
 
    --  Transfer Control Register
    type TWI0_PTCR_Register is record
@@ -590,13 +590,13 @@ package Interfaces.SAM3x8e.TWI is
       --  Write-only. Receiver Transfer Disable
       RXTDIS         : TWI0_PTCR_RXTDIS_Field := 16#0#;
       --  unspecified
-      Reserved_2_7   : Interfaces.SAM3x8e.UInt6 := 16#0#;
+      Reserved_2_7   : SAM3x8e.UInt6 := 16#0#;
       --  Write-only. Transmitter Transfer Enable
       TXTEN          : TWI0_PTCR_TXTEN_Field := 16#0#;
       --  Write-only. Transmitter Transfer Disable
       TXTDIS         : TWI0_PTCR_TXTDIS_Field := 16#0#;
       --  unspecified
-      Reserved_10_31 : Interfaces.SAM3x8e.UInt22 := 16#0#;
+      Reserved_10_31 : SAM3x8e.UInt22 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -610,19 +610,19 @@ package Interfaces.SAM3x8e.TWI is
       Reserved_10_31 at 0 range 10 .. 31;
    end record;
 
-   subtype TWI0_PTSR_RXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype TWI0_PTSR_TXTEN_Field is Interfaces.SAM3x8e.Bit;
+   subtype TWI0_PTSR_RXTEN_Field is SAM3x8e.Bit;
+   subtype TWI0_PTSR_TXTEN_Field is SAM3x8e.Bit;
 
    --  Transfer Status Register
    type TWI0_PTSR_Register is record
       --  Read-only. Receiver Transfer Enable
       RXTEN         : TWI0_PTSR_RXTEN_Field;
       --  unspecified
-      Reserved_1_7  : Interfaces.SAM3x8e.UInt7;
+      Reserved_1_7  : SAM3x8e.UInt7;
       --  Read-only. Transmitter Transfer Enable
       TXTEN         : TWI0_PTSR_TXTEN_Field;
       --  unspecified
-      Reserved_9_31 : Interfaces.SAM3x8e.UInt23;
+      Reserved_9_31 : SAM3x8e.UInt23;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -663,19 +663,19 @@ package Interfaces.SAM3x8e.TWI is
       --  Transmit Holding Register
       THR  : aliased TWI0_THR_Register;
       --  Receive Pointer Register
-      RPR  : aliased Interfaces.SAM3x8e.UInt32;
+      RPR  : aliased SAM3x8e.UInt32;
       --  Receive Counter Register
       RCR  : aliased TWI0_RCR_Register;
       --  Transmit Pointer Register
-      TPR  : aliased Interfaces.SAM3x8e.UInt32;
+      TPR  : aliased SAM3x8e.UInt32;
       --  Transmit Counter Register
       TCR  : aliased TWI0_TCR_Register;
       --  Receive Next Pointer Register
-      RNPR : aliased Interfaces.SAM3x8e.UInt32;
+      RNPR : aliased SAM3x8e.UInt32;
       --  Receive Next Counter Register
       RNCR : aliased TWI0_RNCR_Register;
       --  Transmit Next Pointer Register
-      TNPR : aliased Interfaces.SAM3x8e.UInt32;
+      TNPR : aliased SAM3x8e.UInt32;
       --  Transmit Next Counter Register
       TNCR : aliased TWI0_TNCR_Register;
       --  Transfer Control Register
@@ -717,4 +717,4 @@ package Interfaces.SAM3x8e.TWI is
    TWI1_Periph : aliased TWI_Peripheral
      with Import, Address => TWI1_Base;
 
-end Interfaces.SAM3x8e.TWI;
+end SAM3x8e.TWI;

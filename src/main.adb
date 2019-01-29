@@ -5,41 +5,18 @@ use type Ada.Real_Time.Time_Span;
 with serial.polled;
 with serial.int;
 with pio;
-with SAM3x8e.CHIPID;
+with utils;
+with i2c;
+with i2c.BME280;
+with SAM3x8e;
 
 procedure Main is
    count : Integer := 1;
 --   c : Character;
    s : String(1 .. 40);
    l : Integer := 0;
-   --
-   --  Turn the LED on briefly and then turn it off a given number of times.
-   --
-   Procedure flash_led(times : Integer) is
-   begin
-      for i in Integer range 1 .. times loop
-         pio.set(pio.LED_PIN, 1);
-         delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
-         pio.set(pio.LED_PIN, 0);
-         delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
-      end loop;
-   end;
-   --
-   procedure cpu_info is
-   begin
-      serial.int.put_line(0, "Processor is " &
-                               SAM3x8e.CHIPID.CIDR_EPROC_Field'image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.EPROC));
-      serial.int.put_line(0, "Version is " &
-                               SAM3x8e.CHIPID.CHIPID_CIDR_VERSION_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.VERSION));
-      serial.int.put_line(0, "NVRAM 1 size is " &
-                               SAM3x8e.CHIPID.CIDR_NVPSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.NVPSIZ.Arr(1)));
-      serial.int.put_line(0, "NVRAM 2 size is " &
-                               SAM3x8e.CHIPID.CIDR_NVPSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.NVPSIZ.Arr(2)));
-      serial.int.put_line(0, "RAM size is " &
-                               SAM3x8e.CHIPID.CIDR_SRAMSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.SRAMSIZ));
-      serial.int.put_line(0, "Architecture is " &
-                               SAM3x8e.CHIPID.CIDR_ARCH_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.ARCH));
-   end;
+   data : SAM3x8e.Byte;
+   err  : i2c.err_code;
 
 begin
    pio.config(pio.LED_PIN, pio.output);
@@ -51,8 +28,9 @@ begin
    serial.int.enable_rs485(1, pio.rs485_pin);
    ada.Text_IO.Put_Line("Hello from Ada.Text_IO!");
    serial.int.put_line(0, "Hello world from Ada!");
-   cpu_info;
+   utils.cpu_info;
    serial.int.rx_enable(0, True);
+   i2c.init(0, i2c.low100);
    loop
       Serial.int.put("Enter command: ");
       serial.int.get_line(0, s, l);
@@ -66,14 +44,24 @@ begin
          --
          --  Integer'Value() does not seem to be available on this runtime.
          --
-         --         count := integer'Value(s(1..l));
-         count := Character'Pos(s(2)) - Character'Pos('0');
+         count := integer'Value(s(2..l));
+--         count := Character'Pos(s(2)) - Character'Pos('0');
       end if;
+      if s(1..4) = "exit" then
+         serial.int.put_line("There is nowhere to exit to.  This is it.");
+         count := 1;
+      end if;
+      data := i2c.read(i2c.BME280.addr, i2c.BME280.id, err);
+      --
+      --  ID should be 16#60#.  Use to see if things are working.
+      --
+      serial.int.put_line(0, "Got BME280 ID of " & Integer'Image(Integer(data)));
+      serial.int.put_line(0, "  Error code is " & i2c.err_code'Image(err));
       serial.int.put_line(0, "Flashing LED " & Integer'Image(count) & " times.");
 --      serial.int.put_line(1, "Hello 1 from Ada.");
 --      serial.int.put_line(2, "Hello 2 from Ada.");
 --      serial.int.put_line(3, "Hello 3 from Ada.");
-      flash_led(count);
+      utils.flash_led(count);
       count := count + 1;
       if count > 4 then
          count := 1;
