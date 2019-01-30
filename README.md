@@ -20,6 +20,14 @@ The interrupt driven driver also supports RS-485 mode, character echo, and
 backspace and delete keys.  This should provide the basics for both console I/O
 as well as serial communication with other devices.
 
+### I2C
+Basic polled I2C interface is working.  Some cleanup is still probably needed.  A
+BME280 is used for testing and some functions are working.  Note that 64 bit
+arithmatic is required for this.
+
+### Tasking
+Moved the LED flasher into a separate task - multiple tasks are working.
+
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,
 please contact the author.  Note that the files with the names sam3x8s*.ads have been

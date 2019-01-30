@@ -99,19 +99,20 @@ package body i2c is
    --  flowcharts in the datasheet.  Note that these are polled, not interrupt
    --  driven.  Those will be added later.
    --
-   procedure write(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; data : SAM3x8e.Byte; error : out err_code) is
+   procedure write(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                   data : SAM3x8e.Byte; error : out err_code) is
       status : SAM3x8e.TWI.TWI0_SR_Register;
    begin
-      TWI1.CR.MSEN  := 1;  --  Enable master mode
-      TWI1.CR.SVDIS := 1;  --  Disable slave mode
-      TWI1.MMR.MREAD  := 0;  --  Master write
-      TWI1.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
-      TWI1.MMR.DADR   := addr;
-      TWI1.IADR.IADR := SAM3x8e.UInt24(reg);
-      TWI1.THR.TXDATA := data;
-      TWI1.CR.STOP := 1;
+      i2c_port(chan).port.CR.MSEN  := 1;  --  Enable master mode
+      i2c_port(chan).port.CR.SVDIS := 1;  --  Disable slave mode
+      i2c_port(chan).port.MMR.MREAD  := 0;  --  Master write
+      i2c_port(chan).port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
+      i2c_port(chan).port.MMR.DADR   := addr;
+      i2c_port(chan).port.IADR.IADR := SAM3x8e.UInt24(reg);
+      i2c_port(chan).port.THR.TXDATA := data;
+      i2c_port(chan).port.CR.STOP := 1;
       loop
-         status := TWI1.SR;
+         status := i2c_port(chan).port.SR;
          exit when status.TXRDY = 1;
          exit when status.NACK = 1;
          exit when status.OVRE = 1;
@@ -125,22 +126,23 @@ package body i2c is
       end if;
    end;
    --
-   function read(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; error : out err_code) return SAM3x8e.Byte is
+   function read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                 error : out err_code) return SAM3x8e.Byte is
       status : SAM3x8e.TWI.TWI0_SR_Register;
       ctrl   : SAM3x8e.TWI.TWI0_CR_Register;
       data   : SAM3x8e.Byte;
    begin
-      TWI1.CR.MSEN  := 1;  --  Enable master mode
-      TWI1.CR.SVDIS := 1;  --  Disable slave mode
-      TWI1.MMR.MREAD  := 1;  --  Master read
-      TWI1.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
-      TWI1.MMR.DADR   := addr;
-      TWI1.IADR.IADR := SAM3x8e.UInt24(reg);
+      i2c_port(chan).port.CR.MSEN  := 1;  --  Enable master mode
+      i2c_port(chan).port.CR.SVDIS := 1;  --  Disable slave mode
+      i2c_port(chan).port.MMR.MREAD  := 1;  --  Master read
+      i2c_port(chan).port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
+      i2c_port(chan).port.MMR.DADR   := addr;
+      i2c_port(chan).port.IADR.IADR := SAM3x8e.UInt24(reg);
       ctrl.START := 1;
       ctrl.STOP  := 1;
-      TWI1.CR := ctrl;
+      i2c_port(chan).port.CR := ctrl;
       loop
-         status := TWI1.SR;
+         status := i2c_port(chan).port.SR;
          exit when status.RXRDY = 1;
          exit when status.NACK = 1;
          exit when status.OVRE = 1;
@@ -152,8 +154,8 @@ package body i2c is
       else
          error := none;
       end if;
-      data := TWI1.RHR.RXDATA;
-      while TWI1.SR.TXCOMP = 0 loop
+      data := i2c_port(chan).port.RHR.RXDATA;
+      while i2c_port(chan).port.SR.TXCOMP = 0 loop
          null;
       end loop;
       return data;
@@ -164,29 +166,155 @@ package body i2c is
    --
    -- Read a word with MSB first
    --
-   function readm1(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; error : out err_code) return SAM3x8e.UInt16 is
+   function readm1(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                   error : out err_code) return SAM3x8e.UInt16 is
+      status : SAM3x8e.TWI.TWI0_SR_Register;
+      d0     : SAM3x8e.Byte;
+      d1     : SAM3x8e.Byte;
    begin
-      error := none;
-      return 0;
+      i2c_port(chan).port.CR.MSEN  := 1;  --  Enable master mode
+      i2c_port(chan).port.CR.SVDIS := 1;  --  Disable slave mode
+      i2c_port(chan).port.MMR.MREAD  := 1;  --  Master read
+      i2c_port(chan).port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
+      i2c_port(chan).port.MMR.DADR   := addr;
+      i2c_port(chan).port.IADR.IADR := SAM3x8e.UInt24(reg);
+      i2c_port(chan).port.CR.START := 1;
+      loop
+         status := i2c_port(chan).port.SR;
+         exit when status.RXRDY = 1;
+         exit when status.NACK = 1;
+         exit when status.OVRE = 1;
+      end loop;
+      if status.NACK = 1 then
+         error := nack;
+         return 0;
+      elsif status.OVRE = 1 then
+         error := ovre;
+         return 0;
+      else
+         error := none;
+      end if;
+      d0 := i2c_port(chan).port.RHR.RXDATA;
+      i2c_port(chan).port.CR.STOP := 1;
+      loop
+         status := i2c_port(chan).port.SR;
+         exit when status.RXRDY = 1;
+         exit when status.NACK = 1;
+         exit when status.OVRE = 1;
+      end loop;
+      if status.NACK = 1 then
+         error := nack;
+         return 0;
+      elsif status.OVRE = 1 then
+         error := ovre;
+         return 0;
+      else
+         error := none;
+      end if;
+      d1 := i2c_port(chan).port.RHR.RXDATA;
+      while i2c_port(chan).port.SR.TXCOMP = 0 loop
+         null;
+      end loop;
+      return  SAM3x8e.UInt16(d0)*256 + SAM3x8e.UInt16(d1);
    end;
 
    --
    -- Read a word with MSB second (LSB first)
    --
-   function readm2(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; error : out err_code) return SAM3x8e.UInt16 is
+   function readm2(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                   error : out err_code) return SAM3x8e.UInt16 is
+      status : SAM3x8e.TWI.TWI0_SR_Register;
+      d0     : SAM3x8e.Byte;
+      d1     : SAM3x8e.Byte;
    begin
-      error := none;
-      return 0;
+      i2c_port(chan).port.CR.MSEN  := 1;  --  Enable master mode
+      i2c_port(chan).port.CR.SVDIS := 1;  --  Disable slave mode
+      i2c_port(chan).port.MMR.MREAD  := 1;  --  Master read
+      i2c_port(chan).port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
+      i2c_port(chan).port.MMR.DADR   := addr;
+      i2c_port(chan).port.IADR.IADR := SAM3x8e.UInt24(reg);
+      i2c_port(chan).port.CR.START := 1;
+      loop
+         status := i2c_port(chan).port.SR;
+         exit when status.RXRDY = 1;
+         exit when status.NACK = 1;
+         exit when status.OVRE = 1;
+      end loop;
+      if status.NACK = 1 then
+         error := nack;
+         return 0;
+      elsif status.OVRE = 1 then
+         error := ovre;
+         return 0;
+      else
+         error := none;
+      end if;
+      d0 := i2c_port(chan).port.RHR.RXDATA;
+      i2c_port(chan).port.CR.STOP := 1;
+      loop
+         status := i2c_port(chan).port.SR;
+         exit when status.RXRDY = 1;
+         exit when status.NACK = 1;
+         exit when status.OVRE = 1;
+      end loop;
+      if status.NACK = 1 then
+         error := nack;
+         return 0;
+      elsif status.OVRE = 1 then
+         error := ovre;
+         return 0;
+      else
+         error := none;
+      end if;
+      d1 := i2c_port(chan).port.RHR.RXDATA;
+      while i2c_port(chan).port.SR.TXCOMP = 0 loop
+         null;
+      end loop;
+      return  SAM3x8e.UInt16(d1)*256 + SAM3x8e.UInt16(d0);
    end;
 
    --
    -- Read the specified number of bytes into a buffer
    --
-   procedure read(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; buff : buff_ptr;
-                  size : SAM3x8e.UInt16; error : out err_code) is
+   procedure read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                  buff : buff_ptr; size : SAM3x8e.UInt16; error : out err_code) is
+      status : SAM3x8e.TWI.TWI0_SR_Register;
+--      data   : SAM3x8e.Byte;
+      count  : SAM3x8e.UInt16 := 0;
    begin
-      error := none;
-      null;
+      i2c_port(chan).port.CR.MSEN  := 1;  --  Enable master mode
+      i2c_port(chan).port.CR.SVDIS := 1;  --  Disable slave mode
+      i2c_port(chan).port.MMR.MREAD  := 1;  --  Master read
+      i2c_port(chan).port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
+      i2c_port(chan).port.MMR.DADR   := addr;
+      i2c_port(chan).port.IADR.IADR := SAM3x8e.UInt24(reg);
+      i2c_port(chan).port.CR.START := 1;
+      loop
+         loop
+            status := i2c_port(chan).port.SR;
+            exit when status.RXRDY = 1;
+            exit when status.NACK = 1;
+            exit when status.OVRE = 1;
+         end loop;
+         if status.NACK = 1 then
+            error := nack;
+         elsif status.OVRE = 1 then
+            error := ovre;
+         else
+            error := none;
+         end if;
+         exit when error /= none;
+         buff(Integer(count)) := i2c_port(chan).port.RHR.RXDATA;
+         count := count + 1;
+         if count = (size - 1) then
+            i2c_port(chan).port.CR.STOP := 1;
+         end if;
+         exit when count = size;
+      end loop;
+
+      while i2c_port(chan).port.SR.TXCOMP = 0 loop
+         null;
+      end loop;
    end;
    --
 

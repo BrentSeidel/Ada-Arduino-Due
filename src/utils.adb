@@ -2,16 +2,26 @@ with serial.int;
 with SAM3x8e.CHIPID;
 package body utils is
    --
-   --  Turn the LED on briefly and then turn it off a given number of times.
+   --  Task to flash the LED.
    --
-   Procedure flash_led(times : Integer) is
+   task body flasher is
    begin
-      for i in Integer range 1 .. times loop
-         pio.set(pio.LED_PIN, 1);
-         delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
-         pio.set(pio.LED_PIN, 0);
-         delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
+      Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
+      pio.config(pio.LED_PIN, pio.output);
+      loop
+         for i in Integer range 1 .. 2 loop
+            pio.set(pio.LED_PIN, 1);
+            delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
+            pio.set(pio.LED_PIN, 0);
+            delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
+         end loop;
+         delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.5);
       end loop;
+   end flasher;
+   --
+   procedure start_flasher is
+   begin
+      Ada.Synchronous_Task_Control.Set_True(enable_flasher);
    end;
    --
    --  Print some information about the CPU

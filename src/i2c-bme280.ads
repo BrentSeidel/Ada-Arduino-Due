@@ -76,4 +76,108 @@ package i2c.BME280 is
    stat_measuring : constant SAM3x8e.Byte := 2#0000_1000#;
    stat_im_update : constant SAM3x8e.Byte := 2#0000_0001#;
    --
+   --
+   -- The configure procedure needs to be called first to initialize the
+   -- calibration constants from the device.
+   --
+   procedure configure(i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code);
+   --
+   -- Starts the BME280 converting data.  Temperature, pressure, and humidity
+   -- are converted at the same time.
+   --
+   procedure start_conversion(error : out err_code);
+   --
+   -- Check for data ready.  Reading a value before data is ready will have
+   -- undesirable results.
+   --
+   function data_ready(error : out err_code) return boolean;
+   --
+   -- Read the temperature, pressure, and humidity value (there's less overhead
+   -- to read all three value than to try and read each individually) and compute
+   -- the calibrated values
+   --
+   procedure read_data(error : out err_code);
+   --
+   -- Return the raw uncompensated values.  Used for debugging purposes after
+   -- read_data() has been called.
+   --
+--   procedure get_raw(self : not null access BME280_record'class; raw_temp : out uint32;
+--                     raw_press : out uint32; raw_hum : out uint32);
+   --
+   -- Return the t_fine value.  Used for debugging purposes after
+   -- read_data() has been called.
+   --
+--   function get_t_fine(self : not null access BME280_record'class) return int32;
+   --
+   -- Return the calibrated temperature value.  Temperature is returned in units
+   -- of 0.01 degrees Celsius.
+   --
+   function get_temp return integer;
+   --
+   -- Return temperature in various units.
+   --
+--   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_c;
+--   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_f;
+--   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_k;
+   --
+   -- Return the calibrated pressure value.  Pressure is returned in units of
+   -- 1/256 Pascals.
+   --
+   function get_press return integer;
+   --
+   -- Return pressure in various units.
+   --
+--   function get_press(self : not null access BME280_record'class) return BBS.units.press_p;
+--   function get_press(self : not null access BME280_record'class) return BBS.units.press_mb;
+--   function get_press(self : not null access BME280_record'class) return BBS.units.press_atm;
+--   function get_press(self : not null access BME280_record'class) return BBS.units.press_inHg;
+   --
+   -- Return the calibrated relative humidity.  The result is in units of
+   -- 1/1024 %.
+   --
+   function get_hum return integer;
+   --
+   -- Return the relative humidity in percent.
+   --
+   function get_hum return float;
+   --
+private
+   debug : constant Boolean := True;
+
+   buff : aliased buffer;
+   --
+   type BME280_record is record
+      port : port_id;
+      T1 : SAM3x8e.UInt16 := 0;
+      T2 : SAM3x8e.int16 := 0;
+      T3 : SAM3x8e.int16 := 0;
+      P1 : SAM3x8e.UInt16 := 0;
+      P2 : SAM3x8e.int16 := 0;
+      P3 : SAM3x8e.int16 := 0;
+      P4 : SAM3x8e.int16 := 0;
+      P5 : SAM3x8e.int16 := 0;
+      P6 : SAM3x8e.int16 := 0;
+      P7 : SAM3x8e.int16 := 0;
+      P8 : SAM3x8e.int16 := 0;
+      P9 : SAM3x8e.int16 := 0;
+      H1 : SAM3x8e.Byte := 0;
+      H2 : SAM3x8e.int16 := 0;
+      H3 : SAM3x8e.Byte := 0;
+      H4 : SAM3x8e.int16 := 0;
+      H5 : SAM3x8e.int16 := 0;
+      H6 : SAM3x8e.Byte := 0;
+      --
+      -- Data read from device
+      --
+      raw_press : SAM3x8e.UInt32;
+      raw_temp : SAM3x8e.UInt32;
+      raw_hum : SAM3x8e.UInt32;
+      --
+      -- Compensated values
+      t_fine : SAM3x8e.int32;
+      p_cal : SAM3x8e.UInt32; -- LSB = Pa/256
+      h_cal : SAM3x8e.UInt32; -- LSB = %/1024
+   end record;
+
+   self : BME280_record;
 end i2c.BME280;

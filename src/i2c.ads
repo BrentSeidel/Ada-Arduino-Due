@@ -3,6 +3,7 @@ with Ada.Interrupts.Names;
 with SAM3x8e;
 use type SAM3x8e.Bit;
 use type SAM3x8e.Byte;
+use type SAM3x8e.UInt16;
 use type SAM3x8e.UInt32;
 with SAM3x8e.TWI;
 with pio;
@@ -42,24 +43,28 @@ package i2c is
    --
    -- Routines to read and write data on the i2c bus
    --
-   procedure write(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; data : SAM3x8e.Byte; error : out err_code);
-   function read(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; error : out err_code) return SAM3x8e.Byte;
+   procedure write(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                   data : SAM3x8e.Byte; error : out err_code);
+   function read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                 error : out err_code) return SAM3x8e.Byte;
    --
    -- Reading a single byte is straightforward.  When reading two bytes, is the
    -- MSB first or second?  There is no standard even within a single device.
    --
    -- Read a word with MSB first
    --
-   function readm1(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; error : out err_code) return SAM3x8e.UInt16;
+   function readm1(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                   error : out err_code) return SAM3x8e.UInt16;
    --
    -- Read a word with MSB second (LSB first)
    --
-   function readm2(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; error : out err_code) return SAM3x8e.UInt16;
+   function readm2(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                   error : out err_code) return SAM3x8e.UInt16;
    --
    -- Read the specified number of bytes into a buffer
    --
-   procedure read(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; buff : buff_ptr;
-                  size : SAM3x8e.UInt16; error : out err_code);
+   procedure read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+                  buff : buff_ptr; size : SAM3x8e.UInt16; error : out err_code);
 private
    --
    --  Addresses for TWI records

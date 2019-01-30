@@ -81,6 +81,17 @@ package SAM3x8e is
      with Size => 30;
    type UInt31 is mod 2**31
      with Size => 31;
+   --
+   type int8 is range -128 .. 127
+     with size => 8;
+   type int12 is range -(2**11) .. 2**11 - 1
+     with size => 12;
+   type int16 is range -(2**15) .. 2**15 - 1
+     with size => 16;
+   type int32 is range -(2**31) .. 2**31 - 1
+     with Size => 32;
+   type int64 is range -(2**63) .. 2**63 - 1
+     with Size => 64;
 
    --------------------
    -- Base addresses --
