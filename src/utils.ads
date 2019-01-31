@@ -14,6 +14,7 @@ package utils is
    --
    --  Task to flash the LED.
    --
+   flash_count : Integer := 2;
    task flasher;
    procedure start_flasher;
    --

@@ -11,7 +11,6 @@ with i2c.BME280;
 with SAM3x8e;
 
 procedure Main is
---   count : Integer := 1;
 --   c : Character;
    s : String(1 .. 40);
    l : Integer := 0;
@@ -44,21 +43,18 @@ begin
 --                            Integer'Image(Character'Pos(c)));
       serial.int.put_line("Got " & Integer'Image(l) & " characters in string.");
       serial.int.put_line("String is <" & s(1..l) & ">");
---      if (s(1) = 'f') or (s(1) = 'F') then
+      if (s(1) = 'f') or (s(1) = 'F') then
          --
          --  Integer'Value() does not seem to be available on this runtime.
          --
---         count := integer'Value(s(2..l));
---         count := Character'Pos(s(2)) - Character'Pos('0');
---      end if;
+         utils.flash_count := integer'Value(s(2..l));
+      end if;
       if s(1..4) = "exit" then
          serial.int.put_line("There is nowhere to exit to.  This is it.");
---         count := 1;
       end if;
       loop
          flag := i2c.BME280.data_ready(err);
          exit when flag;
-         serial.int.put_line("Error code is " & i2c.err_code'Image(err));
       end loop;
       i2c.BME280.read_data(err);
       serial.int.put_line("Temperature is " & Integer'Image(i2c.BME280.get_temp/100));
@@ -68,10 +64,5 @@ begin
 --      serial.int.put_line(1, "Hello 1 from Ada.");
 --      serial.int.put_line(2, "Hello 2 from Ada.");
 --      serial.int.put_line(3, "Hello 3 from Ada.");
---      utils.flash_led(count);
---      count := count + 1;
---      if count > 4 then
---         count := 1;
---      end if;
    end loop;
 end Main;

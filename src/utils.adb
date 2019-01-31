@@ -9,7 +9,7 @@ package body utils is
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
       pio.config(pio.LED_PIN, pio.output);
       loop
-         for i in Integer range 1 .. 2 loop
+         for i in Integer range 1 .. flash_count loop
             pio.set(pio.LED_PIN, 1);
             delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
             pio.set(pio.LED_PIN, 0);

@@ -112,9 +112,9 @@ private
    type rx_buff_type is array (rx_buff_ptr'Range) of SAM3x8e.Byte;
 
    --
-   --  A protected type defining the transmit and receive (not yet implemented)
-   --  buffers as well as an interface to the buffers.  This also includes an
-   --  interrupt handler to communicate with the U/SART.
+   --  A protected type defining the transmit and receive buffers as well as an
+   --  interface to the buffers.  This also includes an interrupt handler to
+   --  communicate with the U/SART.
    --
    protected type buffer(chan : port_id) is
       --
