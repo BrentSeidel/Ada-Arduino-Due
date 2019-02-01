@@ -6,35 +6,43 @@ with SAM3x8e.PIO;
 --  also has functions for setting and getting pin values.
 --
 package pio is
-   type direction is (input, output);
+   type direction is (gpio_input, gpio_output, funct_a, funct_b);
    --
    --  Access type to controller address
    --
    type pio_access is access all SAM3x8e.PIO.PIO_Peripheral;
    --
-   --  Record containing information to translate pin number to actual I/O
-   --  signals.
+   --  Definitions for object oriented pins
    --
-   type digital_pin_rec is record
+   type gpio_record is tagged record
       ctrl : pio_access;
       bit  : Integer range 0 .. 31;
    end record;
-   type digital_pin_rec_access is access all digital_pin_rec;
+   type gpio_ptr is access all gpio_record;
+   --
+   --  Record containing information to translate pin number to actual I/O
+   --  signals.
+   --
 
    --
    --  Configures a pin to be controlled by the PIO controller.  Output is
    --  enabled or disabled based on the value of dir.
    --
-   procedure config(pin : digital_pin_rec_access; dir : direction);
-
+   procedure config(self : not null access gpio_record'class;
+                    pin : gpio_record; dir : direction);
+   procedure config(self : not null access gpio_record'class; dir : direction);
    --
    --  Set a pin to a high or low value.
    --
-   procedure set(pin : digital_pin_rec_access; val : SAM3x8e.Bit);
+   procedure set(self : not null access gpio_record'class; val : SAM3x8e.Bit);
    --
    --  Read the value of a pin regardless of what is controlling it
    --
-   function get(pin : digital_pin_rec_access) return SAM3x8e.Bit;
+   function get(self : not null access gpio_record'class) return SAM3x8e.Bit;
+   --
+   --  Enable or disable pullup on a pin
+   --
+   procedure pullup(self : not null access gpio_record'class; val : SAM3x8e.Bit);
 
    --  Parallel Input/Output Controller A
    PIOA : aliased SAM3x8e.PIO.PIO_Peripheral
@@ -51,17 +59,15 @@ package pio is
    --  Parallel Input/Output Controller D
    PIOD : aliased SAM3x8e.PIO.PIO_Peripheral
      with Import, Address => SAM3x8e.PIOD_Base;
-
    --
    --  LED pin is Arduino digital pin 14 (processor pin PB27)
-   led_pin_rec : aliased digital_pin_rec := (ctrl => PIOB'Access,
-                                          bit => 27);
    --
-   --  RS-48 controlled Arduino digital pin 22 (processor pin PB26)
+   led_pin_obj : aliased gpio_record := (ctrl => PIOB'Access, bit => 27);
+   LED_PIN   : gpio_ptr := led_pin_obj'Access;
    --
-   rs485_pin_rec : aliased pio.digital_pin_rec := (ctrl => PIOB'Access, bit => 26);
-
-   LED_PIN   : digital_pin_rec_access := led_pin_rec'Access;
-   RS485_PIN : digital_pin_rec_access := rs485_pin_rec'Access;
+   --  RS-485 controlled Arduino digital pin 22 (processor pin PB26)
+   --
+   rs485_pin_rec : aliased gpio_record := (ctrl => PIOB'Access, bit => 26);
+   RS485_PIN : gpio_ptr := rs485_pin_rec'Access;
 
 end pio;

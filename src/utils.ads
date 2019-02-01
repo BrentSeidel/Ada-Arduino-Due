@@ -21,6 +21,13 @@ package utils is
    --  Print some information about the CPU
    --
    procedure cpu_info;
+   --
+   --  Some string functions
+   --
+   --
+   --  Convert string to uppercase
+   --
+   procedure uppercase(s : in out String);
 
    --
    -- A couple of unchecked conversions to convert unsigned into signed values.

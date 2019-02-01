@@ -142,7 +142,7 @@ package i2c.BME280 is
    function get_hum return float;
    --
 private
-   debug : constant Boolean := True;
+   debug : constant Boolean := False;
 
    buff : aliased buffer;
    --

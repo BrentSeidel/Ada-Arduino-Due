@@ -5,14 +5,15 @@ package body utils is
    --  Task to flash the LED.
    --
    task body flasher is
+      led     : pio.gpio_ptr := pio.led_pin_obj'Access;
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
-      pio.config(pio.LED_PIN, pio.output);
+      led.config(pio.gpio_output);
       loop
          for i in Integer range 1 .. flash_count loop
-            pio.set(pio.LED_PIN, 1);
+            led.set(1);
             delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
-            pio.set(pio.LED_PIN, 0);
+            led.set(0);
             delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
          end loop;
          delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.5);
@@ -22,6 +23,21 @@ package body utils is
    procedure start_flasher is
    begin
       Ada.Synchronous_Task_Control.Set_True(enable_flasher);
+   end;
+   --
+   --  Some string functions
+   --
+   --
+   --  Convert string to uppercase
+   --
+   procedure uppercase(s : in out String) is
+      offset : constant Integer := Character'Pos('a') - Character'Pos('A');
+   begin
+      for i in s'Range loop
+         if (s(i) >= 'a') and (s(i) <= 'z') then
+            s(i) := Character'Val(Character'Pos(s(i)) - offset);
+         end if;
+      end loop;
    end;
    --
    --  Print some information about the CPU

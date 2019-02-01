@@ -49,7 +49,7 @@ package serial.int is
    --  initialized digital I/O pin record.  If d.ctrl isn't pointing to a
    --  PIO control record, bad things can happen, so make this a precondition.
    --
-   procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access)
+   procedure enable_rs485(chan : port_id; d : pio.gpio_ptr)
      with pre => ((d.ctrl = pio.PIOA'Access) or (d.ctrl = pio.PIOB'Access) or
                       (d.ctrl = pio.PIOC'Access) or (d.ctrl = pio.PIOD'Access));
    --
@@ -149,7 +149,7 @@ private
       --
       --  Procedure to enable RS-485 mode.
       --
-      procedure enable_rs485(d : pio.digital_pin_rec_access);
+      procedure enable_rs485(d : pio.gpio_ptr);
    private
       procedure int_handler;
       pragma Attach_Handler (int_handler, channel(chan).int_id);
@@ -157,7 +157,7 @@ private
 
       channel_id : port_id := chan;
       rs485_mode : Boolean := False;
-      rs485_pin  : pio.digital_pin_rec_access;
+      rs485_pin  : pio.gpio_ptr;
 
       tx_buff_empty    : Boolean := True;
       tx_buff_not_full : Boolean := True;

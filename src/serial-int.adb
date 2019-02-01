@@ -63,7 +63,7 @@ package body serial.int is
    --
    --  Enables RS-485 driver control via the specified pin.
    --
-   procedure enable_rs485(chan : port_id; d : pio.digital_pin_rec_access) is
+   procedure enable_rs485(chan : port_id; d : pio.gpio_ptr) is
    begin
       buff(chan).enable_rs485(d);
    end;
@@ -266,7 +266,7 @@ package body serial.int is
       --
       --  Procedure to enable RS-485 mode.
       --
-      procedure enable_rs485(d : pio.digital_pin_rec_access) is
+      procedure enable_rs485(d : pio.gpio_ptr) is
       begin
          rs485_pin := d;
          pio.set(rs485_pin, 0);
