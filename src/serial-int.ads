@@ -23,27 +23,42 @@ use type pio.pio_access;
 --
 package serial.int is
    --
-   --  Very simple procedure to write a character to the UART.  It does a
-   --  busy wait on the UART_SR TXRDY (transmit ready) bit.  It does a loop
-   --  until the value of the bit is 1 and then write the character.
+   --  Serial port object
+   --
+   type serial_port_record is tagged limited private;
+   type serial_port is access all serial_port_record;
+   --
+   --  Function to initialize and return a serial port object
+   --
+   function init(c : port_id; baud : SAM3x8e.UInt32) return serial_port;
+   --
+   --  Function to return an object for a specific serial port
+   --
+   function get_port(c : port_id) return serial_port;
+   --
+   --  Procedure to write a character to a serial port.
    --
    procedure put(c : Character);
    procedure put(chan : port_id; c : Character);
+   procedure put(self : not null access serial_port_record'class; c : Character);
    --
    --  Procedure to put a string to the serial port
    --
    procedure put(s : string);
    procedure put(chan : port_id; s : string);
+   procedure put(self : not null access serial_port_record'class; s : String);
    --
    --  Procedure to put a string to the serial port followed by a CR/LF
    --
    procedure put_line(s : string);
    procedure put_line(chan : port_id; s : string);
+   procedure put_line(self : not null access serial_port_record'class; s : String);
    --
    --  Procedure to write a new line to the serial port
    --
    procedure new_line;
    procedure new_line(chan : port_id);
+   procedure new_line(self : not null access serial_port_record'class);
    --
    --  Procedure to enable RS-485 mode on an I/O channel.  It requires an
    --  initialized digital I/O pin record.  If d.ctrl isn't pointing to a
@@ -52,52 +67,64 @@ package serial.int is
    procedure enable_rs485(chan : port_id; d : pio.gpio_ptr)
      with pre => ((d.ctrl = pio.PIOA'Access) or (d.ctrl = pio.PIOB'Access) or
                       (d.ctrl = pio.PIOC'Access) or (d.ctrl = pio.PIOD'Access));
+   procedure enable_rs485(self : not null access serial_port_record'class; d : pio.gpio_ptr)
+     with pre => ((d.ctrl = pio.PIOA'Access) or (d.ctrl = pio.PIOB'Access) or
+                      (d.ctrl = pio.PIOC'Access) or (d.ctrl = pio.PIOD'Access));
    --
    --  Wait until transmit buffer is empty.  Since the Ravenscar profile doesn't
    --  allow more than one entry in a protected object, look into using
    --  suspension_objects from Ada.Synchronous_Task_Control.
    --
    procedure flush(chan : port_id);
+   procedure flush(self : not null access serial_port_record'class);
    --
    --  Enable or disable rx interrupt.
    --
    procedure rx_enable(chan : port_id; b : Boolean);
+   procedure rx_enable(self : not null access serial_port_record'class; b : Boolean);
    --
    --  Check to see if characters are available in the buffer
    --
    function rx_ready return Boolean;
    function rx_ready(chan : port_id) return Boolean;
+   function rx_ready(self : not null access serial_port_record'class) return Boolean;
    --
    --  Read a character from the buffer.
    --
    function get return Character;
    function get(chan : port_id) return Character;
+   function get(self : not null access serial_port_record'class) return Character;
    --
    -- Return the next character in the receive buffer without removing it
    --
    function peek return Character;
    function peek(chan : port_id) return Character;
+   function peek(self : not null access serial_port_record'class) return Character;
    --
    --  Return a line of text.
    --
    procedure get_line(s : in out String; l : out Integer);
    procedure get_line(chan : port_id; s : in out String; l : out Integer);
+   procedure get_line(self : not null access serial_port_record'class;
+                      s : in out String; l : out Integer);
    --
    -- Procedures to control configuration settings
    --
    procedure set_echo(chan : port_id; b : Boolean);
    procedure set_del(chan : port_id; b : Boolean);
+   procedure set_echo(self : not null access serial_port_record'class; b : Boolean);
+   procedure set_del(self : not null access serial_port_record'class; b : Boolean);
 
 
 private
    --
    --  Some configuration values.
    --
-   rx_echo : array (port_id'Range) of Boolean := (True, False,
-                                                           False, False);
+--   rx_echo : array (port_id'Range) of Boolean := (True, False,
+--                                                           False, False);
    tx_eol  : constant String := CR & LF;
-   rx_del_enable : array (port_id'Range) of Boolean :=
-     (True, False, False, False);
+--   rx_del_enable : array (port_id'Range) of Boolean :=
+--     (True, False, False, False);
    --
    --  Declare types for the transmit buffers.  This size can be adjusted as
    --  needed.
@@ -116,7 +143,7 @@ private
    --  interface to the buffers.  This also includes an interrupt handler to
    --  communicate with the U/SART.
    --
-   protected type buffer(chan : port_id) is
+   protected type buffer(int_id : Ada.Interrupts.Interrupt_ID) is
       --
       --  Functions to return statuses
       --
@@ -150,12 +177,15 @@ private
       --  Procedure to enable RS-485 mode.
       --
       procedure enable_rs485(d : pio.gpio_ptr);
+      --
+      --  Procedure to initialize some things
+      --
+      procedure init(p : serial_port);
    private
       procedure int_handler;
-      pragma Attach_Handler (int_handler, channel(chan).int_id);
+      pragma Attach_Handler (int_handler, int_id);
       pragma Interrupt_Priority(System.Interrupt_Priority'First);
 
-      channel_id : port_id := chan;
       rs485_mode : Boolean := False;
       rs485_pin  : pio.gpio_ptr;
 
@@ -165,34 +195,50 @@ private
       tx_empty_ptr     : tx_buff_ptr := 0;
       tx_buff          : tx_buff_type;
 
-      rx_fill_ptr       : rx_buff_ptr := 0;
-      rx_empty_ptr      : rx_buff_ptr := 0;
-      rx_buff           : rx_buff_type;
-   end buffer;
+      rx_fill_ptr      : rx_buff_ptr := 0;
+      rx_empty_ptr     : rx_buff_ptr := 0;
+      rx_buff          : rx_buff_type;
 
-   --
-   --  Since the Ravenscar profile allows only one entry barrier per protected
-   --  objects, use some suspension objects to accomplish the same purpose.
-   --
-   susp_tx_buff_empty : array (port_id'Range) of
-     Ada.Synchronous_Task_Control.Suspension_Object;
-   --
-   susp_rx_buff_not_empty : array (port_id'Range) of
-     Ada.Synchronous_Task_Control.Suspension_Object;
+      s : serial_port;
+   end buffer;
+   type buffer_access is access all buffer;
+
    --
    --  Declare a buffer for each serial port
    --
-   buff0 : aliased buffer(0);
-   buff1 : aliased buffer(1);
-   buff2 : aliased buffer(2);
-   buff3 : aliased buffer(3);
-
+   buff0 : aliased buffer(channel(0).int_id);
+   buff1 : aliased buffer(channel(1).int_id);
+   buff2 : aliased buffer(channel(2).int_id);
+   buff3 : aliased buffer(channel(3).int_id);
    --
    --  An array of the buffers so that the I/O routines can access a buffer by
    --  the port ID.
    --
-   type buffer_access is access all buffer;
    buff : array (port_id'Range) of buffer_access :=
      (buff0'access, buff1'access, buff2'access, buff3'access);
+   --
+   --  Serial port object
+   --
+   --
+   --  Since the Ravenscar profile allows only one entry barrier per protected
+   --  objects, use some suspension objects to accomplish the same purpose.
+   --
+   type serial_port_record is tagged limited record
+      b             : buffer_access;
+      tx_empty      : Ada.Synchronous_Task_Control.Suspension_Object;
+      rx_not_empty  : Ada.Synchronous_Task_Control.Suspension_Object;
+      hardware      : serial_obj;
+      rx_echo       : Boolean;
+      rx_del_enable : Boolean;
+   end record;
+   --
+   --  Declare the port objects for each port
+   --
+   port0 : aliased serial_port_record;
+   port1 : aliased serial_port_record;
+   port2 : aliased serial_port_record;
+   port3 : aliased serial_port_record;
+   port_list : array (port_id'Range) of serial_port := (port0'Access, port1'Access,
+                                                        port2'Access, port3'Access);
 end serial.int;
 
