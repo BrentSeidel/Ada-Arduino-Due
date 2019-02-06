@@ -3,6 +3,13 @@ with serial.int;
 --  This package implementes a simple command line interpreter.
 package cli is
    --
+   --  Feature selection
+   --
+   i2c_enable    : constant Boolean := True;
+   analog_enable : constant Boolean := True;
+   --
+   i2c_good   : Boolean := False;
+   --
    --  Procedure for the command line interpreter
    --
    procedure command_loop;

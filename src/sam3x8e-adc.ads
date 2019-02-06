@@ -10,7 +10,7 @@ pragma Style_Checks (Off);
 with System;
 
 --  Analog-to-Digital Converter
-package Interfaces.SAM3x8e.ADC is
+package SAM3x8e.ADC is
    pragma Preelaborate;
    pragma No_Elaboration_Code_All;
 
@@ -18,8 +18,8 @@ package Interfaces.SAM3x8e.ADC is
    -- Registers --
    ---------------
 
-   subtype ADC_CR_SWRST_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_CR_START_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_CR_SWRST_Field is SAM3x8e.Bit;
+   subtype ADC_CR_START_Field is SAM3x8e.Bit;
 
    --  Control Register
    type ADC_CR_Register is record
@@ -28,7 +28,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Write-only. Start Conversion
       START         : ADC_CR_START_Field := 16#0#;
       --  unspecified
-      Reserved_2_31 : Interfaces.SAM3x8e.UInt30 := 16#0#;
+      Reserved_2_31 : SAM3x8e.UInt30 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -121,7 +121,7 @@ package Interfaces.SAM3x8e.ADC is
      (Off => 0,
       On => 1);
 
-   subtype ADC_MR_PRESCAL_Field is Interfaces.SAM3x8e.Byte;
+   subtype ADC_MR_PRESCAL_Field is SAM3x8e.Byte;
 
    --  Start Up Time
    type MR_STARTUP_Field is
@@ -206,8 +206,8 @@ package Interfaces.SAM3x8e.ADC is
      (None => 0,
       Allowed => 1);
 
-   subtype ADC_MR_TRACKTIM_Field is Interfaces.SAM3x8e.UInt4;
-   subtype ADC_MR_TRANSFER_Field is Interfaces.SAM3x8e.UInt2;
+   subtype ADC_MR_TRACKTIM_Field is SAM3x8e.UInt4;
+   subtype ADC_MR_TRANSFER_Field is SAM3x8e.UInt2;
 
    --  Use Sequence Enable
    type MR_USEQ_Field is
@@ -224,35 +224,35 @@ package Interfaces.SAM3x8e.ADC is
    --  Mode Register
    type ADC_MR_Register is record
       --  Trigger Enable
-      TRGEN          : MR_TRGEN_Field := Interfaces.SAM3x8e.ADC.Dis;
+      TRGEN          : MR_TRGEN_Field := SAM3x8e.ADC.Dis;
       --  Trigger Selection
-      TRGSEL         : MR_TRGSEL_Field := Interfaces.SAM3x8e.ADC.Adc_Trig0;
+      TRGSEL         : MR_TRGSEL_Field := SAM3x8e.ADC.Adc_Trig0;
       --  Resolution
-      LOWRES         : MR_LOWRES_Field := Interfaces.SAM3x8e.ADC.Bits_12;
+      LOWRES         : MR_LOWRES_Field := SAM3x8e.ADC.Bits_12;
       --  Sleep Mode
-      SLEEP          : MR_SLEEP_Field := Interfaces.SAM3x8e.ADC.Normal;
+      SLEEP          : MR_SLEEP_Field := SAM3x8e.ADC.Normal;
       --  Fast Wake Up
-      FWUP           : MR_FWUP_Field := Interfaces.SAM3x8e.ADC.Off;
+      FWUP           : MR_FWUP_Field := SAM3x8e.ADC.Off;
       --  Free Run Mode
-      FREERUN        : MR_FREERUN_Field := Interfaces.SAM3x8e.ADC.Off;
+      FREERUN        : MR_FREERUN_Field := SAM3x8e.ADC.Off;
       --  Prescaler Rate Selection
       PRESCAL        : ADC_MR_PRESCAL_Field := 16#0#;
       --  Start Up Time
-      STARTUP        : MR_STARTUP_Field := Interfaces.SAM3x8e.ADC.Sut0;
+      STARTUP        : MR_STARTUP_Field := SAM3x8e.ADC.Sut0;
       --  Analog Settling Time
-      SETTLING       : MR_SETTLING_Field := Interfaces.SAM3x8e.ADC.Ast3;
+      SETTLING       : MR_SETTLING_Field := SAM3x8e.ADC.Ast3;
       --  unspecified
-      Reserved_22_22 : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_22_22 : SAM3x8e.Bit := 16#0#;
       --  Analog Change
-      ANACH          : MR_ANACH_Field := Interfaces.SAM3x8e.ADC.None;
+      ANACH          : MR_ANACH_Field := SAM3x8e.ADC.None;
       --  Tracking Time
       TRACKTIM       : ADC_MR_TRACKTIM_Field := 16#0#;
       --  Transfer Period
       TRANSFER       : ADC_MR_TRANSFER_Field := 16#0#;
       --  unspecified
-      Reserved_30_30 : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_30_30 : SAM3x8e.Bit := 16#0#;
       --  Use Sequence Enable
-      USEQ           : MR_USEQ_Field := Interfaces.SAM3x8e.ADC.Num_Order;
+      USEQ           : MR_USEQ_Field := SAM3x8e.ADC.Num_Order;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -276,7 +276,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_SEQR1_USCH array element
-   subtype ADC_SEQR1_USCH_Element is Interfaces.SAM3x8e.UInt4;
+   subtype ADC_SEQR1_USCH_Element is SAM3x8e.UInt4;
 
    --  ADC_SEQR1_USCH array
    type ADC_SEQR1_USCH_Field_Array is array (1 .. 8)
@@ -290,7 +290,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  USCH as a value
-            Val : Interfaces.SAM3x8e.UInt32;
+            Val : SAM3x8e.UInt32;
          when True =>
             --  USCH as an array
             Arr : ADC_SEQR1_USCH_Field_Array;
@@ -305,7 +305,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_SEQR2_USCH array element
-   subtype ADC_SEQR2_USCH_Element is Interfaces.SAM3x8e.UInt4;
+   subtype ADC_SEQR2_USCH_Element is SAM3x8e.UInt4;
 
    --  ADC_SEQR2_USCH array
    type ADC_SEQR2_USCH_Field_Array is array (9 .. 16)
@@ -319,7 +319,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  USCH as a value
-            Val : Interfaces.SAM3x8e.UInt32;
+            Val : SAM3x8e.UInt32;
          when True =>
             --  USCH as an array
             Arr : ADC_SEQR2_USCH_Field_Array;
@@ -334,7 +334,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_CHER_CH array element
-   subtype ADC_CHER_CH_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_CHER_CH_Element is SAM3x8e.Bit;
 
    --  ADC_CHER_CH array
    type ADC_CHER_CH_Field_Array is array (0 .. 15) of ADC_CHER_CH_Element
@@ -347,7 +347,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  CH as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  CH as an array
             Arr : ADC_CHER_CH_Field_Array;
@@ -365,7 +365,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Write-only. Channel 0 Enable
       CH             : ADC_CHER_CH_Field := (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -376,7 +376,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_CHDR_CH array element
-   subtype ADC_CHDR_CH_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_CHDR_CH_Element is SAM3x8e.Bit;
 
    --  ADC_CHDR_CH array
    type ADC_CHDR_CH_Field_Array is array (0 .. 15) of ADC_CHDR_CH_Element
@@ -389,7 +389,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  CH as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  CH as an array
             Arr : ADC_CHDR_CH_Field_Array;
@@ -407,7 +407,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Write-only. Channel 0 Disable
       CH             : ADC_CHDR_CH_Field := (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -418,7 +418,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_CHSR_CH array element
-   subtype ADC_CHSR_CH_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_CHSR_CH_Element is SAM3x8e.Bit;
 
    --  ADC_CHSR_CH array
    type ADC_CHSR_CH_Field_Array is array (0 .. 15) of ADC_CHSR_CH_Element
@@ -431,7 +431,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  CH as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  CH as an array
             Arr : ADC_CHSR_CH_Field_Array;
@@ -449,7 +449,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Read-only. Channel 0 Status
       CH             : ADC_CHSR_CH_Field;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16;
+      Reserved_16_31 : SAM3x8e.UInt16;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -459,8 +459,8 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype ADC_LCDR_LDATA_Field is Interfaces.SAM3x8e.UInt12;
-   subtype ADC_LCDR_CHNB_Field is Interfaces.SAM3x8e.UInt4;
+   subtype ADC_LCDR_LDATA_Field is SAM3x8e.UInt12;
+   subtype ADC_LCDR_CHNB_Field is SAM3x8e.UInt4;
 
    --  Last Converted Data Register
    type ADC_LCDR_Register is record
@@ -469,7 +469,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Read-only. Channel Number
       CHNB           : ADC_LCDR_CHNB_Field;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16;
+      Reserved_16_31 : SAM3x8e.UInt16;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -481,7 +481,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_IER_EOC array element
-   subtype ADC_IER_EOC_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_IER_EOC_Element is SAM3x8e.Bit;
 
    --  ADC_IER_EOC array
    type ADC_IER_EOC_Field_Array is array (0 .. 15) of ADC_IER_EOC_Element
@@ -494,7 +494,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  EOC as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  EOC as an array
             Arr : ADC_IER_EOC_Field_Array;
@@ -507,18 +507,18 @@ package Interfaces.SAM3x8e.ADC is
       Arr at 0 range 0 .. 15;
    end record;
 
-   subtype ADC_IER_DRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IER_GOVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IER_COMPE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IER_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IER_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_IER_DRDY_Field is SAM3x8e.Bit;
+   subtype ADC_IER_GOVRE_Field is SAM3x8e.Bit;
+   subtype ADC_IER_COMPE_Field is SAM3x8e.Bit;
+   subtype ADC_IER_ENDRX_Field is SAM3x8e.Bit;
+   subtype ADC_IER_RXBUFF_Field is SAM3x8e.Bit;
 
    --  Interrupt Enable Register
    type ADC_IER_Register is record
       --  Write-only. End of Conversion Interrupt Enable 0
       EOC            : ADC_IER_EOC_Field := (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_16_23 : Interfaces.SAM3x8e.Byte := 16#0#;
+      Reserved_16_23 : SAM3x8e.Byte := 16#0#;
       --  Write-only. Data Ready Interrupt Enable
       DRDY           : ADC_IER_DRDY_Field := 16#0#;
       --  Write-only. General Overrun Error Interrupt Enable
@@ -530,7 +530,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Write-only. Receive Buffer Full Interrupt Enable
       RXBUFF         : ADC_IER_RXBUFF_Field := 16#0#;
       --  unspecified
-      Reserved_29_31 : Interfaces.SAM3x8e.UInt3 := 16#0#;
+      Reserved_29_31 : SAM3x8e.UInt3 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -547,7 +547,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_IDR_EOC array element
-   subtype ADC_IDR_EOC_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_IDR_EOC_Element is SAM3x8e.Bit;
 
    --  ADC_IDR_EOC array
    type ADC_IDR_EOC_Field_Array is array (0 .. 15) of ADC_IDR_EOC_Element
@@ -560,7 +560,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  EOC as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  EOC as an array
             Arr : ADC_IDR_EOC_Field_Array;
@@ -573,18 +573,18 @@ package Interfaces.SAM3x8e.ADC is
       Arr at 0 range 0 .. 15;
    end record;
 
-   subtype ADC_IDR_DRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IDR_GOVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IDR_COMPE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IDR_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IDR_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_IDR_DRDY_Field is SAM3x8e.Bit;
+   subtype ADC_IDR_GOVRE_Field is SAM3x8e.Bit;
+   subtype ADC_IDR_COMPE_Field is SAM3x8e.Bit;
+   subtype ADC_IDR_ENDRX_Field is SAM3x8e.Bit;
+   subtype ADC_IDR_RXBUFF_Field is SAM3x8e.Bit;
 
    --  Interrupt Disable Register
    type ADC_IDR_Register is record
       --  Write-only. End of Conversion Interrupt Disable 0
       EOC            : ADC_IDR_EOC_Field := (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_16_23 : Interfaces.SAM3x8e.Byte := 16#0#;
+      Reserved_16_23 : SAM3x8e.Byte := 16#0#;
       --  Write-only. Data Ready Interrupt Disable
       DRDY           : ADC_IDR_DRDY_Field := 16#0#;
       --  Write-only. General Overrun Error Interrupt Disable
@@ -596,7 +596,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Write-only. Receive Buffer Full Interrupt Disable
       RXBUFF         : ADC_IDR_RXBUFF_Field := 16#0#;
       --  unspecified
-      Reserved_29_31 : Interfaces.SAM3x8e.UInt3 := 16#0#;
+      Reserved_29_31 : SAM3x8e.UInt3 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -613,7 +613,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_IMR_EOC array element
-   subtype ADC_IMR_EOC_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_IMR_EOC_Element is SAM3x8e.Bit;
 
    --  ADC_IMR_EOC array
    type ADC_IMR_EOC_Field_Array is array (0 .. 15) of ADC_IMR_EOC_Element
@@ -626,7 +626,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  EOC as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  EOC as an array
             Arr : ADC_IMR_EOC_Field_Array;
@@ -639,18 +639,18 @@ package Interfaces.SAM3x8e.ADC is
       Arr at 0 range 0 .. 15;
    end record;
 
-   subtype ADC_IMR_DRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IMR_GOVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IMR_COMPE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IMR_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_IMR_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_IMR_DRDY_Field is SAM3x8e.Bit;
+   subtype ADC_IMR_GOVRE_Field is SAM3x8e.Bit;
+   subtype ADC_IMR_COMPE_Field is SAM3x8e.Bit;
+   subtype ADC_IMR_ENDRX_Field is SAM3x8e.Bit;
+   subtype ADC_IMR_RXBUFF_Field is SAM3x8e.Bit;
 
    --  Interrupt Mask Register
    type ADC_IMR_Register is record
       --  Read-only. End of Conversion Interrupt Mask 0
       EOC            : ADC_IMR_EOC_Field;
       --  unspecified
-      Reserved_16_23 : Interfaces.SAM3x8e.Byte;
+      Reserved_16_23 : SAM3x8e.Byte;
       --  Read-only. Data Ready Interrupt Mask
       DRDY           : ADC_IMR_DRDY_Field;
       --  Read-only. General Overrun Error Interrupt Mask
@@ -662,7 +662,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Read-only. Receive Buffer Full Interrupt Mask
       RXBUFF         : ADC_IMR_RXBUFF_Field;
       --  unspecified
-      Reserved_29_31 : Interfaces.SAM3x8e.UInt3;
+      Reserved_29_31 : SAM3x8e.UInt3;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -679,7 +679,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_ISR_EOC array element
-   subtype ADC_ISR_EOC_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_ISR_EOC_Element is SAM3x8e.Bit;
 
    --  ADC_ISR_EOC array
    type ADC_ISR_EOC_Field_Array is array (0 .. 15) of ADC_ISR_EOC_Element
@@ -692,7 +692,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  EOC as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  EOC as an array
             Arr : ADC_ISR_EOC_Field_Array;
@@ -705,18 +705,18 @@ package Interfaces.SAM3x8e.ADC is
       Arr at 0 range 0 .. 15;
    end record;
 
-   subtype ADC_ISR_DRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_ISR_GOVRE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_ISR_COMPE_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_ISR_ENDRX_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_ISR_RXBUFF_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_ISR_DRDY_Field is SAM3x8e.Bit;
+   subtype ADC_ISR_GOVRE_Field is SAM3x8e.Bit;
+   subtype ADC_ISR_COMPE_Field is SAM3x8e.Bit;
+   subtype ADC_ISR_ENDRX_Field is SAM3x8e.Bit;
+   subtype ADC_ISR_RXBUFF_Field is SAM3x8e.Bit;
 
    --  Interrupt Status Register
    type ADC_ISR_Register is record
       --  Read-only. End of Conversion 0
       EOC            : ADC_ISR_EOC_Field;
       --  unspecified
-      Reserved_16_23 : Interfaces.SAM3x8e.Byte;
+      Reserved_16_23 : SAM3x8e.Byte;
       --  Read-only. Data Ready
       DRDY           : ADC_ISR_DRDY_Field;
       --  Read-only. General Overrun Error
@@ -728,7 +728,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Read-only. RX Buffer Full
       RXBUFF         : ADC_ISR_RXBUFF_Field;
       --  unspecified
-      Reserved_29_31 : Interfaces.SAM3x8e.UInt3;
+      Reserved_29_31 : SAM3x8e.UInt3;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -745,7 +745,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_OVER_OVRE array element
-   subtype ADC_OVER_OVRE_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_OVER_OVRE_Element is SAM3x8e.Bit;
 
    --  ADC_OVER_OVRE array
    type ADC_OVER_OVRE_Field_Array is array (0 .. 15) of ADC_OVER_OVRE_Element
@@ -758,7 +758,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  OVRE as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  OVRE as an array
             Arr : ADC_OVER_OVRE_Field_Array;
@@ -776,7 +776,7 @@ package Interfaces.SAM3x8e.ADC is
       --  Read-only. Overrun Error 0
       OVRE           : ADC_OVER_OVRE_Field;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16;
+      Reserved_16_31 : SAM3x8e.UInt16;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -805,33 +805,33 @@ package Interfaces.SAM3x8e.ADC is
       In_k => 2,
       Out_k => 3);
 
-   subtype ADC_EMR_CMPSEL_Field is Interfaces.SAM3x8e.UInt4;
-   subtype ADC_EMR_CMPALL_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_EMR_CMPFILTER_Field is Interfaces.SAM3x8e.UInt2;
-   subtype ADC_EMR_TAG_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_EMR_CMPSEL_Field is SAM3x8e.UInt4;
+   subtype ADC_EMR_CMPALL_Field is SAM3x8e.Bit;
+   subtype ADC_EMR_CMPFILTER_Field is SAM3x8e.UInt2;
+   subtype ADC_EMR_TAG_Field is SAM3x8e.Bit;
 
    --  Extended Mode Register
    type ADC_EMR_Register is record
       --  Comparison Mode
-      CMPMODE        : EMR_CMPMODE_Field := Interfaces.SAM3x8e.ADC.Low;
+      CMPMODE        : EMR_CMPMODE_Field := SAM3x8e.ADC.Low;
       --  unspecified
-      Reserved_2_3   : Interfaces.SAM3x8e.UInt2 := 16#0#;
+      Reserved_2_3   : SAM3x8e.UInt2 := 16#0#;
       --  Comparison Selected Channel
       CMPSEL         : ADC_EMR_CMPSEL_Field := 16#0#;
       --  unspecified
-      Reserved_8_8   : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_8_8   : SAM3x8e.Bit := 16#0#;
       --  Compare All Channels
       CMPALL         : ADC_EMR_CMPALL_Field := 16#0#;
       --  unspecified
-      Reserved_10_11 : Interfaces.SAM3x8e.UInt2 := 16#0#;
+      Reserved_10_11 : SAM3x8e.UInt2 := 16#0#;
       --  Compare Event Filtering
       CMPFILTER      : ADC_EMR_CMPFILTER_Field := 16#0#;
       --  unspecified
-      Reserved_14_23 : Interfaces.SAM3x8e.UInt10 := 16#0#;
+      Reserved_14_23 : SAM3x8e.UInt10 := 16#0#;
       --  TAG of ADC_LDCR register
       TAG            : ADC_EMR_TAG_Field := 16#0#;
       --  unspecified
-      Reserved_25_31 : Interfaces.SAM3x8e.UInt7 := 16#0#;
+      Reserved_25_31 : SAM3x8e.UInt7 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -849,19 +849,19 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_25_31 at 0 range 25 .. 31;
    end record;
 
-   subtype ADC_CWR_LOWTHRES_Field is Interfaces.SAM3x8e.UInt12;
-   subtype ADC_CWR_HIGHTHRES_Field is Interfaces.SAM3x8e.UInt12;
+   subtype ADC_CWR_LOWTHRES_Field is SAM3x8e.UInt12;
+   subtype ADC_CWR_HIGHTHRES_Field is SAM3x8e.UInt12;
 
    --  Compare Window Register
    type ADC_CWR_Register is record
       --  Low Threshold
       LOWTHRES       : ADC_CWR_LOWTHRES_Field := 16#0#;
       --  unspecified
-      Reserved_12_15 : Interfaces.SAM3x8e.UInt4 := 16#0#;
+      Reserved_12_15 : SAM3x8e.UInt4 := 16#0#;
       --  High Threshold
       HIGHTHRES      : ADC_CWR_HIGHTHRES_Field := 16#0#;
       --  unspecified
-      Reserved_28_31 : Interfaces.SAM3x8e.UInt4 := 16#0#;
+      Reserved_28_31 : SAM3x8e.UInt4 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -874,7 +874,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_CGR_GAIN array element
-   subtype ADC_CGR_GAIN_Element is Interfaces.SAM3x8e.UInt2;
+   subtype ADC_CGR_GAIN_Element is SAM3x8e.UInt2;
 
    --  ADC_CGR_GAIN array
    type ADC_CGR_GAIN_Field_Array is array (0 .. 15) of ADC_CGR_GAIN_Element
@@ -887,7 +887,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  GAIN as a value
-            Val : Interfaces.SAM3x8e.UInt32;
+            Val : SAM3x8e.UInt32;
          when True =>
             --  GAIN as an array
             Arr : ADC_CGR_GAIN_Field_Array;
@@ -902,7 +902,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_COR_OFF array element
-   subtype ADC_COR_OFF_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_COR_OFF_Element is SAM3x8e.Bit;
 
    --  ADC_COR_OFF array
    type ADC_COR_OFF_Field_Array is array (0 .. 15) of ADC_COR_OFF_Element
@@ -915,7 +915,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  OFF as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  OFF as an array
             Arr : ADC_COR_OFF_Field_Array;
@@ -929,7 +929,7 @@ package Interfaces.SAM3x8e.ADC is
    end record;
 
    --  ADC_COR_DIFF array element
-   subtype ADC_COR_DIFF_Element is Interfaces.SAM3x8e.Bit;
+   subtype ADC_COR_DIFF_Element is SAM3x8e.Bit;
 
    --  ADC_COR_DIFF array
    type ADC_COR_DIFF_Field_Array is array (0 .. 15) of ADC_COR_DIFF_Element
@@ -942,7 +942,7 @@ package Interfaces.SAM3x8e.ADC is
       case As_Array is
          when False =>
             --  DIFF as a value
-            Val : Interfaces.SAM3x8e.UInt16;
+            Val : SAM3x8e.UInt16;
          when True =>
             --  DIFF as an array
             Arr : ADC_COR_DIFF_Field_Array;
@@ -970,14 +970,14 @@ package Interfaces.SAM3x8e.ADC is
       DIFF at 0 range 16 .. 31;
    end record;
 
-   subtype ADC_CDR_DATA_Field is Interfaces.SAM3x8e.UInt12;
+   subtype ADC_CDR_DATA_Field is SAM3x8e.UInt12;
 
    --  Channel Data Register
    type ADC_CDR_Register is record
       --  Read-only. Converted Data
       DATA           : ADC_CDR_DATA_Field;
       --  unspecified
-      Reserved_12_31 : Interfaces.SAM3x8e.UInt20;
+      Reserved_12_31 : SAM3x8e.UInt20;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -990,21 +990,21 @@ package Interfaces.SAM3x8e.ADC is
    --  Channel Data Register
    type ADC_CDR_Registers is array (0 .. 15) of ADC_CDR_Register;
 
-   subtype ADC_ACR_TSON_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_ACR_IBCTL_Field is Interfaces.SAM3x8e.UInt2;
+   subtype ADC_ACR_TSON_Field is SAM3x8e.Bit;
+   subtype ADC_ACR_IBCTL_Field is SAM3x8e.UInt2;
 
    --  Analog Control Register
    type ADC_ACR_Register is record
       --  unspecified
-      Reserved_0_3   : Interfaces.SAM3x8e.UInt4 := 16#0#;
+      Reserved_0_3   : SAM3x8e.UInt4 := 16#0#;
       --  Temperature Sensor On
       TSON           : ADC_ACR_TSON_Field := 16#0#;
       --  unspecified
-      Reserved_5_7   : Interfaces.SAM3x8e.UInt3 := 16#0#;
+      Reserved_5_7   : SAM3x8e.UInt3 := 16#0#;
       --  ADC Bias Current Control
       IBCTL          : ADC_ACR_IBCTL_Field := 16#1#;
       --  unspecified
-      Reserved_10_31 : Interfaces.SAM3x8e.UInt22 := 16#0#;
+      Reserved_10_31 : SAM3x8e.UInt22 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -1017,15 +1017,15 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_10_31 at 0 range 10 .. 31;
    end record;
 
-   subtype ADC_WPMR_WPEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_WPMR_WPKEY_Field is Interfaces.SAM3x8e.UInt24;
+   subtype ADC_WPMR_WPEN_Field is SAM3x8e.Bit;
+   subtype ADC_WPMR_WPKEY_Field is SAM3x8e.UInt24;
 
    --  Write Protect Mode Register
    type ADC_WPMR_Register is record
       --  Write Protect Enable
       WPEN         : ADC_WPMR_WPEN_Field := 16#0#;
       --  unspecified
-      Reserved_1_7 : Interfaces.SAM3x8e.UInt7 := 16#0#;
+      Reserved_1_7 : SAM3x8e.UInt7 := 16#0#;
       --  Write Protect KEY
       WPKEY        : ADC_WPMR_WPKEY_Field := 16#0#;
    end record
@@ -1038,19 +1038,19 @@ package Interfaces.SAM3x8e.ADC is
       WPKEY        at 0 range 8 .. 31;
    end record;
 
-   subtype ADC_WPSR_WPVS_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_WPSR_WPVSRC_Field is Interfaces.SAM3x8e.UInt16;
+   subtype ADC_WPSR_WPVS_Field is SAM3x8e.Bit;
+   subtype ADC_WPSR_WPVSRC_Field is SAM3x8e.UInt16;
 
    --  Write Protect Status Register
    type ADC_WPSR_Register is record
       --  Read-only. Write Protect Violation Status
       WPVS           : ADC_WPSR_WPVS_Field;
       --  unspecified
-      Reserved_1_7   : Interfaces.SAM3x8e.UInt7;
+      Reserved_1_7   : SAM3x8e.UInt7;
       --  Read-only. Write Protect Violation Source
       WPVSRC         : ADC_WPSR_WPVSRC_Field;
       --  unspecified
-      Reserved_24_31 : Interfaces.SAM3x8e.Byte;
+      Reserved_24_31 : SAM3x8e.Byte;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -1062,14 +1062,14 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_24_31 at 0 range 24 .. 31;
    end record;
 
-   subtype ADC_RCR_RXCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype ADC_RCR_RXCTR_Field is SAM3x8e.UInt16;
 
    --  Receive Counter Register
    type ADC_RCR_Register is record
       --  Receive Counter Register
       RXCTR          : ADC_RCR_RXCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -1079,14 +1079,14 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype ADC_RNCR_RXNCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype ADC_RNCR_RXNCTR_Field is SAM3x8e.UInt16;
 
    --  Receive Next Counter Register
    type ADC_RNCR_Register is record
       --  Receive Next Counter
       RXNCTR         : ADC_RNCR_RXNCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -1096,10 +1096,10 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype ADC_PTCR_RXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_PTCR_RXTDIS_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_PTCR_TXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_PTCR_TXTDIS_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_PTCR_RXTEN_Field is SAM3x8e.Bit;
+   subtype ADC_PTCR_RXTDIS_Field is SAM3x8e.Bit;
+   subtype ADC_PTCR_TXTEN_Field is SAM3x8e.Bit;
+   subtype ADC_PTCR_TXTDIS_Field is SAM3x8e.Bit;
 
    --  Transfer Control Register
    type ADC_PTCR_Register is record
@@ -1108,13 +1108,13 @@ package Interfaces.SAM3x8e.ADC is
       --  Write-only. Receiver Transfer Disable
       RXTDIS         : ADC_PTCR_RXTDIS_Field := 16#0#;
       --  unspecified
-      Reserved_2_7   : Interfaces.SAM3x8e.UInt6 := 16#0#;
+      Reserved_2_7   : SAM3x8e.UInt6 := 16#0#;
       --  Write-only. Transmitter Transfer Enable
       TXTEN          : ADC_PTCR_TXTEN_Field := 16#0#;
       --  Write-only. Transmitter Transfer Disable
       TXTDIS         : ADC_PTCR_TXTDIS_Field := 16#0#;
       --  unspecified
-      Reserved_10_31 : Interfaces.SAM3x8e.UInt22 := 16#0#;
+      Reserved_10_31 : SAM3x8e.UInt22 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -1128,19 +1128,19 @@ package Interfaces.SAM3x8e.ADC is
       Reserved_10_31 at 0 range 10 .. 31;
    end record;
 
-   subtype ADC_PTSR_RXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype ADC_PTSR_TXTEN_Field is Interfaces.SAM3x8e.Bit;
+   subtype ADC_PTSR_RXTEN_Field is SAM3x8e.Bit;
+   subtype ADC_PTSR_TXTEN_Field is SAM3x8e.Bit;
 
    --  Transfer Status Register
    type ADC_PTSR_Register is record
       --  Read-only. Receiver Transfer Enable
       RXTEN         : ADC_PTSR_RXTEN_Field;
       --  unspecified
-      Reserved_1_7  : Interfaces.SAM3x8e.UInt7;
+      Reserved_1_7  : SAM3x8e.UInt7;
       --  Read-only. Transmitter Transfer Enable
       TXTEN         : ADC_PTSR_TXTEN_Field;
       --  unspecified
-      Reserved_9_31 : Interfaces.SAM3x8e.UInt23;
+      Reserved_9_31 : SAM3x8e.UInt23;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -1201,11 +1201,11 @@ package Interfaces.SAM3x8e.ADC is
       --  Write Protect Status Register
       WPSR  : aliased ADC_WPSR_Register;
       --  Receive Pointer Register
-      RPR   : aliased Interfaces.SAM3x8e.UInt32;
+      RPR   : aliased SAM3x8e.UInt32;
       --  Receive Counter Register
       RCR   : aliased ADC_RCR_Register;
       --  Receive Next Pointer Register
-      RNPR  : aliased Interfaces.SAM3x8e.UInt32;
+      RNPR  : aliased SAM3x8e.UInt32;
       --  Receive Next Counter Register
       RNCR  : aliased ADC_RNCR_Register;
       --  Transfer Control Register
@@ -1249,4 +1249,4 @@ package Interfaces.SAM3x8e.ADC is
    ADC_Periph : aliased ADC_Peripheral
      with Import, Address => ADC_Base;
 
-end Interfaces.SAM3x8e.ADC;
+end SAM3x8e.ADC;

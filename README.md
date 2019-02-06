@@ -25,6 +25,12 @@ Basic polled I2C interface is working.  Some cleanup is still probably needed.  
 BME280 is used for testing and some functions are working.  Note that 64 bit
 arithmatic is required for this.
 
+### Analogs
+Initial version of analog inputs is available.  Note that the internal channel
+numbers don't match the Arduino pin numbers.  Since 16 channels are defined and
+only 12 are actually used, there are four unused channels.  Enabling one of them
+seems to cause problems with the I2C interface and with tasking.
+
 ### Tasking
 Moved the LED flasher into a separate task - multiple tasks are working.
 

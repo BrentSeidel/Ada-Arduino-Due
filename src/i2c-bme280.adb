@@ -12,6 +12,7 @@ package body i2c.BME280 is
       temp_3 : SAM3x8e.Byte;
       temp_a : SAM3x8e.uint12;
       temp_b : SAM3x8e.uint12;
+      stdout : serial.int.serial_port := serial.int.get_port(0);
    begin
       self.port := i2c_port;
       --
@@ -19,56 +20,113 @@ package body i2c.BME280 is
       -- first or a single byte.  The two exceptions are H4 and H5.
       --
       self.T1 := readm2(self.port, i2c.BME280.addr, dig_T1, error);
+      if error /= none then
+         return;
+      end if;
       self.T2 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_T2, error));
+      if error /= none then
+         return;
+      end if;
       self.T3 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_T3, error));
+      if error /= none then
+         return;
+      end if;
       self.P1 := readm2(self.port, i2c.BME280.addr, dig_P1, error);
+      if error /= none then
+         return;
+      end if;
       self.P2 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P2, error));
+      if error /= none then
+         return;
+      end if;
       self.P3 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P3, error));
+      if error /= none then
+         return;
+      end if;
       self.P4 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P4, error));
+      if error /= none then
+         return;
+      end if;
       self.P5 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P5, error));
+      if error /= none then
+         return;
+      end if;
       self.P6 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P6, error));
+      if error /= none then
+         return;
+      end if;
       self.P7 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P7, error));
+      if error /= none then
+         return;
+      end if;
       self.P8 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P8, error));
+      if error /= none then
+         return;
+      end if;
       self.P9 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P9, error));
+      if error /= none then
+         return;
+      end if;
       self.H1 := read(self.port, i2c.BME280.addr, dig_H1, error);
+      if error /= none then
+         return;
+      end if;
       self.H2 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_H2, error));
+      if error /= none then
+         return;
+      end if;
       self.H3 := read(self.port, i2c.BME280.addr, dig_H3, error);
+      if error /= none then
+         return;
+      end if;
       --
       -- Specification of H4 is given as 0xE4/0xE5[3:0] => dig_H4[11:4]/[3:0]
       -- Specification of H5 is given as 0xE5[7:4]/0xE6 => dig_H5[3:0]/[11:4]
       -- These are actually 12 bit integers packed into three bytes.
       --
       temp_1 := read(self.port, i2c.BME280.addr, dig_H4, error);
+      if error /= none then
+         return;
+      end if;
       temp_2 := read(self.port, i2c.BME280.addr, dig_H45, error);
+      if error /= none then
+         return;
+      end if;
       temp_3 := read(self.port, i2c.BME280.addr, dig_H5, error);
+      if error /= none then
+         return;
+      end if;
       temp_a := SAM3x8e.uint12(temp_1)*16 + SAM3x8e.uint12(temp_2 mod 16);
       temp_b := SAM3x8e.uint12(temp_3)*16 + SAM3x8e.uint12(temp_2/16);
       self.H4 := SAM3x8e.int16(utils.uint12_to_int12(temp_a));
       self.H5 := SAM3x8e.int16(utils.uint12_to_int12(temp_b));
       self.H6 := read(self.port, i2c.BME280.addr, dig_H6, error);
+      if error /= none then
+         return;
+      end if;
       if debug then
-         serial.int.Put_Line("BME280 Calibration parameters");
-         Serial.Int.put_line("T1 = " & Integer'Image(integer(self.T1)));
-         Serial.Int.put_line("T2 = " & Integer'Image(integer(self.T2)));
-         Serial.Int.put_line("T3 = " & Integer'Image(integer(self.T3)));
-         Serial.Int.put_line("P1 = " & Integer'Image(integer(self.P1)));
-         Serial.Int.put_line("P2 = " & Integer'Image(integer(self.P2)));
-         Serial.Int.put_line("P3 = " & Integer'Image(integer(self.P3)));
-         Serial.Int.put_line("P4 = " & Integer'Image(integer(self.P4)));
-         Serial.Int.put_line("P5 = " & Integer'Image(integer(self.P5)));
-         Serial.Int.put_line("P6 = " & Integer'Image(integer(self.P6)));
-         Serial.Int.put_line("P7 = " & Integer'Image(integer(self.P7)));
-         Serial.Int.put_line("P8 = " & Integer'Image(integer(self.P8)));
-         Serial.Int.put_line("P9 = " & Integer'Image(integer(self.P9)));
-         Serial.Int.put_line("H1 = " & Integer'Image(integer(self.H1)));
-         Serial.Int.put_line("H2 = " & Integer'Image(integer(self.H2)));
-         Serial.Int.put_line("H3 = " & Integer'Image(integer(self.H3)));
-         Serial.Int.put_line("temp_1 = " & Integer'Image(integer(temp_1)));
-         Serial.Int.put_line("temp_2 = " & Integer'Image(integer(temp_2)));
-         Serial.Int.put_line("temp_3 = " & Integer'Image(integer(temp_3)));
-         Serial.Int.put_line("H4 = " & Integer'Image(integer(self.H4)));
-         Serial.Int.put_line("H5 = " & Integer'Image(integer(self.H5)));
-         Serial.Int.put_line("H6 = " & Integer'Image(integer(self.H6)));
+         stdout.Put_Line("BME280: Calibration parameters");
+         stdout.put_line("BME280: T1 = " & Integer'Image(integer(self.T1)));
+         stdout.put_line("BME280: T2 = " & Integer'Image(integer(self.T2)));
+         stdout.put_line("BME280: T3 = " & Integer'Image(integer(self.T3)));
+         stdout.put_line("BME280: P1 = " & Integer'Image(integer(self.P1)));
+         stdout.put_line("BME280: P2 = " & Integer'Image(integer(self.P2)));
+         stdout.put_line("BME280: P3 = " & Integer'Image(integer(self.P3)));
+         stdout.put_line("BME280: P4 = " & Integer'Image(integer(self.P4)));
+         stdout.put_line("BME280: P5 = " & Integer'Image(integer(self.P5)));
+         stdout.put_line("BME280: P6 = " & Integer'Image(integer(self.P6)));
+         stdout.put_line("BME280: P7 = " & Integer'Image(integer(self.P7)));
+         stdout.put_line("BME280: P8 = " & Integer'Image(integer(self.P8)));
+         stdout.put_line("BME280: P9 = " & Integer'Image(integer(self.P9)));
+         stdout.put_line("BME280: H1 = " & Integer'Image(integer(self.H1)));
+         stdout.put_line("BME280: H2 = " & Integer'Image(integer(self.H2)));
+         stdout.put_line("BME280: H3 = " & Integer'Image(integer(self.H3)));
+         stdout.put_line("BME280: temp_1 = " & Integer'Image(integer(temp_1)));
+         stdout.put_line("BME280: temp_2 = " & Integer'Image(integer(temp_2)));
+         stdout.put_line("BME280: temp_3 = " & Integer'Image(integer(temp_3)));
+         stdout.put_line("BME280: H4 = " & Integer'Image(integer(self.H4)));
+         stdout.put_line("BME280: H5 = " & Integer'Image(integer(self.H5)));
+         stdout.put_line("BME280: H6 = " & Integer'Image(integer(self.H6)));
       end if;
       --
       -- Now set the mode.  Use forced mode to keep the interface similar to

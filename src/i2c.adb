@@ -1,6 +1,7 @@
 with SAM3x8e.PMC;
 with SAM3x8e.PIO;
 with SAM3x8e.TWI;
+with serial.int;
 --
 --  Package for the I2C interface
 --
@@ -199,9 +200,11 @@ package body i2c is
       end loop;
       if status.NACK = 1 then
          error := nack;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       elsif status.OVRE = 1 then
          error := ovre;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       else
          error := none;
@@ -216,9 +219,11 @@ package body i2c is
       end loop;
       if status.NACK = 1 then
          error := nack;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       elsif status.OVRE = 1 then
          error := ovre;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       else
          error := none;
@@ -255,9 +260,11 @@ package body i2c is
       end loop;
       if status.NACK = 1 then
          error := nack;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       elsif status.OVRE = 1 then
          error := ovre;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       else
          error := none;
@@ -272,9 +279,11 @@ package body i2c is
       end loop;
       if status.NACK = 1 then
          error := nack;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       elsif status.OVRE = 1 then
          error := ovre;
+         Ada.Synchronous_Task_Control.Set_True(i2c_not_busy(chan));
          return 0;
       else
          error := none;

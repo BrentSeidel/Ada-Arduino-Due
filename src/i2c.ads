@@ -90,7 +90,13 @@ private
       sda_pin  : SAM3x8e.Byte;    --  SDA pin on PIO
       scl_pin  : SAM3x8e.Byte;    --  SCL pin on PIO
       int_id   : Ada.Interrupts.Interrupt_ID; -- Interrupt for channel
+      b        : buff_ptr;
    end record;
+   --
+   --  Buffers for reading data
+   --
+   b0 : aliased buffer;
+   b1 : aliased buffer;
    --
    --  The Arduino Due has two I2C busses available on the headers.  Note that
    --  the port numbers on the header are reversed from the internal hardware
@@ -98,9 +104,11 @@ private
    --
    i2c_port : constant array (port_id'Range) of channel_info_rec :=
      ((dev_id => dev.TWI1_ID, port => TWI1'Access, pioc => pio.PIOB'Access,
-       sda_pin => 12, scl_pin => 13, int_id =>Ada.Interrupts.Names.TWI1_Interrupt),
+       sda_pin => 12, scl_pin => 13, int_id =>Ada.Interrupts.Names.TWI1_Interrupt,
+       b => b0'Access),
       (dev_id => dev.TWI0_ID, port => TWI0'Access, pioc => pio.PIOA'Access,
-       sda_pin => 17, scl_pin => 18, int_id =>Ada.Interrupts.Names.TWI0_Interrupt));
+       sda_pin => 17, scl_pin => 18, int_id =>Ada.Interrupts.Names.TWI0_Interrupt,
+       b => b1'Access));
 
    --
    --  A protected type defining the transmit and receive buffers as well as an
