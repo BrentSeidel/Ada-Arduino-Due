@@ -31,6 +31,10 @@ numbers don't match the Arduino pin numbers.  Since 16 channels are defined and
 only 12 are actually used, there are four unused channels.  Enabling one of them
 seems to cause problems with the I2C interface and with tasking.
 
+Analog outputs are working on both channels.  Note that currently analog inputs
+operate in the free running mode and analog outputs use a polled wait.  This
+will probably be enhanced sometime in the future.
+
 ### Tasking
 Moved the LED flasher into a separate task - multiple tasks are working.
 

@@ -28,6 +28,12 @@ package utils is
    --  Convert string to uppercase
    --
    procedure uppercase(s : in out String);
+   --
+   --  See if a string starts with another string.  's' is the sample string,
+   --  'l' is the number of characters in the sample, 'test' is typically a
+   --  constant string to see if 's' starts with it.
+   --
+   function starts_with(s : String; l : Integer; test : String) return Boolean;
 
    --
    -- A couple of unchecked conversions to convert unsigned into signed values.

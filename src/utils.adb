@@ -40,6 +40,26 @@ package body utils is
       end loop;
    end;
    --
+   --  See if a string starts with another string.  's' is the sample string,
+   --  'l' is the number of characters in the sample, 'test' is typically a
+   --  constant string to see if 's' starts with it.
+   --
+   function starts_with(s : String; l : Integer; test : String) return Boolean is
+      test_len : constant Integer := test'Last - test'First + 1;
+   begin
+      --
+      --  Make sure that s is not shorter than test.
+      --
+      if l < test_len then
+         return False;
+      end if;
+      if s(s'First..test_len) = test then
+         return True;
+      else
+         return False;
+      end if;
+   end;
+   --
    --  Print some information about the CPU
    --
    procedure cpu_info is

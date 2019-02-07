@@ -24,4 +24,8 @@ private
    pass   : String(1 .. 20);
    l_pass : Integer := 0;
 
+   --
+   --  Procedure to break up some of the functionality
+   --
+   procedure analog_outs;
 end cli;

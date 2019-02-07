@@ -1,5 +1,6 @@
-with SAM3x8e.ADC;
-with SAM3x8e.PMC;
+with SAM3x8e;
+use type SAM3x8e.UInt32;
+use type SAM3x8e.Bit;
 
 package analogs is
    --
@@ -31,16 +32,31 @@ package analogs is
    --  Do not use channels marked as unused.  It may cause problems.  Using AD15.
    --  the CPU temperature sensor also seems to cause trouble with tasking.
    --
-   subtype AIN_type is Integer range 0 .. 15;
-   cpu_temp : constant AIN_type := 15;
+   --  Define a subtype for the Arduino analogs inputs.  These are mapped to the
+   --  analog channels via an array defined in the private section of this
+   --  package.
+   --
+   subtype AIN_Num is Integer range 0 .. 11;
+   --
+   --  Define a subtype for the analog outputs
+   --
+   subtype AOUT_Num is Integer range 0 .. 1;
    --
    --  Setup the analog to digital controller
    --
-   procedure setup;
+   procedure setup_ain;
    --
-   --  Enable or disable a specified channel
+   --  Setup the digital to analog controller
    --
-   procedure enable(c : AIN_type; b : Boolean);
+   procedure setup_aout;
+   --
+   --  Enable or disable a specified analog input channel
+   --
+   procedure enable_ain(c : AIN_Num; b : Boolean);
+   --
+   --  Enable or disable a specified analog output channel
+   --
+   procedure enable_aout(c : AOUT_Num; b : Boolean);
    --
    --  Start conversion
    --
@@ -52,6 +68,23 @@ package analogs is
    --
    --  Read an ADC value from a channel
    --
-   function get(c : AIN_type) return SAM3x8e.UInt16;
+   function get(c : AIN_Num) return SAM3x8e.UInt16;
+   --
+   --  Write a value to an analog output
+   --
+   procedure put(c : AOUT_Num; v : SAM3x8e.UInt12);
+   --
+private
+   --
+   --  The processor defines 16 analog input channels.
+   --
+   subtype AIN_type is Integer range 0 .. 15;
+   cpu_temp : constant AIN_type := 15;
+   --
+   --  Map the Arduino pins to the internal analog input channels
+   --
+   AIN_map : constant array (AIN_Num'Range) of AIN_type := (7, 6, 5, 4, 3, 2,
+                                                             1, 0, 10, 11, 12,
+                                                             13);
 
 end analogs;

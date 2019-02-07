@@ -1,9 +1,13 @@
+with SAM3x8e.ADC;
+with SAM3x8e.DACC;
+with SAM3x8e.PMC;
+
 with dev;
 package body analogs is
    --
    --  Setup the analog to digital controller
    --
-   procedure setup is
+   procedure setup_ain is
    begin
       --
       --  Enable clock for ADC
@@ -34,16 +38,46 @@ package body analogs is
       --  Turn the temperature sensor on
       --
       SAM3x8e.ADC.ADC_Periph.ACR.TSON := 1;
+   end setup_ain;
+   --
+   --  Setup the digital to analog controller
+   --
+   procedure setup_aout is
+   begin
+      --
+      --  Enable clock for ADC
+      --
+      SAM3x8e.PMC.PMC_Periph.PMC_PCER1.PID.Arr(dev.DACC_ID) := 1;
+      --
+      --  Setup some reasonable values for the DAC
+      --
+      SAM3x8e.DACC.DACC_Periph.MR.TRGEN := SAM3x8e.DACC.Dis;
+      SAM3x8e.DACC.DACC_Periph.MR.WORD  := SAM3x8e.DACC.Half;
+      SAM3x8e.DACC.DACC_Periph.MR.SLEEP := 0;  --  Normal mode
+      SAM3x8e.DACC.DACC_Periph.MR.TAG   := SAM3x8e.DACC.En;
+      SAM3x8e.DACC.DACC_Periph.MR.REFRESH := 1;
    end;
    --
-   --  Enable or disable a specified channel
+   --  Enable or disable a specified analog input channel
    --
-   procedure enable(c : AIN_type; b : Boolean) is
+   procedure enable_ain(c : AIN_Num; b : Boolean) is
+      ain : constant AIN_type := AIN_map(c);
    begin
       if b then
-         SAM3x8e.ADC.ADC_Periph.CHER.CH.Arr(c) := 1;
+         SAM3x8e.ADC.ADC_Periph.CHER.CH.Arr(ain) := 1;
       else
-         SAM3x8e.ADC.ADC_Periph.CHDR.CH.Arr(c) := 1;
+         SAM3x8e.ADC.ADC_Periph.CHDR.CH.Arr(ain) := 1;
+      end if;
+   end;
+   --
+   --  Enable or disable a specified analog output channel
+   --
+   procedure enable_aout(c : AOUT_Num; b : Boolean) is
+   begin
+      if b then
+         SAM3x8e.DACC.DACC_Periph.CHER.CH.Arr(c) := 1;
+      else
+         SAM3x8e.DACC.DACC_Periph.CHDR.CH.Arr(c) := 1;
       end if;
    end;
    --
@@ -67,9 +101,26 @@ package body analogs is
    --
    --  Read an ADC value from a channel
    --
-   function get(c : AIN_type) return SAM3x8e.UInt16 is
+   function get(c : AIN_Num) return SAM3x8e.UInt16 is
+      ain : constant AIN_type := AIN_map(c);
    begin
-      return SAM3x8e.UInt16(SAM3x8e.ADC.ADC_Periph.CDR(c).DATA);
+      return SAM3x8e.UInt16(SAM3x8e.ADC.ADC_Periph.CDR(ain).DATA);
+   end;
+   --
+   --  Write a value to an analog output
+   --
+   procedure put(c : AOUT_Num; v : SAM3x8e.UInt12) is
+   begin
+      --
+      --  Busy wait for the channel to be ready
+      --
+      while SAM3x8e.DACC.DACC_Periph.ISR.TXRDY = 0 loop
+         null;
+      end loop;
+      --
+      --  Write the data
+      --
+      SAM3x8e.DACC.DACC_Periph.CDR := SAM3x8e.UInt32(v) + SAM3x8e.UInt32(c)*16#1000#;
    end;
 
 end;

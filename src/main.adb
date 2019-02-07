@@ -24,19 +24,19 @@ procedure Main is
 begin
    stdout.put_line("Central Control Computer starting up:");
    if cli.analog_enable then
-      stdout.put_line("Analogs: Setting up");
-      analogs.setup;
+      stdout.put_line("Analogs: Setting up inputs");
+      analogs.setup_ain;
       stdout.put_line("Analogs: Enabling inputs");
-      for i in 0 .. 7 loop
-         analogs.enable(i, True);
+      for i in analogs.AIN_Num'Range loop
+         analogs.enable_ain(i, True);
       end loop;
-      analogs.enable(10, True);
-      analogs.enable(11, True);
-      analogs.enable(12, True);
-      analogs.enable(13, True);
---      analogs.enable(15, True);
       stdout.put_line("Analogs: Free run");
       analogs.free_run(True);
+      stdout.put_line("Analogs: Setting up outputs");
+      analogs.setup_aout;
+      stdout.put_line("Analogs: Enabling outputs");
+      analogs.enable_aout(0, True);
+      analogs.enable_aout(1, True);
    else
       stdout.put_line("Analogs: Disabled");
    end if;

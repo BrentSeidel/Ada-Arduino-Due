@@ -10,7 +10,7 @@ pragma Style_Checks (Off);
 with System;
 
 --  Digital-to-Analog Converter Controller
-package Interfaces.SAM3x8e.DACC is
+package SAM3x8e.DACC is
    pragma Preelaborate;
    pragma No_Elaboration_Code_All;
 
@@ -18,14 +18,14 @@ package Interfaces.SAM3x8e.DACC is
    -- Registers --
    ---------------
 
-   subtype DACC_CR_SWRST_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_CR_SWRST_Field is SAM3x8e.Bit;
 
    --  Control Register
    type DACC_CR_Register is record
       --  Write-only. Software Reset
       SWRST         : DACC_CR_SWRST_Field := 16#0#;
       --  unspecified
-      Reserved_1_31 : Interfaces.SAM3x8e.UInt31 := 16#0#;
+      Reserved_1_31 : SAM3x8e.UInt31 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -46,7 +46,7 @@ package Interfaces.SAM3x8e.DACC is
      (Dis => 0,
       En => 1);
 
-   subtype DACC_MR_TRGSEL_Field is Interfaces.SAM3x8e.UInt3;
+   subtype DACC_MR_TRGSEL_Field is SAM3x8e.UInt3;
 
    --  Word Transfer
    type MR_WORD_Field is
@@ -59,9 +59,9 @@ package Interfaces.SAM3x8e.DACC is
      (Half => 0,
       Word => 1);
 
-   subtype DACC_MR_SLEEP_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_MR_FASTWKUP_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_MR_REFRESH_Field is Interfaces.SAM3x8e.Byte;
+   subtype DACC_MR_SLEEP_Field is SAM3x8e.Bit;
+   subtype DACC_MR_FASTWKUP_Field is SAM3x8e.Bit;
+   subtype DACC_MR_REFRESH_Field is SAM3x8e.Byte;
 
    --  User Channel Selection
    type MR_USER_SEL_Field is
@@ -201,33 +201,33 @@ package Interfaces.SAM3x8e.DACC is
    --  Mode Register
    type DACC_MR_Register is record
       --  Trigger Enable
-      TRGEN          : MR_TRGEN_Field := Interfaces.SAM3x8e.DACC.Dis;
+      TRGEN          : MR_TRGEN_Field := SAM3x8e.DACC.Dis;
       --  Trigger Selection
       TRGSEL         : DACC_MR_TRGSEL_Field := 16#0#;
       --  Word Transfer
-      WORD           : MR_WORD_Field := Interfaces.SAM3x8e.DACC.Half;
+      WORD           : MR_WORD_Field := SAM3x8e.DACC.Half;
       --  Sleep Mode
       SLEEP          : DACC_MR_SLEEP_Field := 16#0#;
       --  Fast Wake up Mode
       FASTWKUP       : DACC_MR_FASTWKUP_Field := 16#0#;
       --  unspecified
-      Reserved_7_7   : Interfaces.SAM3x8e.Bit := 16#0#;
+      Reserved_7_7   : SAM3x8e.Bit := 16#0#;
       --  Refresh Period
       REFRESH        : DACC_MR_REFRESH_Field := 16#0#;
       --  User Channel Selection
-      USER_SEL       : MR_USER_SEL_Field := Interfaces.SAM3x8e.DACC.Channel0;
+      USER_SEL       : MR_USER_SEL_Field := SAM3x8e.DACC.Channel0;
       --  unspecified
-      Reserved_18_19 : Interfaces.SAM3x8e.UInt2 := 16#0#;
+      Reserved_18_19 : SAM3x8e.UInt2 := 16#0#;
       --  Tag Selection Mode
-      TAG            : MR_TAG_Field := Interfaces.SAM3x8e.DACC.Dis;
+      TAG            : MR_TAG_Field := SAM3x8e.DACC.Dis;
       --  Max Speed Mode
-      MAXS           : MR_MAXS_Field := Interfaces.SAM3x8e.DACC.Normal;
+      MAXS           : MR_MAXS_Field := SAM3x8e.DACC.Normal;
       --  unspecified
-      Reserved_22_23 : Interfaces.SAM3x8e.UInt2 := 16#0#;
+      Reserved_22_23 : SAM3x8e.UInt2 := 16#0#;
       --  Startup Time Selection
-      STARTUP        : MR_STARTUP_Field := Interfaces.SAM3x8e.DACC.Val_0;
+      STARTUP        : MR_STARTUP_Field := SAM3x8e.DACC.Val_0;
       --  unspecified
-      Reserved_30_31 : Interfaces.SAM3x8e.UInt2 := 16#0#;
+      Reserved_30_31 : SAM3x8e.UInt2 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -250,7 +250,7 @@ package Interfaces.SAM3x8e.DACC is
    end record;
 
    --  DACC_CHER_CH array element
-   subtype DACC_CHER_CH_Element is Interfaces.SAM3x8e.Bit;
+   subtype DACC_CHER_CH_Element is SAM3x8e.Bit;
 
    --  DACC_CHER_CH array
    type DACC_CHER_CH_Field_Array is array (0 .. 1) of DACC_CHER_CH_Element
@@ -263,7 +263,7 @@ package Interfaces.SAM3x8e.DACC is
       case As_Array is
          when False =>
             --  CH as a value
-            Val : Interfaces.SAM3x8e.UInt2;
+            Val : SAM3x8e.UInt2;
          when True =>
             --  CH as an array
             Arr : DACC_CHER_CH_Field_Array;
@@ -281,7 +281,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Write-only. Channel 0 Enable
       CH            : DACC_CHER_CH_Field := (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_2_31 : Interfaces.SAM3x8e.UInt30 := 16#0#;
+      Reserved_2_31 : SAM3x8e.UInt30 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -292,7 +292,7 @@ package Interfaces.SAM3x8e.DACC is
    end record;
 
    --  DACC_CHDR_CH array element
-   subtype DACC_CHDR_CH_Element is Interfaces.SAM3x8e.Bit;
+   subtype DACC_CHDR_CH_Element is SAM3x8e.Bit;
 
    --  DACC_CHDR_CH array
    type DACC_CHDR_CH_Field_Array is array (0 .. 1) of DACC_CHDR_CH_Element
@@ -305,7 +305,7 @@ package Interfaces.SAM3x8e.DACC is
       case As_Array is
          when False =>
             --  CH as a value
-            Val : Interfaces.SAM3x8e.UInt2;
+            Val : SAM3x8e.UInt2;
          when True =>
             --  CH as an array
             Arr : DACC_CHDR_CH_Field_Array;
@@ -323,7 +323,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Write-only. Channel 0 Disable
       CH            : DACC_CHDR_CH_Field := (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_2_31 : Interfaces.SAM3x8e.UInt30 := 16#0#;
+      Reserved_2_31 : SAM3x8e.UInt30 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -334,7 +334,7 @@ package Interfaces.SAM3x8e.DACC is
    end record;
 
    --  DACC_CHSR_CH array element
-   subtype DACC_CHSR_CH_Element is Interfaces.SAM3x8e.Bit;
+   subtype DACC_CHSR_CH_Element is SAM3x8e.Bit;
 
    --  DACC_CHSR_CH array
    type DACC_CHSR_CH_Field_Array is array (0 .. 1) of DACC_CHSR_CH_Element
@@ -347,7 +347,7 @@ package Interfaces.SAM3x8e.DACC is
       case As_Array is
          when False =>
             --  CH as a value
-            Val : Interfaces.SAM3x8e.UInt2;
+            Val : SAM3x8e.UInt2;
          when True =>
             --  CH as an array
             Arr : DACC_CHSR_CH_Field_Array;
@@ -365,7 +365,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Read-only. Channel 0 Status
       CH            : DACC_CHSR_CH_Field;
       --  unspecified
-      Reserved_2_31 : Interfaces.SAM3x8e.UInt30;
+      Reserved_2_31 : SAM3x8e.UInt30;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -375,10 +375,10 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_2_31 at 0 range 2 .. 31;
    end record;
 
-   subtype DACC_IER_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IER_EOC_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IER_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IER_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_IER_TXRDY_Field is SAM3x8e.Bit;
+   subtype DACC_IER_EOC_Field is SAM3x8e.Bit;
+   subtype DACC_IER_ENDTX_Field is SAM3x8e.Bit;
+   subtype DACC_IER_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Enable Register
    type DACC_IER_Register is record
@@ -391,7 +391,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Write-only. Transmit Buffer Empty Interrupt Enable
       TXBUFE        : DACC_IER_TXBUFE_Field := 16#0#;
       --  unspecified
-      Reserved_4_31 : Interfaces.SAM3x8e.UInt28 := 16#0#;
+      Reserved_4_31 : SAM3x8e.UInt28 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -404,10 +404,10 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_4_31 at 0 range 4 .. 31;
    end record;
 
-   subtype DACC_IDR_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IDR_EOC_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IDR_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IDR_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_IDR_TXRDY_Field is SAM3x8e.Bit;
+   subtype DACC_IDR_EOC_Field is SAM3x8e.Bit;
+   subtype DACC_IDR_ENDTX_Field is SAM3x8e.Bit;
+   subtype DACC_IDR_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Disable Register
    type DACC_IDR_Register is record
@@ -420,7 +420,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Write-only. Transmit Buffer Empty Interrupt Disable
       TXBUFE        : DACC_IDR_TXBUFE_Field := 16#0#;
       --  unspecified
-      Reserved_4_31 : Interfaces.SAM3x8e.UInt28 := 16#0#;
+      Reserved_4_31 : SAM3x8e.UInt28 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -433,10 +433,10 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_4_31 at 0 range 4 .. 31;
    end record;
 
-   subtype DACC_IMR_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IMR_EOC_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IMR_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_IMR_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_IMR_TXRDY_Field is SAM3x8e.Bit;
+   subtype DACC_IMR_EOC_Field is SAM3x8e.Bit;
+   subtype DACC_IMR_ENDTX_Field is SAM3x8e.Bit;
+   subtype DACC_IMR_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Mask Register
    type DACC_IMR_Register is record
@@ -449,7 +449,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Read-only. Transmit Buffer Empty Interrupt Mask
       TXBUFE        : DACC_IMR_TXBUFE_Field;
       --  unspecified
-      Reserved_4_31 : Interfaces.SAM3x8e.UInt28;
+      Reserved_4_31 : SAM3x8e.UInt28;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -462,10 +462,10 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_4_31 at 0 range 4 .. 31;
    end record;
 
-   subtype DACC_ISR_TXRDY_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_ISR_EOC_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_ISR_ENDTX_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_ISR_TXBUFE_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_ISR_TXRDY_Field is SAM3x8e.Bit;
+   subtype DACC_ISR_EOC_Field is SAM3x8e.Bit;
+   subtype DACC_ISR_ENDTX_Field is SAM3x8e.Bit;
+   subtype DACC_ISR_TXBUFE_Field is SAM3x8e.Bit;
 
    --  Interrupt Status Register
    type DACC_ISR_Register is record
@@ -478,7 +478,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Read-only. Transmit Buffer Empty
       TXBUFE        : DACC_ISR_TXBUFE_Field;
       --  unspecified
-      Reserved_4_31 : Interfaces.SAM3x8e.UInt28;
+      Reserved_4_31 : SAM3x8e.UInt28;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -492,7 +492,7 @@ package Interfaces.SAM3x8e.DACC is
    end record;
 
    --  DACC_ACR_IBCTLCH array element
-   subtype DACC_ACR_IBCTLCH_Element is Interfaces.SAM3x8e.UInt2;
+   subtype DACC_ACR_IBCTLCH_Element is SAM3x8e.UInt2;
 
    --  DACC_ACR_IBCTLCH array
    type DACC_ACR_IBCTLCH_Field_Array is array (0 .. 1)
@@ -506,7 +506,7 @@ package Interfaces.SAM3x8e.DACC is
       case As_Array is
          when False =>
             --  IBCTLCH as a value
-            Val : Interfaces.SAM3x8e.UInt4;
+            Val : SAM3x8e.UInt4;
          when True =>
             --  IBCTLCH as an array
             Arr : DACC_ACR_IBCTLCH_Field_Array;
@@ -519,7 +519,7 @@ package Interfaces.SAM3x8e.DACC is
       Arr at 0 range 0 .. 3;
    end record;
 
-   subtype DACC_ACR_IBCTLDACCORE_Field is Interfaces.SAM3x8e.UInt2;
+   subtype DACC_ACR_IBCTLDACCORE_Field is SAM3x8e.UInt2;
 
    --  Analog Current Register
    type DACC_ACR_Register is record
@@ -527,11 +527,11 @@ package Interfaces.SAM3x8e.DACC is
       IBCTLCH        : DACC_ACR_IBCTLCH_Field :=
                         (As_Array => False, Val => 16#0#);
       --  unspecified
-      Reserved_4_7   : Interfaces.SAM3x8e.UInt4 := 16#0#;
+      Reserved_4_7   : SAM3x8e.UInt4 := 16#0#;
       --  Bias Current Control for DAC Core
       IBCTLDACCORE   : DACC_ACR_IBCTLDACCORE_Field := 16#0#;
       --  unspecified
-      Reserved_10_31 : Interfaces.SAM3x8e.UInt22 := 16#0#;
+      Reserved_10_31 : SAM3x8e.UInt22 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -543,15 +543,15 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_10_31 at 0 range 10 .. 31;
    end record;
 
-   subtype DACC_WPMR_WPEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_WPMR_WPKEY_Field is Interfaces.SAM3x8e.UInt24;
+   subtype DACC_WPMR_WPEN_Field is SAM3x8e.Bit;
+   subtype DACC_WPMR_WPKEY_Field is SAM3x8e.UInt24;
 
    --  Write Protect Mode register
    type DACC_WPMR_Register is record
       --  Write Protect Enable
       WPEN         : DACC_WPMR_WPEN_Field := 16#0#;
       --  unspecified
-      Reserved_1_7 : Interfaces.SAM3x8e.UInt7 := 16#0#;
+      Reserved_1_7 : SAM3x8e.UInt7 := 16#0#;
       --  Write Protect KEY
       WPKEY        : DACC_WPMR_WPKEY_Field := 16#0#;
    end record
@@ -564,19 +564,19 @@ package Interfaces.SAM3x8e.DACC is
       WPKEY        at 0 range 8 .. 31;
    end record;
 
-   subtype DACC_WPSR_WPROTERR_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_WPSR_WPROTADDR_Field is Interfaces.SAM3x8e.Byte;
+   subtype DACC_WPSR_WPROTERR_Field is SAM3x8e.Bit;
+   subtype DACC_WPSR_WPROTADDR_Field is SAM3x8e.Byte;
 
    --  Write Protect Status register
    type DACC_WPSR_Register is record
       --  Read-only. Write protection error
       WPROTERR       : DACC_WPSR_WPROTERR_Field;
       --  unspecified
-      Reserved_1_7   : Interfaces.SAM3x8e.UInt7;
+      Reserved_1_7   : SAM3x8e.UInt7;
       --  Read-only. Write protection error address
       WPROTADDR      : DACC_WPSR_WPROTADDR_Field;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16;
+      Reserved_16_31 : SAM3x8e.UInt16;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -588,14 +588,14 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype DACC_TCR_TXCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype DACC_TCR_TXCTR_Field is SAM3x8e.UInt16;
 
    --  Transmit Counter Register
    type DACC_TCR_Register is record
       --  Transmit Counter Register
       TXCTR          : DACC_TCR_TXCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -605,14 +605,14 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype DACC_TNCR_TXNCTR_Field is Interfaces.SAM3x8e.UInt16;
+   subtype DACC_TNCR_TXNCTR_Field is SAM3x8e.UInt16;
 
    --  Transmit Next Counter Register
    type DACC_TNCR_Register is record
       --  Transmit Counter Next
       TXNCTR         : DACC_TNCR_TXNCTR_Field := 16#0#;
       --  unspecified
-      Reserved_16_31 : Interfaces.SAM3x8e.UInt16 := 16#0#;
+      Reserved_16_31 : SAM3x8e.UInt16 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -622,10 +622,10 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_16_31 at 0 range 16 .. 31;
    end record;
 
-   subtype DACC_PTCR_RXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_PTCR_RXTDIS_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_PTCR_TXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_PTCR_TXTDIS_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_PTCR_RXTEN_Field is SAM3x8e.Bit;
+   subtype DACC_PTCR_RXTDIS_Field is SAM3x8e.Bit;
+   subtype DACC_PTCR_TXTEN_Field is SAM3x8e.Bit;
+   subtype DACC_PTCR_TXTDIS_Field is SAM3x8e.Bit;
 
    --  Transfer Control Register
    type DACC_PTCR_Register is record
@@ -634,13 +634,13 @@ package Interfaces.SAM3x8e.DACC is
       --  Write-only. Receiver Transfer Disable
       RXTDIS         : DACC_PTCR_RXTDIS_Field := 16#0#;
       --  unspecified
-      Reserved_2_7   : Interfaces.SAM3x8e.UInt6 := 16#0#;
+      Reserved_2_7   : SAM3x8e.UInt6 := 16#0#;
       --  Write-only. Transmitter Transfer Enable
       TXTEN          : DACC_PTCR_TXTEN_Field := 16#0#;
       --  Write-only. Transmitter Transfer Disable
       TXTDIS         : DACC_PTCR_TXTDIS_Field := 16#0#;
       --  unspecified
-      Reserved_10_31 : Interfaces.SAM3x8e.UInt22 := 16#0#;
+      Reserved_10_31 : SAM3x8e.UInt22 := 16#0#;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -654,19 +654,19 @@ package Interfaces.SAM3x8e.DACC is
       Reserved_10_31 at 0 range 10 .. 31;
    end record;
 
-   subtype DACC_PTSR_RXTEN_Field is Interfaces.SAM3x8e.Bit;
-   subtype DACC_PTSR_TXTEN_Field is Interfaces.SAM3x8e.Bit;
+   subtype DACC_PTSR_RXTEN_Field is SAM3x8e.Bit;
+   subtype DACC_PTSR_TXTEN_Field is SAM3x8e.Bit;
 
    --  Transfer Status Register
    type DACC_PTSR_Register is record
       --  Read-only. Receiver Transfer Enable
       RXTEN         : DACC_PTSR_RXTEN_Field;
       --  unspecified
-      Reserved_1_7  : Interfaces.SAM3x8e.UInt7;
+      Reserved_1_7  : SAM3x8e.UInt7;
       --  Read-only. Transmitter Transfer Enable
       TXTEN         : DACC_PTSR_TXTEN_Field;
       --  unspecified
-      Reserved_9_31 : Interfaces.SAM3x8e.UInt23;
+      Reserved_9_31 : SAM3x8e.UInt23;
    end record
      with Volatile_Full_Access, Size => 32,
           Bit_Order => System.Low_Order_First;
@@ -695,7 +695,7 @@ package Interfaces.SAM3x8e.DACC is
       --  Channel Status Register
       CHSR : aliased DACC_CHSR_Register;
       --  Conversion Data Register
-      CDR  : aliased Interfaces.SAM3x8e.UInt32;
+      CDR  : aliased SAM3x8e.UInt32;
       --  Interrupt Enable Register
       IER  : aliased DACC_IER_Register;
       --  Interrupt Disable Register
@@ -711,11 +711,11 @@ package Interfaces.SAM3x8e.DACC is
       --  Write Protect Status register
       WPSR : aliased DACC_WPSR_Register;
       --  Transmit Pointer Register
-      TPR  : aliased Interfaces.SAM3x8e.UInt32;
+      TPR  : aliased SAM3x8e.UInt32;
       --  Transmit Counter Register
       TCR  : aliased DACC_TCR_Register;
       --  Transmit Next Pointer Register
-      TNPR : aliased Interfaces.SAM3x8e.UInt32;
+      TNPR : aliased SAM3x8e.UInt32;
       --  Transmit Next Counter Register
       TNCR : aliased DACC_TNCR_Register;
       --  Transfer Control Register
@@ -751,4 +751,4 @@ package Interfaces.SAM3x8e.DACC is
    DACC_Periph : aliased DACC_Peripheral
      with Import, Address => DACC_Base;
 
-end Interfaces.SAM3x8e.DACC;
+end SAM3x8e.DACC;
