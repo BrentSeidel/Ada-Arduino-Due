@@ -31,15 +31,16 @@ package body cli is
    --  Procedure for the command line interpreter
    --
    procedure command_loop is
-      s : String(1 .. 80);
-      l : Integer := 0;
-      flag : Boolean;
-      err  : i2c.err_code;
       stdout  : constant serial.int.serial_port := serial.int.get_port(0);
       stdin   : constant serial.int.serial_port := serial.int.get_port(0);
       serial1 : constant serial.int.serial_port := serial.int.get_port(1);
       serial2 : constant serial.int.serial_port := serial.int.get_port(2);
       serial3 : constant serial.int.serial_port := serial.int.get_port(3);
+      s    : String(1 .. 80);
+      l    : Integer := 0;
+      flag : Boolean;
+      err  : i2c.err_code;
+      val  : Integer;
    begin
       stdout.put_line("Welcome to the Central Control Computer.");
       loop
@@ -80,13 +81,14 @@ package body cli is
             serial2.put_line("Hello 2 from Ada.");
             serial2.put_line("Hello 3 from Ada.");
          elsif analog_enable and utils.starts_with(s, l, "ANALOG") then
+            val := Integer'Value(s(7..l));
             stdout.put_line("Analog input values:");
             for i in analogs.AIN_Num'Range loop
                stdout.put_line("Channel " & Integer'Image(i) & " has value " &
                                  Integer'Image(Integer(analogs.get(i))));
             end loop;
             stdout.put_line("Testing analog outputs.");
-            analog_outs;
+            analog_outs(val);
          else
             stdout.put_line("Unrecognized command.");
          end if;
@@ -100,17 +102,22 @@ package body cli is
    --
    --  Procedure to break up some of the functionality
    --
-   procedure analog_outs is
-      val : SAM3x8e.UInt12 := 0;
+   procedure analog_outs(v : Integer) is
+      val   : SAM3x8e.UInt12 := 0;
+      incr  : constant SAM3x8e.UInt12 := SAM3x8e.UInt12(v);
+      count : constant Integer := 1000;
    begin
-      for i in 1 .. 10000 loop
+      for i in 1 .. count loop
          analogs.put(0, val);
-         val := val + 32;
+         val := val + incr;
       end loop;
-      for i in 1 .. 10000 loop
+      analogs.put(0, 0);
+      val := 0;
+      for i in 1 .. count loop
          analogs.put(1, val);
-         val := val + 32;
+         val := val + incr;
       end loop;
+      analogs.put(0, 1);
    end;
 
 end cli;

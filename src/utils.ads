@@ -22,6 +22,13 @@ package utils is
    --
    procedure cpu_info;
    --
+   --  Definitions for bounded strings - to be moved to a separate package
+   --
+   type bounded(max : Integer) is record
+      len : Integer;
+      str : String(1 .. max);
+   end record;
+   --
    --  Some string functions
    --
    --

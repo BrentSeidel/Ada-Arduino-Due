@@ -1,3 +1,6 @@
+with Ada.Interrupts.Names;
+with Ada.Synchronous_Task_Control;
+with System;
 with SAM3x8e;
 use type SAM3x8e.UInt32;
 use type SAM3x8e.Bit;
@@ -84,7 +87,25 @@ private
    --  Map the Arduino pins to the internal analog input channels
    --
    AIN_map : constant array (AIN_Num'Range) of AIN_type := (7, 6, 5, 4, 3, 2,
-                                                             1, 0, 10, 11, 12,
-                                                             13);
+                                                            1, 0, 10, 11, 12,
+                                                            13);
+   --
+   --  Interrupt handler for Analog Outs.  Since both outputs share the same
+   --  interrupt and the same TXRDY flag, the handler is very simple compared
+   --  to the serial handler.
+   --
+   protected type aout_handler is
+      --
+      --  Start the wait for transmission complete
+      --
+      procedure start_wait;
+   private
+      procedure int_handler;
+      pragma Attach_Handler (int_handler, Ada.Interrupts.Names.DACC_Interrupt);
+      pragma Interrupt_Priority(System.Interrupt_Priority'First);
+   end aout_handler;
+
+   aout_interrupt : aout_handler;
+   aout_ready     : Ada.Synchronous_Task_Control.Suspension_Object;
 
 end analogs;

@@ -27,5 +27,5 @@ private
    --
    --  Procedure to break up some of the functionality
    --
-   procedure analog_outs;
+   procedure analog_outs(v : Integer);
 end cli;

@@ -135,17 +135,4 @@ private
                                          int_id => Ada.Interrupts.Names.USART3_Interrupt);
    channel : constant array (port_id'Range) of serial_obj := (chan0'Access, chan1'Access,
                                                               chan2'Access, chan3'Access);
---   channel : constant array (port_id'Range) of channel_info_rec :=
---     ((dev_id => dev.UART_ID, port => Serial'Access, pioc => pio.PIOA'Access,
---       tx_pin => 9, rx_pin => 8, tx_absel => 0, rx_absel => 0,
---       int_id => Ada.Interrupts.Names.UART_Interrupt),    --  Serial 0 works
---      (dev_id => dev.USART0_ID, port => Serial0'Access, pioc => pio.PIOA'Access,
---       tx_pin => 11, rx_pin => 10, tx_absel => 0, rx_absel => 0,
---       int_id => Ada.Interrupts.Names.USART0_Interrupt),  --  Serial 1 works
---      (dev_id => dev.USART1_ID, port => Serial1'Access, pioc => pio.PIOA'Access,
---       tx_pin => 13, rx_pin => 12, tx_absel => 0, rx_absel => 0,
---       int_id => Ada.Interrupts.Names.USART1_Interrupt),  --  Serial 2 works
---      (dev_id => dev.USART3_ID, port => Serial3'Access, pioc => pio.PIOD'Access,
---       tx_pin => 4, rx_pin => 5, tx_absel => 1, rx_absel => 1,
---       int_id => Ada.Interrupts.Names.USART3_Interrupt)); --  Serial 3 works
 end serial;
