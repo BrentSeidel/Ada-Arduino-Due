@@ -1,4 +1,6 @@
 with SAM3x8e;
+with BBS.units;
+use type BBS.units.press_p;
 package i2c.BME280 is
    --
    -- Addresses for the BME280 pressure and temperature sensor
@@ -32,10 +34,10 @@ package i2c.BME280 is
 --
 -- Note that H4 and H5 are actually 12 bit integers packed into 3 bytes.
 --
-   dig_H4 : constant SAM3x8e.Byte := 16#e4#; -- int12
+   dig_H4  : constant SAM3x8e.Byte := 16#e4#; -- int12
    dig_H45 : constant SAM3x8e.Byte := 16#e5#; -- SAM3x8e.Byte
-   dig_H5 : constant SAM3x8e.Byte := 16#e6#; -- int12
-   dig_H6 : constant SAM3x8e.Byte := 16#e7#; -- SAM3x8e.Byte
+   dig_H5  : constant SAM3x8e.Byte := 16#e6#; -- int12
+   dig_H6  : constant SAM3x8e.Byte := 16#e7#; -- SAM3x8e.Byte
    --
    -- Mode constants
    --
@@ -77,76 +79,91 @@ package i2c.BME280 is
    stat_im_update : constant SAM3x8e.Byte := 2#0000_0001#;
    --
    --
+   -- Stuff for object oriented interface.  A non-object oriented interface
+   -- is not provided for this device.  If you need one, it should be fairly
+   -- easy to write one.
+   --
+   type BME280_record is tagged private;
+   type BME280_ptr is access all BME280_record;
+   --
+   --  For the Ravenscar profile, we can't allocate objects on the fly, so the
+   --  object is defined in the private section and a pointer can be obtained
+   --  by the following function.
+   --
+   function get_BME280 return BME280_ptr;
+   --
+   --
    -- The configure procedure needs to be called first to initialize the
    -- calibration constants from the device.
    --
-   procedure configure(i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code);
+   procedure configure(self : not null access BME280_record'class;
+                       i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code);
    --
    -- Starts the BME280 converting data.  Temperature, pressure, and humidity
    -- are converted at the same time.
    --
-   procedure start_conversion(error : out err_code);
+   procedure start_conversion(self : not null access BME280_record'class; error : out err_code);
    --
    -- Check for data ready.  Reading a value before data is ready will have
    -- undesirable results.
    --
-   function data_ready(error : out err_code) return boolean;
+   function data_ready(self : not null access BME280_record'class; error : out err_code) return boolean;
    --
    -- Read the temperature, pressure, and humidity value (there's less overhead
    -- to read all three value than to try and read each individually) and compute
    -- the calibrated values
    --
-   procedure read_data(error : out err_code);
+   procedure read_data(self : not null access BME280_record'class; error : out err_code);
    --
    -- Return the raw uncompensated values.  Used for debugging purposes after
    -- read_data() has been called.
    --
---   procedure get_raw(self : not null access BME280_record'class; raw_temp : out uint32;
---                     raw_press : out uint32; raw_hum : out uint32);
+   procedure get_raw(self : not null access BME280_record'class; raw_temp : out SAM3x8e.uint32;
+                     raw_press : out SAM3x8e.uint32; raw_hum : out SAM3x8e.uint32);
    --
    -- Return the t_fine value.  Used for debugging purposes after
    -- read_data() has been called.
    --
---   function get_t_fine(self : not null access BME280_record'class) return int32;
+   function get_t_fine(self : not null access BME280_record'class) return SAM3x8e.int32;
    --
    -- Return the calibrated temperature value.  Temperature is returned in units
    -- of 0.01 degrees Celsius.
    --
-   function get_temp return integer;
+   function get_temp(self : not null access BME280_record'class) return integer;
    --
    -- Return temperature in various units.
    --
---   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_c;
---   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_f;
---   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_k;
+   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_c;
+   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_f;
+   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_k;
    --
    -- Return the calibrated pressure value.  Pressure is returned in units of
    -- 1/256 Pascals.
    --
-   function get_press return integer;
+   function get_press(self : not null access BME280_record'class) return integer;
    --
    -- Return pressure in various units.
    --
---   function get_press(self : not null access BME280_record'class) return BBS.units.press_p;
---   function get_press(self : not null access BME280_record'class) return BBS.units.press_mb;
---   function get_press(self : not null access BME280_record'class) return BBS.units.press_atm;
---   function get_press(self : not null access BME280_record'class) return BBS.units.press_inHg;
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_p;
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_mb;
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_atm;
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_inHg;
    --
    -- Return the calibrated relative humidity.  The result is in units of
    -- 1/1024 %.
    --
-   function get_hum return integer;
+   function get_hum(self : not null access BME280_record'class) return integer;
    --
    -- Return the relative humidity in percent.
    --
-   function get_hum return float;
+   function get_hum(self : not null access BME280_record'class) return float;
    --
 private
    debug : constant Boolean := True;
 
    buff : aliased buffer;
    --
-   type BME280_record is record
+   type BME280_record is tagged record
       port : port_id;
       T1 : SAM3x8e.UInt16 := 0;
       T2 : SAM3x8e.int16 := 0;
@@ -174,10 +191,12 @@ private
       raw_hum : SAM3x8e.UInt32;
       --
       -- Compensated values
+      --
       t_fine : SAM3x8e.int32;
       p_cal : SAM3x8e.UInt32; -- LSB = Pa/256
       h_cal : SAM3x8e.UInt32; -- LSB = %/1024
    end record;
 
-   self : BME280_record;
+   BME280_object : aliased BME280_record;
+
 end i2c.BME280;

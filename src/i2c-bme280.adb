@@ -6,8 +6,18 @@ with serial.int;
 with utils;
 package body i2c.BME280 is
    --
-   procedure configure(i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code) is
-      temp_1 :SAM3x8e. Byte;
+   --  For the Ravenscar profile, we can't allocate objects on the fly, so the
+   --  object is defined in the private section and a pointer can be obtained
+   --  by the following function.
+   --
+   function get_BME280 return BME280_ptr is
+   begin
+      return BME280_object'Access;
+   end;
+   --
+   procedure configure(self : not null access BME280_record'class;
+                       i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code) is
+      temp_1 : SAM3x8e. Byte;
       temp_2 : SAM3x8e.Byte;
       temp_3 : SAM3x8e.Byte;
       temp_a : SAM3x8e.uint12;
@@ -148,13 +158,15 @@ package body i2c.BME280 is
                         mode_force, error);
    end;
    --
-   procedure start_conversion(error : out err_code) is
+   procedure start_conversion(self : not null access BME280_record'class;
+                              error : out err_code) is
    begin
       write(self.port, i2c.BME280.addr, ctrl_meas, temp_over_1 + press_over_1 +
                         mode_force, error);
    end;
    --
-   function data_ready(error : out err_code) return boolean is
+   function data_ready(self : not null access BME280_record'class;
+                       error : out err_code) return boolean is
       data : SAM3x8e.Byte;
       err : err_code;
    begin
@@ -170,7 +182,7 @@ package body i2c.BME280 is
    -- Read 3 bytes for pressure and temperature and 2 bytes for humidity. 8 bytes
    -- total
    --
-   procedure read_data(error : out err_code) is
+   procedure read_data(self : not null access BME280_record'class; error : out err_code) is
       --
       -- Nested functions to do conversion of the temperature, pressure, and
       -- humidity values.  These are based on the example C code in the datasheet
@@ -249,24 +261,81 @@ package body i2c.BME280 is
       self.h_cal := cal_hum;
    end;
    --
-   function get_temp return integer is
+   --
+   procedure get_raw(self : not null access BME280_record'class; raw_temp : out SAM3x8e.uint32;
+                     raw_press : out SAM3x8e.uint32; raw_hum : out SAM3x8e.uint32) is
+   begin
+      raw_temp := self.raw_temp;
+      raw_press := self.raw_press;
+      raw_hum := self.raw_hum;
+   end;
+   --
+   function get_t_fine(self : not null access BME280_record'class) return SAM3x8e.int32 is
+   begin
+      return self.t_fine;
+   end;
+   --
+   function get_temp(self : not null access BME280_record'class) return integer is
    begin
       return integer((self.t_fine*5 + 128)/2**8);
    end;
    --
-   function get_press return integer is
+   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_c is
+      int_temp : integer := self.get_temp;
+   begin
+      return BBS.units.temp_c(float(int_temp) / 100.0);
+   end;
+   --
+   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_f is
+      int_temp : integer := self.get_temp;
+   begin
+      return BBS.units.to_Farenheit(BBS.units.temp_c(float(int_temp) / 100.0));
+   end;
+   --
+   function get_temp(self : not null access BME280_record'class) return BBS.units.temp_k is
+      int_temp : integer := self.get_temp;
+   begin
+      return BBS.units.to_Kelvin(BBS.units.temp_c(float(int_temp) / 100.0));
+   end;
+   --
+   function get_press(self : not null access BME280_record'class) return integer is
    begin
       return integer(self.p_cal);
    end;
    --
-   function get_hum return integer is
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_p is
+      int_press : integer := self.get_press;
+   begin
+      return BBS.units.press_p(int_press)/256.0;
+   end;
+   --
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_mb is
+      int_press : integer := self.get_press;
+   begin
+      return BBS.units.to_milliBar(BBS.units.press_p(int_press)/256.0);
+   end;
+   --
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_atm is
+      int_press : integer := self.get_press;
+   begin
+      return BBS.units.to_Atmosphere(BBS.units.press_p(int_press)/256.0);
+   end;
+   --
+   function get_press(self : not null access BME280_record'class) return BBS.units.press_inHg is
+      int_press : integer := self.get_press;
+   begin
+      return BBS.units.to_inHg(BBS.units.press_p(int_press)/256.0);
+   end;
+   --
+   function get_hum(self : not null access BME280_record'class) return integer is
    begin
       return integer(self.h_cal);
    end get_hum;
    --
-   function get_hum return float is
+   function get_hum(self : not null access BME280_record'class) return float is
+      int_value : integer := self.get_hum;
    begin
-      return float(self.h_cal)/1024.0;
+      return float(int_value)/1024.0;
    end get_hum;
    --
 end i2c.BME280;

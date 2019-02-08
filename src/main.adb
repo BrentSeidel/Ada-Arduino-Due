@@ -20,6 +20,7 @@ procedure Main is
    serial1 : constant serial.int.serial_port := serial.int.init(1, 115_200);
    serial2 : constant serial.int.serial_port := serial.int.init(2, 115_200);
    serial3 : constant serial.int.serial_port := serial.int.init(3, 115_200);
+   BME280  : constant i2c.BME280.BME280_ptr := i2c.BME280.get_BME280;
 
 begin
    stdout.put_line("Central Control Computer starting up:");
@@ -44,7 +45,7 @@ begin
       stdout.put_line("I2C: Initialization");
       i2c.init(0, i2c.low100);
       stdout.put_line("I2C: Configuring BME280");
-      i2c.BME280.configure(0, i2c.BME280.addr, err);
+      BME280.configure(0, i2c.BME280.addr, err);
       stdout.put_line("I2C: BME280 Configuration error code is " & i2c.err_code'Image(err));
       if err = i2c.none then
          cli.i2c_good := True;

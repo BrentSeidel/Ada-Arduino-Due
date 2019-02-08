@@ -4,6 +4,7 @@ with i2c.BME280;
 with analogs;
 with SAM3x8e;
 use type SAM3x8e.UInt12;
+with BBS.units;
 
 package body cli is
 
@@ -36,6 +37,7 @@ package body cli is
       serial1 : constant serial.int.serial_port := serial.int.get_port(1);
       serial2 : constant serial.int.serial_port := serial.int.get_port(2);
       serial3 : constant serial.int.serial_port := serial.int.get_port(3);
+      BME280  : constant i2c.BME280.BME280_ptr := i2c.BME280.get_BME280;
       s    : String(1 .. 80);
       l    : Integer := 0;
       flag : Boolean;
@@ -67,15 +69,15 @@ package body cli is
          elsif utils.starts_with(s, l, "HELP") then
             stdout.put_line("I'm sorry, I can't help you.");
          elsif i2c_good and utils.starts_with(s, l, "BME280") then
-            i2c.BME280.start_conversion(err);
+            BME280.start_conversion(err);
             loop
-               flag := i2c.BME280.data_ready(err);
+               flag := BME280.data_ready(err);
                exit when flag;
             end loop;
-            i2c.BME280.read_data(err);
-            stdout.put_line("Temperature is " & Integer'Image(i2c.BME280.get_temp/100));
-            stdout.put_line("Pressure is " & Integer'Image(i2c.BME280.get_press/256));
-            stdout.put_line("Humidity is " & Integer'Image(i2c.BME280.get_hum/1024));
+            BME280.read_data(err);
+            stdout.put_line("Temperature is " & Integer'Image(BME280.get_temp/100));
+            stdout.put_line("Pressure is " & Integer'Image(BME280.get_press/256));
+            stdout.put_line("Humidity is " & Integer'Image(BME280.get_hum/1024));
          elsif utils.starts_with(s, l, "SERIAL") then
             serial1.put_line("Hello 1 from Ada.");
             serial2.put_line("Hello 2 from Ada.");
