@@ -5,6 +5,7 @@ with analogs;
 with SAM3x8e;
 use type SAM3x8e.UInt12;
 with BBS.units;
+with strings;
 
 package body cli is
 
@@ -19,10 +20,10 @@ package body cli is
          stdout.put_line("MovieOS V27.5.2 Central Control Computer");
          stdout.put("Username: ");
          stdin.get_line(user, l_user);
-         utils.uppercase(user);
+         strings.uppercase(user);
          stdout.put("Password: ");
          stdin.get_line(pass, l_pass);
-         utils.uppercase(pass);
+         strings.uppercase(pass);
          exit when (l_pass = 8) and (pass(1..l_pass) = "OVERRIDE");
          stdout.put_line("Invalid credentials.  Security has been notified.");
       end loop;
@@ -38,6 +39,9 @@ package body cli is
       serial2 : constant serial.int.serial_port := serial.int.get_port(2);
       serial3 : constant serial.int.serial_port := serial.int.get_port(3);
       BME280  : constant i2c.BME280.BME280_ptr := i2c.BME280.get_BME280;
+      line : aliased strings.bounded(80);
+      cmd  : aliased strings.bounded(80);
+      rest : aliased strings.bounded(80);
       s    : String(1 .. 80);
       l    : Integer := 0;
       flag : Boolean;
@@ -48,27 +52,28 @@ package body cli is
       loop
          stdout.put(user(1..l_user) & "> ");
          stdin.get_line(s, l);
-         stdout.put_line("Got " & Integer'Image(l) & " characters in string.");
-         stdout.put_line("String is <" & s(1..l) & ">");
-         utils.uppercase(s);
-         stdout.put_line("Uppercase string is <" & s(1..l) & ">");
+         strings.to_bounded(line, s, l);
+         line.token(' ', cmd, rest);
+         cmd.uppercase;
+--         stdout.put_line("Token is <" & cmd.to_string & ">");
+--         stdout.put_line("Rest is <" & rest.to_string & ">");
          --
          -- Check for some commands.
          --
-         exit when utils.starts_with(s, l, "LOGOUT");
-         exit when utils.starts_with(s, l, "LOGOFF");
-         exit when utils.starts_with(s, l, "BYE");
-         if utils.starts_with(s, l, "FLASH") then
-            utils.flash_count := integer'Value(s(6..l));
-         elsif utils.starts_with(s, l, "EXIT") then
+         exit when cmd.starts_with("LOGOUT");
+         exit when cmd.starts_with("LOGOFF");
+         exit when cmd.starts_with("BYE");
+         if cmd.starts_with("FLASH") then
+            utils.flash_count := integer'Value(rest.to_string);
+         elsif cmd.starts_with("EXIT") then
             stdout.put_line("There is nowhere to exit to.  This is it.");
-         elsif utils.starts_with(s, l, "QUIT") then
+         elsif cmd.starts_with("QUIT") then
             stdout.put_line("I can't quit.");
-         elsif utils.starts_with(s, l, "INFO") then
+         elsif cmd.starts_with("INFO") then
             utils.cpu_info;
-         elsif utils.starts_with(s, l, "HELP") then
+         elsif cmd.starts_with("HELP") then
             stdout.put_line("I'm sorry, I can't help you.");
-         elsif i2c_good and utils.starts_with(s, l, "BME280") then
+         elsif i2c_good and cmd.starts_with("BME280") then
             BME280.start_conversion(err);
             loop
                flag := BME280.data_ready(err);
@@ -78,12 +83,12 @@ package body cli is
             stdout.put_line("Temperature is " & Integer'Image(BME280.get_temp/100));
             stdout.put_line("Pressure is " & Integer'Image(BME280.get_press/256));
             stdout.put_line("Humidity is " & Integer'Image(BME280.get_hum/1024));
-         elsif utils.starts_with(s, l, "SERIAL") then
+         elsif cmd.starts_with("SERIAL") then
             serial1.put_line("Hello 1 from Ada.");
             serial2.put_line("Hello 2 from Ada.");
             serial2.put_line("Hello 3 from Ada.");
-         elsif analog_enable and utils.starts_with(s, l, "ANALOG") then
-            val := Integer'Value(s(7..l));
+         elsif analog_enable and cmd.starts_with("ANALOG") then
+            val := Integer'Value(rest.to_string);
             stdout.put_line("Analog input values:");
             for i in analogs.AIN_Num'Range loop
                stdout.put_line("Channel " & Integer'Image(i) & " has value " &
@@ -92,7 +97,7 @@ package body cli is
             stdout.put_line("Testing analog outputs.");
             analog_outs(val);
          else
-            stdout.put_line("Unrecognized command.");
+            stdout.put_line("Unrecognized command <" & cmd.to_string & ">.");
          end if;
       end loop;
       stdout.put_line("User " & user(1..l_user) & " logged off.");
