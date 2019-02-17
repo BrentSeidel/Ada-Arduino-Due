@@ -5,7 +5,10 @@ with Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
 with pio;
 with SAM3x8e;
+use type SAM3x8e.Bit;
+use type SAM3x8e.Byte;
 use type SAM3x8e.UInt16;
+with SAM3x8e.TWI;
 --
 --  This package contains a random collection of utility functions used when
 --  exploring the Arduino Due.
@@ -21,6 +24,15 @@ package utils is
    --  Print some information about the CPU
    --
    procedure cpu_info;
+   --
+   --  Decode the I2C status register
+   --
+   procedure print_i2c_sr(s : SAM3x8e.TWI.TWI0_SR_Register);
+   --
+   --  Hex conversion routines
+   --
+   function hex_to_char(v : SAM3x8e.UInt4) return Character;
+   function byte_to_str(v : SAM3x8e.Byte) return String;
 
    --
    -- A couple of unchecked conversions to convert unsigned into signed values.

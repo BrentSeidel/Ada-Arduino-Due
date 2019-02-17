@@ -21,9 +21,16 @@ backspace and delete keys.  This should provide the basics for both console I/O
 as well as serial communication with other devices.
 
 ### I2C
-Basic polled I2C interface is working.  Some cleanup is still probably needed.  A
-BME280 is used for testing and some functions are working.  Note that 64 bit
-arithmatic is required for this.
+I2C reads are interrupt driven.  I2C writes only have a single byte write that
+is partially polled.  These are also available in an object oriented version.
+The write needs to be converted to fully interrupt driven and a block write added.
+
+The interface is moving in the direction of the I2C interface in BBS-BBB-Ada,
+though some changes will probably be required there.  Once the interfaces match,
+all the I2C devices from BBS-BBB-Ada should work.
+
+A BME280 is used for testing and some functions are working.  Note that 64 bit
+arithmatic is required for the BME280.
 
 ### Analogs
 Initial version of analog inputs is available.  Note that the internal channel

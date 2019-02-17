@@ -16,7 +16,7 @@ package body i2c.BME280 is
    end;
    --
    procedure configure(self : not null access BME280_record'class;
-                       i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code) is
+                       i2c_port : i2c_device; addr : SAM3x8e.UInt7; error : out err_code) is
       temp_1 : SAM3x8e. Byte;
       temp_2 : SAM3x8e.Byte;
       temp_3 : SAM3x8e.Byte;
@@ -24,68 +24,77 @@ package body i2c.BME280 is
       temp_b : SAM3x8e.uint12;
       stdout : serial.int.serial_port := serial.int.get_port(0);
    begin
-      self.port := i2c_port;
+      self.hw := i2c_port;
       --
       -- Calibration parameters.  Most of these are either two byte with LSB
       -- first or a single byte.  The two exceptions are H4 and H5.
       --
-      self.T1 := readm2(self.port, i2c.BME280.addr, dig_T1, error);
+      stdout.put_line("BME280: Reading T1");
+      self.T1 := self.readm2(i2c.BME280.addr, dig_T1, error);
       if error /= none then
          return;
       end if;
-      self.T2 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_T2, error));
+      stdout.put_line("BME280: Reading T2");
+      self.T2 := utils.uint16_to_int16(self.readm2(i2c.BME280.addr, dig_T2, error));
       if error /= none then
          return;
       end if;
-      self.T3 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_T3, error));
+      stdout.put_line("BME280: Reading T3");
+      self.T3 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_T3, error));
       if error /= none then
          return;
       end if;
-      self.P1 := readm2(self.port, i2c.BME280.addr, dig_P1, error);
+      stdout.put_line("BME280: Reading P1");
+      self.P1 := readm2(self, i2c.BME280.addr, dig_P1, error);
       if error /= none then
          return;
       end if;
-      self.P2 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P2, error));
+      stdout.put_line("BME280: Reading P2");
+      self.P2 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P2, error));
       if error /= none then
          return;
       end if;
-      self.P3 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P3, error));
+      stdout.put_line("BME280: Reading P3");
+      self.P3 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P3, error));
       if error /= none then
          return;
       end if;
-      self.P4 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P4, error));
+      stdout.put_line("BME280: Reading P4");
+      self.P4 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P4, error));
       if error /= none then
          return;
       end if;
-      self.P5 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P5, error));
+      stdout.put_line("BME280: Reading P5");
+      self.P5 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P5, error));
       if error /= none then
          return;
       end if;
-      self.P6 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P6, error));
+      stdout.put_line("BME280: Reading P6");
+      self.P6 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P6, error));
       if error /= none then
          return;
       end if;
-      self.P7 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P7, error));
+      self.P7 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P7, error));
       if error /= none then
          return;
       end if;
-      self.P8 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P8, error));
+      self.P8 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P8, error));
       if error /= none then
          return;
       end if;
-      self.P9 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_P9, error));
+      self.P9 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P9, error));
       if error /= none then
          return;
       end if;
-      self.H1 := read(self.port, i2c.BME280.addr, dig_H1, error);
+      self.H1 := read(self, i2c.BME280.addr, dig_H1, error);
       if error /= none then
          return;
       end if;
-      self.H2 := utils.uint16_to_int16(readm2(self.port, i2c.BME280.addr, dig_H2, error));
+      self.H2 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_H2, error));
       if error /= none then
          return;
       end if;
-      self.H3 := read(self.port, i2c.BME280.addr, dig_H3, error);
+      self.H3 := read(self, i2c.BME280.addr, dig_H3, error);
       if error /= none then
          return;
       end if;
@@ -94,15 +103,15 @@ package body i2c.BME280 is
       -- Specification of H5 is given as 0xE5[7:4]/0xE6 => dig_H5[3:0]/[11:4]
       -- These are actually 12 bit integers packed into three bytes.
       --
-      temp_1 := read(self.port, i2c.BME280.addr, dig_H4, error);
+      temp_1 := read(self, i2c.BME280.addr, dig_H4, error);
       if error /= none then
          return;
       end if;
-      temp_2 := read(self.port, i2c.BME280.addr, dig_H45, error);
+      temp_2 := read(self, i2c.BME280.addr, dig_H45, error);
       if error /= none then
          return;
       end if;
-      temp_3 := read(self.port, i2c.BME280.addr, dig_H5, error);
+      temp_3 := read(self, i2c.BME280.addr, dig_H5, error);
       if error /= none then
          return;
       end if;
@@ -110,7 +119,7 @@ package body i2c.BME280 is
       temp_b := SAM3x8e.uint12(temp_3)*16 + SAM3x8e.uint12(temp_2/16);
       self.H4 := SAM3x8e.int16(utils.uint12_to_int12(temp_a));
       self.H5 := SAM3x8e.int16(utils.uint12_to_int12(temp_b));
-      self.H6 := read(self.port, i2c.BME280.addr, dig_H6, error);
+      self.H6 := read(self, i2c.BME280.addr, dig_H6, error);
       if error /= none then
          return;
       end if;
@@ -145,23 +154,23 @@ package body i2c.BME280 is
       -- First put into sleep more so configuration can be set.  Oversampling
       -- is set to 1 for each parameter.
       --
-      write(self.port, i2c.BME280.addr, ctrl_meas, mode_sleep, error);
+      write(self, i2c.BME280.addr, ctrl_meas, mode_sleep, error);
       --
       -- Set humidity oversampling
       --
-      write(self.port, i2c.BME280.addr, ctrl_hum, hum_over_1, error);
+      write(self, i2c.BME280.addr, ctrl_hum, hum_over_1, error);
       --
       -- Temperature, pressure, and mode are in the same register so set them
       -- all at once.
       --
-      write(self.port, i2c.BME280.addr, ctrl_meas, temp_over_1 + press_over_1 +
+      write(self, i2c.BME280.addr, ctrl_meas, temp_over_1 + press_over_1 +
                         mode_force, error);
    end;
    --
    procedure start_conversion(self : not null access BME280_record'class;
                               error : out err_code) is
    begin
-      write(self.port, i2c.BME280.addr, ctrl_meas, temp_over_1 + press_over_1 +
+      write(self, i2c.BME280.addr, ctrl_meas, temp_over_1 + press_over_1 +
                         mode_force, error);
    end;
    --
@@ -170,7 +179,7 @@ package body i2c.BME280 is
       data : SAM3x8e.Byte;
       err : err_code;
    begin
-      data := read(self.port, i2c.BME280.addr, status, err);
+      data := read(self, i2c.BME280.addr, status, err);
       error := err;
       if ((data and stat_measuring) /= stat_measuring) and (err = none) then
          return true;
@@ -183,6 +192,7 @@ package body i2c.BME280 is
    -- total
    --
    procedure read_data(self : not null access BME280_record'class; error : out err_code) is
+      stdout : serial.int.serial_port := serial.int.get_port(0);
       --
       -- Nested functions to do conversion of the temperature, pressure, and
       -- humidity values.  These are based on the example C code in the datasheet
@@ -244,10 +254,14 @@ package body i2c.BME280 is
       end;
       --
    begin
-      read(self.port, addr, data_start, buff'access, 8, error);
-      self.raw_press := (SAM3x8e.uint32(buff(0))*2**16 + SAM3x8e.uint32(buff(1))*2**8 + SAM3x8e.uint32(buff(2)))/16;
-      self.raw_temp  := (SAM3x8e.uint32(buff(3))*2**16 + SAM3x8e.uint32(buff(4))*2**8 + SAM3x8e.uint32(buff(5)))/16;
-      self.raw_hum   := SAM3x8e.uint32(buff(6))*2**8  + SAM3x8e.uint32(buff(7));
+      stdout.put_line("BME280: Starting read of environment data.");
+      read(self, addr, data_start, 8, error);
+      stdout.put_line("BME280: Data collected.  Processing...");
+      self.raw_press := (SAM3x8e.uint32(self.hw.b(0))*2**16 + SAM3x8e.uint32(self.hw.b(1))*2**8 +
+                           SAM3x8e.uint32(self.hw.b(2)))/16;
+      self.raw_temp  := (SAM3x8e.uint32(self.hw.b(3))*2**16 + SAM3x8e.uint32(self.hw.b(4))*2**8 +
+                           SAM3x8e.uint32(self.hw.b(5)))/16;
+      self.raw_hum   := SAM3x8e.uint32(self.hw.b(6))*2**8  + SAM3x8e.uint32(self.hw.b(7));
       if (debug) then
          serial.int.put_line("p_raw: " & Integer'Image(integer(self.raw_press)));
          serial.int.put_line("t_raw: " & Integer'Image(integer(self.raw_temp)));

@@ -83,7 +83,7 @@ package i2c.BME280 is
    -- is not provided for this device.  If you need one, it should be fairly
    -- easy to write one.
    --
-   type BME280_record is tagged private;
+   type BME280_record is new i2c_interface_record with private;
    type BME280_ptr is access all BME280_record;
    --
    --  For the Ravenscar profile, we can't allocate objects on the fly, so the
@@ -97,7 +97,7 @@ package i2c.BME280 is
    -- calibration constants from the device.
    --
    procedure configure(self : not null access BME280_record'class;
-                       i2c_port : port_id; addr : SAM3x8e.UInt7; error : out err_code);
+                       i2c_port : i2c_device; addr : SAM3x8e.UInt7; error : out err_code);
    --
    -- Starts the BME280 converting data.  Temperature, pressure, and humidity
    -- are converted at the same time.
@@ -159,12 +159,10 @@ package i2c.BME280 is
    function get_hum(self : not null access BME280_record'class) return float;
    --
 private
-   debug : constant Boolean := True;
+   debug : constant Boolean := False;
 
-   buff : aliased buffer;
    --
-   type BME280_record is tagged record
-      port : port_id;
+   type BME280_record is new i2c_interface_record with record
       T1 : SAM3x8e.UInt16 := 0;
       T2 : SAM3x8e.int16 := 0;
       T3 : SAM3x8e.int16 := 0;

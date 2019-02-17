@@ -1,4 +1,5 @@
 with serial.int;
+with strings;
 --
 --  This package implementes a simple command line interpreter.
 package cli is
@@ -8,7 +9,9 @@ package cli is
    i2c_enable    : constant Boolean := True;
    analog_enable : constant Boolean := True;
    --
-   i2c_good   : Boolean := False;
+--   i2c_good    : Boolean := False;
+   bme280_good : Boolean := False;
+   bmp180_good : Boolean := False;
    --
    --  Procedure for the command line interpreter
    --
@@ -28,4 +31,6 @@ private
    --  Procedure to break up some of the functionality
    --
    procedure analog_outs(v : Integer);
+   --
+   procedure process_i2c(r : strings.bounded);
 end cli;

@@ -42,4 +42,109 @@ package body utils is
       serial.int.put_line(0, "Architecture is " &
                                SAM3x8e.CHIPID.CIDR_ARCH_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.ARCH));
    end;
+   --
+   --  Decode the I2C status register
+   --
+   procedure print_i2c_sr(s : SAM3x8e.TWI.TWI0_SR_Register) is
+      stdout : serial.int.serial_port := serial.int.get_port(0);
+      flag   : Boolean := False;
+   begin
+      if s.TXCOMP = 1 then
+         stdout.put("TXCOMP ");
+         flag := True;
+      end if;
+      if s.RXRDY = 1 then
+         stdout.put("RXRDY ");
+         flag := True;
+      end if;
+      if s.TXRDY = 1 then
+         stdout.put("TXDRY ");
+         flag := True;
+      end if;
+      if s.SVREAD = 1 then
+         stdout.put("SVREAD ");
+      end if;
+      if s.SVACC = 1 then
+         stdout.put("SVACC ");
+      end if;
+      if s.GACC = 1 then
+         stdout.put("GACC ");
+      end if;
+      if s.OVRE = 1 then
+         stdout.put("OVRE ");
+      end if;
+      if s.NACK = 1 then
+         stdout.put("NACK ");
+      end if;
+      if s.ARBLST = 1 then
+         stdout.put("ARBLST ");
+      end if;
+      if s.SCLWS = 1 then
+         stdout.put("SCLWS ");
+      end if;
+      if s.EOSACC = 1 then
+         stdout.put("EOSACC ");
+      end if;
+      if s.ENDRX = 1 then
+         stdout.put("ENDRX ");
+      end if;
+      if s.ENDTX = 1 then
+         stdout.put("ENDTX ");
+      end if;
+      if s.RXBUFF = 1 then
+         stdout.put("RXBUFF ");
+      end if;
+      if s.TXBUFE = 1 then
+         stdout.put("TXBUFE");
+      end if;
+      if flag then
+         stdout.new_line;
+      end if;
+   end;
+   --
+   --  Hex conversion routines
+   --
+   function hex_to_char(v : SAM3x8e.UInt4) return Character is
+   begin
+      case v is
+         when 0 =>
+            return '0';
+         when 1 =>
+            return '1';
+         when 2 =>
+            return '2';
+         when 3 =>
+            return '3';
+         when 4 =>
+            return '4';
+         when 5 =>
+            return '5';
+         when 6 =>
+            return '6';
+         when 7 =>
+            return '7';
+         when 8 =>
+            return '8';
+         when 9 =>
+            return '9';
+         when 10 =>
+            return 'A';
+         when 11 =>
+            return 'B';
+         when 12 =>
+            return 'C';
+         when 13 =>
+            return 'D';
+         when 14 =>
+            return 'E';
+         when 15 =>
+            return 'F';
+      end case;
+   end;
+   --
+   function byte_to_str(v : SAM3x8e.Byte) return String is
+   begin
+      return hex_to_char(SAM3x8e.UInt4((v/16) and 16#f#)) &
+        hex_to_char(SAM3x8e.UInt4(v and 16#f#));
+   end;
 end utils;

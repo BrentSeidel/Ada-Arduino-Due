@@ -1,11 +1,11 @@
 with utils;
 with i2c;
+use type i2c.err_code;
 with i2c.BME280;
 with analogs;
 with SAM3x8e;
 use type SAM3x8e.UInt12;
 with BBS.units;
-with strings;
 
 package body cli is
 
@@ -73,16 +73,20 @@ package body cli is
             utils.cpu_info;
          elsif cmd.starts_with("HELP") then
             stdout.put_line("I'm sorry, I can't help you.");
-         elsif i2c_good and cmd.starts_with("BME280") then
+         elsif bme280_good and cmd.starts_with("BME280") then
+            stdout.put_line("BME280: Starting conversion.");
             BME280.start_conversion(err);
+            stdout.put_line("BME280: Waiting for conversion.");
             loop
                flag := BME280.data_ready(err);
                exit when flag;
             end loop;
+            stdout.put_line("BME280: Conversion complete.");
             BME280.read_data(err);
-            stdout.put_line("Temperature is " & Integer'Image(BME280.get_temp/100));
-            stdout.put_line("Pressure is " & Integer'Image(BME280.get_press/256));
-            stdout.put_line("Humidity is " & Integer'Image(BME280.get_hum/1024));
+            stdout.put_line("BME280 Data:");
+            stdout.put_line("  Temperature is " & Integer'Image(BME280.get_temp/100));
+            stdout.put_line("  Pressure is " & Integer'Image(BME280.get_press/256));
+            stdout.put_line("  Humidity is " & Integer'Image(BME280.get_hum/1024));
          elsif cmd.starts_with("SERIAL") then
             serial1.put_line("Hello 1 from Ada.");
             serial2.put_line("Hello 2 from Ada.");
@@ -96,6 +100,8 @@ package body cli is
             end loop;
             stdout.put_line("Testing analog outputs.");
             analog_outs(val);
+         elsif cmd.starts_with("I2C") then
+            process_i2c(rest);
          else
             stdout.put_line("Unrecognized command <" & cmd.to_string & ">.");
          end if;
@@ -125,6 +131,32 @@ package body cli is
          val := val + incr;
       end loop;
       analogs.put(0, 1);
+   end;
+   --
+   --  I2C related operations
+   --
+   procedure process_i2c(r : strings.bounded) is
+      stdout : constant serial.int.serial_port := serial.int.get_port(0);
+      line   : aliased strings.bounded := r;
+      cmd    : aliased strings.bounded(80);
+      rest   : aliased strings.bounded(80);
+      err    : i2c.err_code;
+      i2c_chan : aliased i2c.i2c_interface_record := (hw => i2c.get_device(0));
+   begin
+      line.token(' ', cmd, rest);
+      cmd.uppercase;
+      if cmd.starts_with("SCAN") then
+         for i in SAM3x8e.UInt7 range 16#0E# .. 16#77# loop
+            i2c_chan.read(i, 0, 1, err);
+            if err = i2c.none then
+               stdout.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
+            end if;
+         end loop;
+      elsif cmd.starts_with("READ") then
+         null;
+      else
+         stdout.put_line("Unrecognized option <" & cmd.to_string & ">");
+      end if;
    end;
 
 end cli;
