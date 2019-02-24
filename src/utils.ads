@@ -3,23 +3,40 @@ use type Ada.Real_Time.Time;
 use type Ada.Real_Time.Time_Span;
 with Ada.Synchronous_Task_Control;
 with Ada.Unchecked_Conversion;
-with pio;
+with System;
 with SAM3x8e;
 use type SAM3x8e.Bit;
 use type SAM3x8e.Byte;
 use type SAM3x8e.UInt16;
 with SAM3x8e.TWI;
+with pio;
 --
 --  This package contains a random collection of utility functions used when
 --  exploring the Arduino Due.
 --
 package utils is
    --
+   --  Task priority
+   --
+   background : constant System.Priority := System.Priority'First;
+   --
    --  Task to flash the LED.
    --
    flash_count : Integer := 2;
-   task flasher;
-   procedure start_flasher;
+   task flasher is
+      pragma Priority(background);
+   end;
+   procedure ctrl_flasher(s : Boolean);
+   function state_flasher return Boolean;
+   --
+   --  Task to toggle pin 23.  Note that this task has to have a lower priority
+   --  than other tasks, otherwise it will block them when it runs.
+   --
+   task toggle is
+      pragma Priority(background);
+   end;
+   procedure ctrl_toggle(s : Boolean);
+   function state_toggle return Boolean;
    --
    --  Print some information about the CPU
    --
@@ -52,6 +69,12 @@ package utils is
      (SAM3x8e.Byte(x and 16#FF#));
    --
 private
+   --
+   --  Suspension objects and booleans to control tasks
+   --
    enable_flasher : Ada.Synchronous_Task_Control.Suspension_Object;
-
+   enable_toggle  : Ada.Synchronous_Task_Control.Suspension_Object;
+   run_flasher : Boolean;
+   run_toggle  : Boolean;
+   --
 end utils;

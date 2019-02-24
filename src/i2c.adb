@@ -149,6 +149,10 @@ package body i2c is
                    data : SAM3x8e.Byte; error : out err_code) is
       status : SAM3x8e.TWI.TWI0_SR_Register;
    begin
+      if (addr < 16#0E#) or (addr > 16#77#) then
+         error := invalid_addr;
+         return;
+      end if;
       Ada.Synchronous_Task_Control.Suspend_Until_True(i2c_port(chan).not_busy);
       i2c_port(chan).port.CR.MSEN    := 1;  --  Enable master mode
       i2c_port(chan).port.CR.SVDIS   := 1;  --  Disable slave mode
@@ -212,6 +216,10 @@ package body i2c is
                   size : buff_index; error : out err_code) is
       count  : buff_index := 0;
    begin
+      if (addr < 16#0E#) or (addr > 16#77#) then
+         error := invalid_addr;
+         return;
+      end if;
       Ada.Synchronous_Task_Control.Suspend_Until_True(i2c_port(chan).not_busy);
       buff(chan).rx_read(addr, reg, size);
       Ada.Synchronous_Task_Control.Suspend_Until_True(i2c_port(chan).not_busy);
@@ -229,6 +237,10 @@ package body i2c is
                    data : SAM3x8e.Byte; error : out err_code) is
       status : SAM3x8e.TWI.TWI0_SR_Register;
    begin
+      if (addr < 16#0E#) or (addr > 16#77#) then
+         error := invalid_addr;
+         return;
+      end if;
       Ada.Synchronous_Task_Control.Suspend_Until_True(self.hw.not_busy);
       self.hw.port.CR.MSEN    := 1;  --  Enable master mode
       self.hw.port.CR.SVDIS   := 1;  --  Disable slave mode
@@ -298,6 +310,10 @@ package body i2c is
       stdout : serial.int.serial_port := serial.int.get_port(0);
       count  : Integer := 0;
    begin
+      if (addr < 16#0E#) or (addr > 16#77#) then
+         error := invalid_addr;
+         return;
+      end if;
       Ada.Synchronous_Task_Control.Suspend_Until_True(self.hw.not_busy);
       self.hw.handle.rx_read(addr, reg, size);
       Ada.Synchronous_Task_Control.Suspend_Until_True(self.hw.not_busy);

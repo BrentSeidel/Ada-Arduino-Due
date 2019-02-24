@@ -29,47 +29,38 @@ package body i2c.BME280 is
       -- Calibration parameters.  Most of these are either two byte with LSB
       -- first or a single byte.  The two exceptions are H4 and H5.
       --
-      stdout.put_line("BME280: Reading T1");
       self.T1 := self.readm2(i2c.BME280.addr, dig_T1, error);
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading T2");
       self.T2 := utils.uint16_to_int16(self.readm2(i2c.BME280.addr, dig_T2, error));
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading T3");
       self.T3 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_T3, error));
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading P1");
       self.P1 := readm2(self, i2c.BME280.addr, dig_P1, error);
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading P2");
       self.P2 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P2, error));
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading P3");
       self.P3 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P3, error));
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading P4");
       self.P4 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P4, error));
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading P5");
       self.P5 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P5, error));
       if error /= none then
          return;
       end if;
-      stdout.put_line("BME280: Reading P6");
       self.P6 := utils.uint16_to_int16(readm2(self, i2c.BME280.addr, dig_P6, error));
       if error /= none then
          return;

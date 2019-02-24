@@ -69,5 +69,10 @@ package pio is
    --
    rs485_pin_rec : aliased gpio_record := (ctrl => PIOB'Access, bit => 26);
    RS485_PIN : gpio_ptr := rs485_pin_rec'Access;
+   --
+   --  Arduino pin 23 used by toggle task.
+   --
+   pin23_rec : aliased gpio_record := (ctrl => PIOA'Access, bit => 14);
+   pin23 : gpio_ptr := pin23_rec'Access;
 
 end pio;

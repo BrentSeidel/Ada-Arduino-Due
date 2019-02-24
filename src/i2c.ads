@@ -4,6 +4,7 @@ with Ada.Synchronous_Task_Control;
 with System;
 with SAM3x8e;
 use type SAM3x8e.Bit;
+use type SAM3x8e.UInt7;
 use type SAM3x8e.Byte;
 use type SAM3x8e.UInt16;
 use type SAM3x8e.UInt32;
@@ -22,7 +23,7 @@ package i2c is
    --
    --  Possible error codes
    --
-   type err_code is (none, nack, ovre);
+   type err_code is (none, nack, ovre, invalid_addr);
    --
    --  Interface speed, 100kHz and 400kHz are supported.
    --

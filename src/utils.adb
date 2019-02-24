@@ -5,7 +5,7 @@ package body utils is
    --  Task to flash the LED.
    --
    task body flasher is
-      led     : pio.gpio_ptr := pio.led_pin_obj'Access;
+      led : constant pio.gpio_ptr := pio.led_pin_obj'Access;
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
       led.config(pio.gpio_output);
@@ -17,13 +17,53 @@ package body utils is
             delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.1);
          end loop;
          delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(0.5);
+         if not run_flasher then
+            Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
+         end if;
       end loop;
    end flasher;
    --
-   procedure start_flasher is
+   procedure ctrl_flasher(s : Boolean) is
    begin
-      Ada.Synchronous_Task_Control.Set_True(enable_flasher);
+      if s then
+         Ada.Synchronous_Task_Control.Set_True(enable_flasher);
+         run_flasher := True;
+      else
+         Ada.Synchronous_Task_Control.Set_False(enable_flasher);
+         run_flasher := False;
+      end if;
    end;
+   --
+   function state_flasher return Boolean is (run_flasher);
+   --
+   --  Task to toggle pin 23.
+   --
+   task body toggle is
+      pin : constant pio.gpio_ptr := pio.pin23;
+   begin
+      Ada.Synchronous_Task_Control.Suspend_Until_True(enable_toggle);
+      pin.config(pio.gpio_output);
+      loop
+         pin.set(1);
+         pin.set(0);
+         if not run_toggle then
+            Ada.Synchronous_Task_Control.Suspend_Until_True(enable_toggle);
+         end if;
+      end loop;
+   end toggle;
+   --
+   procedure ctrl_toggle(s : Boolean) is
+   begin
+      if s then
+         Ada.Synchronous_Task_Control.Set_True(enable_toggle);
+         run_toggle := True;
+      else
+         Ada.Synchronous_Task_Control.Set_False(enable_toggle);
+         run_toggle := False;
+      end if;
+   end;
+   --
+   function state_toggle return Boolean is (run_toggle);
    --
    --  Print some information about the CPU
    --
