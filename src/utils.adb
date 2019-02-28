@@ -187,4 +187,10 @@ package body utils is
       return hex_to_char(SAM3x8e.UInt4((v/16) and 16#f#)) &
         hex_to_char(SAM3x8e.UInt4(v and 16#f#));
    end;
+   --
+   function byte_to_str(v : BBS.embed.uint8) return String is
+   begin
+      return hex_to_char(SAM3x8e.UInt4((v/16) and 16#f#)) &
+        hex_to_char(SAM3x8e.UInt4(v and 16#f#));
+   end;
 end utils;

@@ -1,8 +1,8 @@
 with utils;
-with i2c.BME280;
+with bbs.embed.i2c.BME280;
 with analogs;
 with SAM3x8e;
-use type SAM3x8e.Byte;
+--use type SAM3x8e.Byte;
 use type SAM3x8e.UInt12;
 with BBS.units;
 with Ada.Synchronous_Task_Control;
@@ -132,14 +132,14 @@ package body cli is
    --    BME280
    --
    procedure process_i2c(r : strings.bounded) is
-      i2c0   : aliased i2c.i2c_interface_record := (hw => i2c.get_device(0));
-      i2c1   : aliased i2c.i2c_interface_record := (hw => i2c.get_device(1));
-      BME280 : constant i2c.BME280.BME280_ptr := i2c.BME280.get_BME280;
+      i2c0   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(0);
+      i2c1   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(1);
+      BME280 : constant BBS.embed.i2c.BME280.BME280_ptr := BBS.embed.i2c.BME280.get_BME280;
       stdout : constant serial.int.serial_port := serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
       rest   : aliased strings.bounded(80);
-      err    : i2c.err_code;
+      err    : BBS.embed.i2c.err_code;
       flag   : Boolean;
    begin
       line.token(' ', cmd, rest);
@@ -147,9 +147,9 @@ package body cli is
       if cmd.starts_with("SCAN") then
          stdout.put_line("Scanning I2C bus 0");
          flag := False;
-         for i in SAM3x8e.UInt7 range 16#0E# .. 16#77# loop
+         for i in BBS.embed.addr7 range 16#0E# .. 16#77# loop
             i2c0.read(i, 0, 1, err);
-            if err = i2c.none then
+            if err = BBS.embed.i2c.none then
                stdout.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
                flag := True;
             end if;
@@ -159,9 +159,9 @@ package body cli is
          end if;
          stdout.put_line("Scanning I2C bus 1");
          flag := False;
-         for i in SAM3x8e.UInt7 range 16#0E# .. 16#77# loop
+         for i in BBS.embed.addr7 range 16#0E# .. 16#77# loop
             i2c1.read(i, 0, 1, err);
-            if err = i2c.none then
+            if err = BBS.embed.i2c.none then
                stdout.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
                flag := True;
             end if;
@@ -172,9 +172,9 @@ package body cli is
       elsif cmd.starts_with("READ") then
          null;
       elsif (bme280_found /= absent) and cmd.starts_with("BME280") then
-         stdout.put_line("BME280: Starting conversion.");
+--         stdout.put_line("BME280: Starting conversion.");
          BME280.start_conversion(err);
-         stdout.put_line("BME280: Waiting for conversion.");
+--         stdout.put_line("BME280: Waiting for conversion.");
          loop
             flag := BME280.data_ready(err);
             exit when flag;
@@ -297,20 +297,20 @@ package body cli is
       return gpio;
    end;
    --
-   procedure i2c_probe(c : i2c.port_id) is
+   procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
       stdout  : constant serial.int.serial_port := serial.int.init(0, 115_200);
-      i2c_bus : aliased i2c.i2c_interface_record := (hw => i2c.get_device(c));
-      BME280  : constant i2c.BME280.BME280_ptr := i2c.BME280.get_BME280;
-      err     : i2c.err_code;
-      temp    : SAM3x8e.Byte;
+      i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
+      BME280  : constant BBS.embed.i2c.BME280.BME280_ptr := BBS.embed.i2c.BME280.get_BME280;
+      err     : BBS.embed.i2c.err_code;
+      temp    : BBS.embed.uint8;
    begin
-      stdout.put_line("I2C: Probing bus " & i2c.port_id'Image(c));
+      stdout.put_line("I2C: Probing bus " & BBS.embed.i2c.due.port_id'Image(c));
       --
       --  Looking for L3GD20
       --
       stdout.put_line("I2C: Getting device ID at 16#6B#.");
       temp := i2c_bus.read(16#6b#, 16#0f#, err);
-      if err = i2c.none then
+      if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
          if temp = 16#c4# then
             stdout.put_line("I2C: L3GD20 found.");
@@ -324,14 +324,15 @@ package body cli is
       --  Looking for BMP180 or BME280
       --
       stdout.put_line("I2C: Getting device ID at 16#77#.");
-      temp := i2c_bus.read(i2c.BME280.addr, i2c.BME280.id, err);
+      temp := i2c_bus.read(BBS.embed.i2c.BME280.addr, BBS.embed.i2c.BME280.id, err);
       stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
-      if err = i2c.none then
-      if temp = 16#60# then
+      if err = BBS.embed.i2c.none then
+         if temp = 16#60# then
             stdout.put_line("I2C: BME280 Found, configuring");
-            BME280.configure(i2c.get_device(c), i2c.BME280.addr, err);
-            stdout.put_line("I2C: BME280 Configuration error code is " & i2c.err_code'Image(err));
-            if err = i2c.none then
+            BME280.configure(i2c_bus, BBS.embed.i2c.BME280.addr, err);
+--            BME280.configure(BBS.embed.i2c.due.get_device(c), BBS.embed.i2c.BME280.addr, err);
+            stdout.put_line("I2C: BME280 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
+            if err = BBS.embed.i2c.none then
                if c = 0 then
                   bme280_found := bus0;
                else

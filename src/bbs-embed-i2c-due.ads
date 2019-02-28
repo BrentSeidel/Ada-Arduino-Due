@@ -4,9 +4,9 @@ with Ada.Synchronous_Task_Control;
 with System;
 with SAM3x8e;
 use type SAM3x8e.Bit;
-use type SAM3x8e.UInt7;
-use type SAM3x8e.Byte;
-use type SAM3x8e.UInt16;
+--use type SAM3x8e.UInt7;
+--use type SAM3x8e.Byte;
+--use type SAM3x8e.UInt16;
 use type SAM3x8e.UInt32;
 with SAM3x8e.TWI;
 with pio;
@@ -19,11 +19,7 @@ with dev;
 --  I2C-0      PB13 PB12  TWI0
 --  I2C-1      PA18 PA17  TWI1
 --
-package i2c is
-   --
-   --  Possible error codes
-   --
-   type err_code is (none, nack, ovre, invalid_addr);
+package bbs.embed.i2c.due is
    --
    --  Interface speed, 100kHz and 400kHz are supported.
    --
@@ -33,29 +29,14 @@ package i2c is
    --
    type port_id is  new Integer range 0 .. 1;
    --
-   -- buffer to use for reading and writing from i2c bus.  In most cases, only
-   -- a few bytes are needed.  This should be quite adequate.
-   --
-   type buff_index is new Integer range 0 .. 127;
-   type buffer is array(buff_index'Range) of SAM3x8e.Byte;
-   type buff_ptr is access all buffer;
-   --
    --  The I2C device object
    --
-   type i2c_device_record is tagged limited private;
-   type i2c_device is access all i2c_device_record;
-   --
-   --  The I2C interface object
-   --
-   type i2c_interface_record is tagged
-      record
-         hw       : i2c_device;
-      end record;
-   type i2c_interface is access i2c_interface_record;
+   type due_i2c_interface_record is new i2c_interface_record with private;
+   type due_i2c_interface is access all due_i2c_interface_record'Class;
    --
    --  Function to return access to a device record.
    --
-   function get_device(d : port_id) return i2c_device;
+   function get_interface(d : port_id) return due_i2c_interface;
    --
    --  Initialize interface I2C-0 on the Arduino (turns out to be TWI1
    --  internally)
@@ -64,58 +45,63 @@ package i2c is
    --
    -- Routines to read and write data on the i2c bus
    --
-   procedure write(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   data : SAM3x8e.Byte; error : out err_code);
-   function read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                 error : out err_code) return SAM3x8e.Byte;
+   procedure write(chan : port_id; addr : addr7; reg : uint8;
+                   data : uint8; error : out err_code);
+   function read(chan : port_id; addr : addr7; reg : uint8;
+                 error : out err_code) return uint8;
    --
    -- Reading a single byte is straightforward.  When reading two bytes, is the
    -- MSB first or second?  There is no standard even within a single device.
    --
    -- Read a word with MSB first
    --
-   function readm1(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   error : out err_code) return SAM3x8e.UInt16;
+   function readm1(chan : port_id; addr : addr7; reg : uint8;
+                   error : out err_code) return UInt16;
    --
    -- Read a word with MSB second (LSB first)
    --
-   function readm2(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   error : out err_code) return SAM3x8e.UInt16;
+   function readm2(chan : port_id; addr : addr7; reg : uint8;
+                   error : out err_code) return UInt16;
    --
    -- Read the specified number of bytes into a buffer
    --
-   procedure read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+   procedure read(chan : port_id; addr : addr7; reg : uint8;
                   size : buff_index; error : out err_code);
    --
    --  Object oriented interface
    --
-   procedure write(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   data : SAM3x8e.Byte; error : out err_code);
+   overriding
+   procedure write(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                   data : uint8; error : out err_code);
    --
-   function read(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                 error : out err_code) return SAM3x8e.Byte;
+   overriding
+   function read(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                 error : out err_code) return uint8;
    --
    -- When reading two bytes, is the MSB first or second?  There is no standard
    -- even within a single device.
    --
    -- Read a word with MSB first
    --
-   function readm1(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                 error : out err_code) return SAM3x8e.UInt16;
+   overriding
+   function readm1(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                 error : out err_code) return UInt16;
    --
    -- Read a word with MSB second (LSB first)
    --
-   function readm2(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                 error : out err_code) return SAM3x8e.UInt16;
+   overriding
+   function readm2(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                 error : out err_code) return UInt16;
    --
    -- Write an arbitrary number of bytes to a device on the i2c bus.
    --
---   procedure write(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
---                   buff : buff_ptr; size : SAM3x8e.UInt16; error : out err_code);
+   procedure write(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                   size : buff_index; error : out err_code);
    --
    -- Read the specified number of bytes into a buffer
    --
-   procedure read(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+   overriding
+   procedure read(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
                   size : buff_index; error : out err_code);
 private
    --
@@ -146,7 +132,7 @@ private
       --  Set the address to the device record.  This only needs to be called
       --  once during initialization/configuration.
       --
-      procedure set_device(d : i2c_device);
+      procedure set_interface(d : due_i2c_interface);
       --
       --  Functions to return statuses
       --
@@ -162,7 +148,7 @@ private
       --  Calls to this procedure need to be synchronized using
       --  susp_not_busy.
       --
-      procedure rx_read(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; size : buff_index);
+      procedure rx_read(addr : addr7; reg : uint8; size : buff_index);
       --
       -- Return the error code, if any.
       --
@@ -172,7 +158,7 @@ private
       pragma Attach_Handler (int_handler, interrupt);
       pragma Interrupt_Priority(System.Interrupt_Priority'First);
 
-      device   : i2c_device;
+      device   : due_i2c_interface;
       stat     : SAM3x8e.TWI.TWI0_SR_Register;
 
       busy     : Boolean := False;
@@ -201,7 +187,7 @@ private
    --  by it.
    --
    type twi_access is access all SAM3x8e.TWI.TWI_Peripheral;
-   type i2c_device_record is tagged limited
+   type due_i2c_interface_record is new i2c_interface_record with
       record
          dev_id   : SAM3x8e.Byte;    --  TWI device ID
          port     : twi_access;      --  Access to I2C registers
@@ -209,7 +195,6 @@ private
          sda_pin  : SAM3x8e.Byte;    --  SDA pin on PIO
          scl_pin  : SAM3x8e.Byte;    --  SCL pin on PIO
          int_id   : Ada.Interrupts.Interrupt_ID; -- Interrupt for channel
-         b        : buff_ptr;
          handle   : buffer_access;
          not_busy : Ada.Synchronous_Task_Control.Suspension_Object;
       end record;
@@ -218,8 +203,8 @@ private
    --  the port numbers on the header are reversed from the internal hardware
    --  channel numbers.
    --
-   i2c_0 : aliased i2c_device_record;
-   i2c_1 : aliased i2c_device_record;
-   i2c_port :  array (port_id'Range) of i2c_device := (i2c_0'Access, i2c_1'Access);
+   i2c_0 : aliased due_i2c_interface_record;
+   i2c_1 : aliased due_i2c_interface_record;
+   i2c_port : array (port_id'Range) of due_i2c_interface := (i2c_0'Access, i2c_1'Access);
 
-end i2c;
+end bbs.embed.i2c.due;

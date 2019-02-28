@@ -14,11 +14,11 @@ with utils;
 --  I2C-0      PB13 PB12  TWI0
 --  I2C-1      PA18 PA17  TWI1
 --
-package body i2c is
+package body bbs.embed.i2c.due is
    --
    --  Function to return access to a device record.
    --
-   function get_device(d : port_id) return i2c_device is
+   function get_interface(d : port_id) return due_i2c_interface is
    begin
       return i2c_port(d);
    end;
@@ -43,7 +43,7 @@ package body i2c is
       i2c_port(0).int_id  := Ada.Interrupts.Names.TWI1_Interrupt;
       i2c_port(0).b       := b0'Access;
       i2c_port(0).handle  := buff(0);
-      buff0.set_device(i2c_0'Access);
+      buff0.set_interface(i2c_0'Access);
       --
       i2c_port(1).dev_id := dev.TWI0_ID;
       i2c_port(1).port   := TWI0'Access;
@@ -53,7 +53,7 @@ package body i2c is
       i2c_port(1).int_id  := Ada.Interrupts.Names.TWI0_Interrupt;
       i2c_port(1).b       := b1'Access;
       i2c_port(1).handle  := buff(1);
-      buff1.set_device(i2c_1'Access);
+      buff1.set_interface(i2c_1'Access);
       --
       pins    := 2**Natural(i2c_port(chan).sda_pin) or 2**Natural(i2c_port(chan).scl_pin);
       --
@@ -145,8 +145,8 @@ package body i2c is
    --  The write routine is still partially polled.  It will eventually be
    --  converted to interrupt driven and a block write added.
    --
-   procedure write(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   data : SAM3x8e.Byte; error : out err_code) is
+   procedure write(chan : port_id; addr : addr7; reg : uint8;
+                   data : uint8; error : out err_code) is
       status : SAM3x8e.TWI.TWI0_SR_Register;
    begin
       if (addr < 16#0E#) or (addr > 16#77#) then
@@ -158,9 +158,9 @@ package body i2c is
       i2c_port(chan).port.CR.SVDIS   := 1;  --  Disable slave mode
       i2c_port(chan).port.MMR.MREAD  := 0;  --  Master write
       i2c_port(chan).port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
-      i2c_port(chan).port.MMR.DADR   := addr;
+      i2c_port(chan).port.MMR.DADR   := SAM3x8e.UInt7(addr);
       i2c_port(chan).port.IADR.IADR  := SAM3x8e.UInt24(reg);
-      i2c_port(chan).port.THR.TXDATA := data;
+      i2c_port(chan).port.THR.TXDATA := SAM3x8e.Byte(data);
       i2c_port(chan).port.CR.STOP    := 1;
       loop
          status := i2c_port(chan).port.SR;
@@ -178,11 +178,11 @@ package body i2c is
       Ada.Synchronous_Task_Control.Set_True(i2c_port(chan).not_busy);
    end;
    --
-   function read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                 error : out err_code) return SAM3x8e.Byte is
+   function read(chan : port_id; addr : addr7; reg : uint8;
+                 error : out err_code) return uint8 is
    begin
       read(chan, addr, reg, 1, error);
-      return  SAM3x8e.Byte(i2c_port(chan).b(0));
+      return  uint8(i2c_port(chan).b(0));
    end;
    --
    -- Reading a single byte is straightforward.  When reading two bytes, is the
@@ -190,29 +190,27 @@ package body i2c is
    --
    -- Read a word with MSB first
    --
-   function readm1(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   error : out err_code) return SAM3x8e.UInt16 is
+   function readm1(chan : port_id; addr : addr7; reg : uint8;
+                   error : out err_code) return UInt16 is
    begin
       read(chan, addr, reg, 2, error);
-      return  SAM3x8e.UInt16(i2c_port(chan).b(0))*256 +
-        SAM3x8e.UInt16(i2c_port(chan).b(1));
+      return  UInt16(i2c_port(chan).b(0))*256 + UInt16(i2c_port(chan).b(1));
    end;
 
    --
    -- Read a word with MSB second (LSB first)
    --
-   function readm2(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   error : out err_code) return SAM3x8e.UInt16 is
+   function readm2(chan : port_id; addr : addr7; reg : uint8;
+                   error : out err_code) return UInt16 is
    begin
       read(chan, addr, reg, 2, error);
-      return  SAM3x8e.UInt16(i2c_port(chan).b(1))*256 +
-        SAM3x8e.UInt16(i2c_port(chan).b(0));
+      return UInt16(i2c_port(chan).b(1))*256 + UInt16(i2c_port(chan).b(0));
    end;
 
    --
    -- Read the specified number of bytes into the device buffer
    --
-   procedure read(chan : port_id; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+   procedure read(chan : port_id; addr : addr7; reg : uint8;
                   size : buff_index; error : out err_code) is
       count  : buff_index := 0;
    begin
@@ -233,25 +231,25 @@ package body i2c is
    --
    --  Write a byte to a specified register on an I2C device.
    --
-   procedure write(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   data : SAM3x8e.Byte; error : out err_code) is
+   procedure write(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                   data : uint8; error : out err_code) is
       status : SAM3x8e.TWI.TWI0_SR_Register;
    begin
       if (addr < 16#0E#) or (addr > 16#77#) then
          error := invalid_addr;
          return;
       end if;
-      Ada.Synchronous_Task_Control.Suspend_Until_True(self.hw.not_busy);
-      self.hw.port.CR.MSEN    := 1;  --  Enable master mode
-      self.hw.port.CR.SVDIS   := 1;  --  Disable slave mode
-      self.hw.port.MMR.MREAD  := 0;  --  Master write
-      self.hw.port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
-      self.hw.port.MMR.DADR   := addr;
-      self.hw.port.IADR.IADR  := SAM3x8e.UInt24(reg);
-      self.hw.port.THR.TXDATA := data;
-      self.hw.port.CR.STOP    := 1;
+      Ada.Synchronous_Task_Control.Suspend_Until_True(self.not_busy);
+      self.port.CR.MSEN    := 1;  --  Enable master mode
+      self.port.CR.SVDIS   := 1;  --  Disable slave mode
+      self.port.MMR.MREAD  := 0;  --  Master write
+      self.port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
+      self.port.MMR.DADR   := SAM3x8e.UInt7(addr);
+      self.port.IADR.IADR  := SAM3x8e.UInt24(reg);
+      self.port.THR.TXDATA := SAM3x8e.Byte(data);
+      self.port.CR.STOP    := 1;
       loop
-         status := self.hw.port.SR;
+         status := self.port.SR;
          exit when status.TXRDY = 1;
          exit when status.NACK = 1;
          exit when status.OVRE = 1;
@@ -263,17 +261,17 @@ package body i2c is
       else
          error := none;
       end if;
-      Ada.Synchronous_Task_Control.Set_True(self.hw.not_busy);
+      Ada.Synchronous_Task_Control.Set_True(self.not_busy);
    end write;
    --
    --  All the read functions use the block read procedure and return the
    --  specified data.
    --
-   function read(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                 error : out err_code) return SAM3x8e.Byte is
+   function read(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                 error : out err_code) return uint8 is
    begin
       read(self, addr, reg, 1, error);
-      return  SAM3x8e.Byte(self.hw.b(0));
+      return  self.b(0);
    end read;
    --
    -- When reading two bytes, is the MSB first or second?  There is no standard
@@ -281,31 +279,31 @@ package body i2c is
    --
    -- Read a word with MSB first
    --
-   function readm1(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   error : out err_code) return SAM3x8e.UInt16 is
+   function readm1(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                   error : out err_code) return UInt16 is
    begin
       read(self, addr, reg, 2, error);
-      return  SAM3x8e.UInt16(self.hw.b(0))*256 + SAM3x8e.UInt16(self.hw.b(1));
+      return  UInt16(self.b(0))*256 + UInt16(self.b(1));
    end;
    --
    -- Read a word with MSB second (LSB first)
    --
-   function readm2(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
-                   error : out err_code) return SAM3x8e.UInt16 is
+   function readm2(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                   error : out err_code) return UInt16 is
    begin
       read(self, addr, reg, 2, error);
-      return  SAM3x8e.UInt16(self.hw.b(1))*256 + SAM3x8e.UInt16(self.hw.b(0));
+      return  UInt16(self.b(1))*256 + UInt16(self.b(0));
    end;
    --
    --  Write an arbitrary number of bytes to a device on the i2c bus.  Not yet
    --  implemented.
    --
---   procedure write(self : not null access i2c_interface_record'class; addr : addr7; reg : uint8;
---                   buff : buff_ptr; size : uint16; error : out err_code) is null;
+   procedure write(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
+                   size : buff_index; error : out err_code) is null;
    --
    -- Read the specified number of bytes into a buffer
    --
-   procedure read(self : not null access i2c_interface_record'class; addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte;
+   procedure read(self : in out due_i2c_interface_record; addr : addr7; reg : uint8;
                   size : buff_index; error : out err_code) is
       stdout : serial.int.serial_port := serial.int.get_port(0);
       count  : Integer := 0;
@@ -314,11 +312,11 @@ package body i2c is
          error := invalid_addr;
          return;
       end if;
-      Ada.Synchronous_Task_Control.Suspend_Until_True(self.hw.not_busy);
-      self.hw.handle.rx_read(addr, reg, size);
-      Ada.Synchronous_Task_Control.Suspend_Until_True(self.hw.not_busy);
-      error := self.hw.handle.get_error;
-      Ada.Synchronous_Task_Control.Set_True(self.hw.not_busy);
+      Ada.Synchronous_Task_Control.Suspend_Until_True(self.not_busy);
+      self.handle.rx_read(addr, reg, size);
+      Ada.Synchronous_Task_Control.Suspend_Until_True(self.not_busy);
+      error := self.handle.get_error;
+      Ada.Synchronous_Task_Control.Set_True(self.not_busy);
    end read;
    --
    --  -------------------------------------------------------------------------
@@ -334,7 +332,7 @@ package body i2c is
       --  Set the address to the device record.  This only needs to be called
       --  once during initialization/configuration.
       --
-      procedure set_device(d : i2c_device) is
+      procedure set_interface(d : due_i2c_interface) is
       begin
          device := d;
       end;
@@ -366,7 +364,7 @@ package body i2c is
       --  Calls to this procedure need to be synchronized using
       --  susp_not_busy.
       --
-      procedure rx_read(addr : SAM3x8e.UInt7; reg : SAM3x8e.Byte; size : buff_index) is
+      procedure rx_read(addr : addr7; reg : uint8; size : buff_index) is
       begin
          busy := True;
          not_busy := False;
@@ -381,7 +379,7 @@ package body i2c is
          device.port.CR.SVDIS   := 1;  --  Disable slave mode
          device.port.MMR.MREAD  := 1;  --  Master read
          device.port.MMR.IADRSZ := SAM3x8e.TWI.Val_1_Byte;  --  Register addresses are 1 byte;
-         device.port.MMR.DADR   := addr;
+         device.port.MMR.DADR   := SAM3x8e.UInt7(addr);
          device.port.IADR.IADR  := SAM3x8e.UInt24(reg);
          device.port.CR.START   := 1;
          if size = 1 then
@@ -427,7 +425,7 @@ package body i2c is
          --  Check for receiver ready and add new data to the buffer.
          --
          if status.RXRDY = 1 then
-            device.b(index) := device.port.RHR.RXDATA;
+            device.b(index) := uint8(device.port.RHR.RXDATA);
             index := index + 1;
             if index = bytes then
                device.port.CR.STOP := 1;
@@ -463,4 +461,4 @@ package body i2c is
    end handler;
    --
 
-end i2c;
+end bbs.embed.i2c.due;

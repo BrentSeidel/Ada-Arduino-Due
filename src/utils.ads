@@ -9,6 +9,8 @@ use type SAM3x8e.Bit;
 use type SAM3x8e.Byte;
 use type SAM3x8e.UInt16;
 with SAM3x8e.TWI;
+with BBS.embed;
+use type BBS.embed.uint8;
 with pio;
 --
 --  This package contains a random collection of utility functions used when
@@ -50,6 +52,7 @@ package utils is
    --
    function hex_to_char(v : SAM3x8e.UInt4) return Character;
    function byte_to_str(v : SAM3x8e.Byte) return String;
+   function byte_to_str(v : BBS.embed.uint8) return String;
 
    --
    -- A couple of unchecked conversions to convert unsigned into signed values.

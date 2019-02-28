@@ -1,9 +1,11 @@
 with serial.int;
 with strings;
 with pio;
-with i2c;
-use type i2c.err_code;
-use type i2c.port_id;
+with bbs.embed.i2c.due;
+use type bbs.embed.i2c.err_code;
+use type bbs.embed.i2c.due.port_id;
+with BBS.embed;
+use type BBS.embed.uint8;
 --
 --  This package implementes a simple command line interpreter.
 --
@@ -28,7 +30,7 @@ package cli is
    --
    procedure logon;
    --
-   procedure i2c_probe(c : i2c.port_id);
+   procedure i2c_probe(c : bbs.embed.i2c.due.port_id);
    --
 private
    username : aliased strings.bounded(20);

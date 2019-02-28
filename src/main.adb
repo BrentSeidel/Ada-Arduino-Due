@@ -8,9 +8,10 @@ with pio;
 with utils;
 with analogs;
 with cli;
-with i2c;
-use type i2c.err_code;
-with i2c.BME280;
+--with bbs.embed.i2c;
+with bbs.embed.i2c.due;
+use type bbs.embed.i2c.err_code;
+--with bbs.embed.i2c.BME280;
 with SAM3x8e;
 use type SAM3x8e.Byte;
 
@@ -20,8 +21,8 @@ procedure Main is
    serial1 : constant serial.int.serial_port := serial.int.init(1, 115_200);
    serial2 : constant serial.int.serial_port := serial.int.init(2, 115_200);
    serial3 : constant serial.int.serial_port := serial.int.init(3, 115_200);
-   i2c_0   : aliased i2c.i2c_interface_record := (hw => i2c.get_device(0));
-   i2c_1   : aliased i2c.i2c_interface_record := (hw => i2c.get_device(1));
+   i2c_0   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(0);
+   i2c_1   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(1);
 
 begin
    stdout.put_line("Central Control Computer starting up:");
@@ -47,8 +48,8 @@ begin
    --
    if cli.i2c_enable then
       stdout.put_line("I2C: Initialization");
-      i2c.init(0, i2c.low100);
-      i2c.init(1, i2c.low100);
+      bbs.embed.i2c.due.init(0, bbs.embed.i2c.due.low100);
+      bbs.embed.i2c.due.init(1, bbs.embed.i2c.due.low100);
       cli.i2c_probe(0);
       cli.i2c_probe(1);
    else
