@@ -1,8 +1,9 @@
 with utils;
-with bbs.embed.i2c.BME280;
+with BBS.embed.i2c.BME280;
+--with BBS.embed.i2c.LSM303DLHC;
+with BBS.embed.i2c.L3GD20H;
 with analogs;
 with SAM3x8e;
---use type SAM3x8e.Byte;
 use type SAM3x8e.UInt12;
 with BBS.units;
 with Ada.Synchronous_Task_Control;
@@ -13,8 +14,8 @@ package body cli is
    --  Logon procedure
    --
    procedure logon is
-      stdout : constant serial.int.serial_port := serial.int.get_port(0);
-      stdin  : constant serial.int.serial_port := serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      stdin  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       user   : String(1 .. 20);
       l_user : Integer := 0;
    begin
@@ -36,11 +37,11 @@ package body cli is
    --  Procedure for the command line interpreter
    --
    procedure command_loop is
-      stdout  : constant serial.int.serial_port := serial.int.get_port(0);
-      stdin   : constant serial.int.serial_port := serial.int.get_port(0);
-      serial1 : constant serial.int.serial_port := serial.int.get_port(1);
-      serial2 : constant serial.int.serial_port := serial.int.get_port(2);
-      serial3 : constant serial.int.serial_port := serial.int.get_port(3);
+      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(1);
+      serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(2);
+      serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(3);
       line : aliased strings.bounded(80);
       cmd  : aliased strings.bounded(80);
       rest : aliased strings.bounded(80);
@@ -134,8 +135,7 @@ package body cli is
    procedure process_i2c(r : strings.bounded) is
       i2c0   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(0);
       i2c1   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(1);
-      BME280 : constant BBS.embed.i2c.BME280.BME280_ptr := BBS.embed.i2c.BME280.get_BME280;
-      stdout : constant serial.int.serial_port := serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
       rest   : aliased strings.bounded(80);
@@ -172,19 +172,45 @@ package body cli is
       elsif cmd.starts_with("READ") then
          null;
       elsif (bme280_found /= absent) and cmd.starts_with("BME280") then
---         stdout.put_line("BME280: Starting conversion.");
          BME280.start_conversion(err);
---         stdout.put_line("BME280: Waiting for conversion.");
          loop
             flag := BME280.data_ready(err);
             exit when flag;
+            exit when err /= BBS.embed.i2c.none;
          end loop;
-         stdout.put_line("BME280: Conversion complete.");
-         BME280.read_data(err);
-         stdout.put_line("BME280 Data:");
-         stdout.put_line("  Temperature is " & Integer'Image(BME280.get_temp/100));
-         stdout.put_line("  Pressure is " & Integer'Image(BME280.get_press/256));
-         stdout.put_line("  Humidity is " & Integer'Image(BME280.get_hum/1024));
+         if err /= BBS.embed.i2c.none then
+            stdout.put_line("BME280 Error: " & BBS.embed.i2c.err_code'Image(err));
+         else
+            BME280.read_data(err);
+            stdout.put_line("BME280 Data:");
+            stdout.put_line("  Temperature is " & Integer'Image(BME280.get_temp/100));
+            stdout.put_line("  Pressure is " & Integer'Image(BME280.get_press/256));
+            stdout.put_line("  Humidity is " & Integer'Image(BME280.get_hum/1024));
+         end if;
+      elsif (bmp180_found /= absent) and cmd.starts_with("BMP180") then
+         BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_temp, err);
+         loop
+            flag := BMP180.data_ready(err);
+            exit when flag;
+            exit when err /= BBS.embed.i2c.none;
+         end loop;
+         if err /= BBS.embed.i2c.none then
+            stdout.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
+         else
+            stdout.put_line("BMEP10 Data:");
+            stdout.put_line("  Temperature is " & Integer'Image(BMP180.get_temp(err)/100));
+            BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_press0, err);
+            loop
+               flag := BMP180.data_ready(err);
+               exit when flag;
+               exit when err /= BBS.embed.i2c.none;
+            end loop;
+            if err /= BBS.embed.i2c.none then
+               stdout.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
+            else
+               stdout.put_line("  Pressure is " & Integer'Image(BMP180.get_press(err)/256));
+            end if;
+         end if;
       else
          stdout.put_line("Unrecognized option <" & cmd.to_string & ">");
       end if;
@@ -195,7 +221,7 @@ package body cli is
    --    TOGGLE
    --
    procedure stop_task(r : strings.bounded) is
-      stdout : constant serial.int.serial_port := serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
       rest   : aliased strings.bounded(80);
@@ -216,7 +242,7 @@ package body cli is
    --    TOGGLE
    --
    procedure start_task(r : strings.bounded) is
-      stdout : constant serial.int.serial_port := serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
       rest   : aliased strings.bounded(80);
@@ -237,13 +263,13 @@ package body cli is
    --    GET
    --
    procedure handle_gpio(r : strings.bounded) is
-      stdout : constant serial.int.serial_port := serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
       rest   : aliased strings.bounded(80);
       pin    : aliased strings.bounded(80);
       state  : aliased strings.bounded(80);
-      gpio   : aliased pio.gpio_record;
+      gpio   : aliased BBS.embed.due.pio.gpio_record;
       err    : Boolean := False;
    begin
       line.token(' ', cmd, rest);
@@ -255,7 +281,7 @@ package body cli is
          return;
       end if;
       if cmd.starts_with("SET") then
-         gpio.config(pio.gpio_output);
+         gpio.config(BBS.embed.due.pio.gpio_output);
          if state.str(1) = '0' then
             gpio.set(0);
          elsif state.str(1) = '1' then
@@ -270,8 +296,8 @@ package body cli is
       end if;
    end;
    --
-   function parse_pin(r : strings.bounded; err : out Boolean) return pio.gpio_record is
-      gpio : pio.gpio_record := (ctrl => pio.PIOA'Access, bit => 0);
+   function parse_pin(r : strings.bounded; err : out Boolean) return BBS.embed.due.pio.gpio_record is
+      gpio : BBS.embed.due.pio.gpio_record := (ctrl => BBS.embed.due.pio.PIOA'Access, bit => 0);
       temp : Character := r.str(1);
    begin
       err := False;
@@ -280,13 +306,13 @@ package body cli is
       end if;
       case temp is
          when 'A' | 'a' =>
-            gpio.ctrl := pio.PIOA'Access;
+            gpio.ctrl := BBS.embed.due.pio.PIOA'Access;
          when 'B' | 'b' =>
-            gpio.ctrl := pio.PIOB'Access;
+            gpio.ctrl := BBS.embed.due.pio.PIOB'Access;
          when 'C' | 'c' =>
-            gpio.ctrl := pio.PIOC'Access;
+            gpio.ctrl := BBS.embed.due.pio.PIOC'Access;
          when 'D' | 'd' =>
-            gpio.ctrl := pio.PIOD'Access;
+            gpio.ctrl := BBS.embed.due.pio.PIOD'Access;
          when others =>
             err := True;
       end case;
@@ -298,22 +324,53 @@ package body cli is
    end;
    --
    procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
-      stdout  : constant serial.int.serial_port := serial.int.init(0, 115_200);
+      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
       i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
-      BME280  : constant BBS.embed.i2c.BME280.BME280_ptr := BBS.embed.i2c.BME280.get_BME280;
       err     : BBS.embed.i2c.err_code;
       temp    : BBS.embed.uint8;
    begin
       stdout.put_line("I2C: Probing bus " & BBS.embed.i2c.due.port_id'Image(c));
       --
+      --  Look for the LSM303DLHC.  This device exist at two I2C addresses.  If
+      --  something is present at both addresses, assume that the device is
+      --  present.  Currently commented out because the LSM303DLHC package uses
+      --  a square root function that is not avaialable on the Ravenscar SFP.
+      --
+--        stdout.put_line("I2C: Probing address 16#19#");
+--        temp := i2c_bus.read(BBS.embed.i2c.LSM303DLHC.addr_accel,
+--                             BBS.embed.i2c.LSM303DLHC.accel_status, err);
+--        if err = BBS.embed.i2c.none then
+--           stdout.put_line("I2C: Probing address 16#1e#");
+--           temp := i2c_bus.read(BBS.embed.i2c.LSM303DLHC.addr_mag,
+--                                BBS.embed.i2c.LSM303DLHC.mag_sr, err);
+--           if err = BBS.embed.i2c.none then
+--              if c = 0 then
+--                 lsm303dlhc_found := bus0;
+--              else
+--                 lsm303dlhc_found := bus1;
+--              end if;
+--           else
+--              stdout.put_line("I2C: No device found.");
+--           end if;
+--        else
+--           stdout.put_line("I2C: No device found.");
+--        end if;
+
+      --
       --  Looking for L3GD20
       --
-      stdout.put_line("I2C: Getting device ID at 16#6B#.");
-      temp := i2c_bus.read(16#6b#, 16#0f#, err);
+      stdout.put_line("I2C: Probing address 16#6B#.");
+      temp := i2c_bus.read(BBS.embed.i2c.L3GD20H.addr,
+                           BBS.embed.i2c.L3GD20H.who_am_i, err);
       if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
-         if temp = 16#c4# then
+         if temp = 2#1101_0100# then
             stdout.put_line("I2C: L3GD20 found.");
+            if c = 0 then
+               l3gd20_found := bus0;
+            else
+               l3gd20_found := bus1;
+            end if;
          else
             stdout.put_line("I2C: Unrecognized device found at address 16#6B#.");
          end if;
@@ -330,7 +387,6 @@ package body cli is
          if temp = 16#60# then
             stdout.put_line("I2C: BME280 Found, configuring");
             BME280.configure(i2c_bus, BBS.embed.i2c.BME280.addr, err);
---            BME280.configure(BBS.embed.i2c.due.get_device(c), BBS.embed.i2c.BME280.addr, err);
             stdout.put_line("I2C: BME280 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
             if err = BBS.embed.i2c.none then
                if c = 0 then
@@ -343,11 +399,18 @@ package body cli is
                cli.bme280_found := cli.absent;
             end if;
          elsif temp = 16#55# then
-            stdout.put_line("I2C: BMP180 Found.");
-            if c = 0 then
-               bmp180_found := bus0;
+            stdout.put_line("I2C: BMP180 Found, configuring.");
+            BMP180.configure(i2c_bus, BBS.embed.i2c.BMP180.addr, err);
+            stdout.put_line("I2C: BMP180 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
+            if err = BBS.embed.i2c.none then
+               if c = 0 then
+                  bmp180_found := bus0;
+               else
+                  bmp180_found := bus1;
+               end if;
             else
-               bmp180_found := bus1;
+               stdout.put_line("I2C: BMP180 initialization failed - disabling.");
+               cli.bmp180_found := cli.absent;
             end if;
          else
             stdout.put_line("I2C: Unrecognized device found at address 16#77#.");
@@ -358,7 +421,7 @@ package body cli is
    end;
    --
    procedure show_status is
-      stdout  : constant serial.int.serial_port := serial.int.init(0, 115_200);
+      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
    begin
       stdout.put_line("System Status Report");
       stdout.put_line("Task List");

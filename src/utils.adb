@@ -1,14 +1,14 @@
-with serial.int;
+with BBS.embed.due.serial.int;
 with SAM3x8e.CHIPID;
 package body utils is
    --
    --  Task to flash the LED.
    --
    task body flasher is
-      led : constant pio.gpio_ptr := pio.led_pin_obj'Access;
+      led : constant BBS.embed.due.pio.gpio_ptr := BBS.embed.due.pio.led_pin_obj'Access;
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
-      led.config(pio.gpio_output);
+      led.config(BBS.embed.due.pio.gpio_output);
       loop
          for i in Integer range 1 .. flash_count loop
             led.set(1);
@@ -39,10 +39,10 @@ package body utils is
    --  Task to toggle pin 23.
    --
    task body toggle is
-      pin : constant pio.gpio_ptr := pio.pin23;
+      pin : constant BBS.embed.due.pio.gpio_ptr := BBS.embed.due.pio.pin23;
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_toggle);
-      pin.config(pio.gpio_output);
+      pin.config(BBS.embed.due.pio.gpio_output);
       loop
          pin.set(1);
          pin.set(0);
@@ -68,25 +68,26 @@ package body utils is
    --  Print some information about the CPU
    --
    procedure cpu_info is
+      stdout : BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
    begin
-      serial.int.put_line(0, "Processor is " &
-                               SAM3x8e.CHIPID.CIDR_EPROC_Field'image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.EPROC));
-      serial.int.put_line(0, "Version is " &
-                               SAM3x8e.CHIPID.CHIPID_CIDR_VERSION_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.VERSION));
-      serial.int.put_line(0, "NVRAM 1 size is " &
-                               SAM3x8e.CHIPID.CIDR_NVPSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.NVPSIZ.Arr(1)));
-      serial.int.put_line(0, "NVRAM 2 size is " &
-                               SAM3x8e.CHIPID.CIDR_NVPSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.NVPSIZ.Arr(2)));
-      serial.int.put_line(0, "RAM size is " &
-                               SAM3x8e.CHIPID.CIDR_SRAMSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.SRAMSIZ));
-      serial.int.put_line(0, "Architecture is " &
-                               SAM3x8e.CHIPID.CIDR_ARCH_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.ARCH));
+      stdout.put_line("Processor is " &
+                        SAM3x8e.CHIPID.CIDR_EPROC_Field'image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.EPROC));
+      stdout.put_line("Version is " &
+                        SAM3x8e.CHIPID.CHIPID_CIDR_VERSION_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.VERSION));
+      stdout.put_line("NVRAM 1 size is " &
+                        SAM3x8e.CHIPID.CIDR_NVPSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.NVPSIZ.Arr(1)));
+      stdout.put_line("NVRAM 2 size is " &
+                        SAM3x8e.CHIPID.CIDR_NVPSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.NVPSIZ.Arr(2)));
+      stdout.put_line("RAM size is " &
+                        SAM3x8e.CHIPID.CIDR_SRAMSIZ_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.SRAMSIZ));
+      stdout.put_line("Architecture is " &
+                        SAM3x8e.CHIPID.CIDR_ARCH_Field'Image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.ARCH));
    end;
    --
    --  Decode the I2C status register
    --
    procedure print_i2c_sr(s : SAM3x8e.TWI.TWI0_SR_Register) is
-      stdout : serial.int.serial_port := serial.int.get_port(0);
+      stdout : BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       flag   : Boolean := False;
    begin
       if s.TXCOMP = 1 then

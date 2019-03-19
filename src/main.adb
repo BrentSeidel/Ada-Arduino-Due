@@ -2,30 +2,34 @@ with Ada.Text_IO;
 with Ada.Real_Time;
 use type Ada.Real_Time.Time;
 use type Ada.Real_Time.Time_Span;
-with serial.polled;
-with serial.int;
-with pio;
+with BBS.embed.due.serial.polled;
+with BBS.embed.due.serial.int;
+with BBS.embed.due.pio;
 with utils;
 with analogs;
 with cli;
---with bbs.embed.i2c;
 with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
---with bbs.embed.i2c.BME280;
-with SAM3x8e;
-use type SAM3x8e.Byte;
+with BBS.embed.log;
 
 procedure Main is
-   stdout  : constant serial.int.serial_port := serial.int.init(0, 115_200);
-   stdin   : constant serial.int.serial_port := serial.int.get_port(0);
-   serial1 : constant serial.int.serial_port := serial.int.init(1, 115_200);
-   serial2 : constant serial.int.serial_port := serial.int.init(2, 115_200);
-   serial3 : constant serial.int.serial_port := serial.int.init(3, 115_200);
+   stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
+   stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+   serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(1, 115_200);
+   serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(2, 115_200);
+   serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(3, 115_200);
    i2c_0   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(0);
    i2c_1   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(1);
 
 begin
    stdout.put_line("Central Control Computer starting up:");
+   stdout.put_line("Configuing Logging.");
+   utils.dbg.enable;
+   utils.err.enable;
+   utils.info.enable;
+   BBS.embed.log.debug := utils.dbg'Access;
+   BBS.embed.log.error := utils.err'Access;
+   BBS.embed.log.info  := utils.info'Access;
    if cli.analog_enable then
       stdout.put_line("Analogs: Setting up inputs");
       analogs.setup_ain;
@@ -59,13 +63,12 @@ begin
    --  Other initializations
    --
    stdout.put_line("GPIO: Configuing RS485 control pin");
-   pio.RS485_PIN.config(pio.gpio_output);
-   pio.RS485_PIN.set(0);
+   BBS.embed.due.pio.RS485_PIN.config(BBS.embed.due.pio.gpio_output);
+   BBS.embed.due.pio.RS485_PIN.set(0);
    stdout.put_line("Serial: Enabling RS485 control on serial 1");
-   serial1.enable_rs485(pio.rs485_pin);
+   serial1.enable_rs485(BBS.embed.due.pio.rs485_pin);
    stdout.put_line("LED: Starting LED flashing task");
    utils.ctrl_flasher(True);
---   ada.Text_IO.Put_Line("Hello from Ada.Text_IO!");
    stdout.put_line("Serial: Enable receive on stdin");
    stdin.rx_enable(True);
    stdout.put_line("BOOT: Setup complete.");

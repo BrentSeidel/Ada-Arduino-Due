@@ -11,7 +11,8 @@ use type SAM3x8e.UInt16;
 with SAM3x8e.TWI;
 with BBS.embed;
 use type BBS.embed.uint8;
-with pio;
+with BBS.embed.due.pio;
+with BBS.embed.log.due;
 --
 --  This package contains a random collection of utility functions used when
 --  exploring the Arduino Due.
@@ -71,6 +72,11 @@ package utils is
    function lowByte(x : SAM3x8e.uint16) return SAM3x8e.Byte is
      (SAM3x8e.Byte(x and 16#FF#));
    --
+   --  Logging objects
+   --
+   info : aliased BBS.embed.log.due.due_log_record;
+   dbg  : aliased BBS.embed.log.due.due_log_record;
+   err  : aliased BBS.embed.log.due.due_log_record;
 private
    --
    --  Suspension objects and booleans to control tasks

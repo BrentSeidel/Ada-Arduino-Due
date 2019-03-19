@@ -1,11 +1,13 @@
-with serial.int;
+with BBS.embed.due.serial.int;
 with strings;
-with pio;
+with BBS.embed.due.pio;
 with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed;
 use type BBS.embed.uint8;
+with BBS.embed.i2c.BME280;
+with BBS.embed.i2c.BMP180;
 --
 --  This package implementes a simple command line interpreter.
 --
@@ -38,6 +40,11 @@ private
    l_pass : Integer := 0;
 
    --
+   --  Device records
+   --
+   BMP180 : aliased BBS.embed.i2c.BMP180.BMP180_record;
+   BME280 : aliased BBS.embed.i2c.BME280.BME280_record;
+   --
    --  Procedure to break up some of the functionality
    --
    procedure analog_outs(v : Integer);
@@ -50,7 +57,7 @@ private
    --
    procedure handle_gpio(r : strings.bounded);
    --
-   function parse_pin(r : strings.bounded; err : out Boolean) return pio.gpio_record;
+   function parse_pin(r : strings.bounded; err : out Boolean) return BBS.embed.due.pio.gpio_record;
    --
    procedure show_status;
    --

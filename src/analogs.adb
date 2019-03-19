@@ -2,7 +2,7 @@ with SAM3x8e.ADC;
 with SAM3x8e.DACC;
 with SAM3x8e.PMC;
 
-with dev;
+with BBS.embed.due.dev;
 package body analogs is
    --
    --  Setup the analog to digital controller
@@ -12,7 +12,7 @@ package body analogs is
       --
       --  Enable clock for ADC
       --
-      SAM3x8e.PMC.PMC_Periph.PMC_PCER1.PID.Arr(dev.ADC_ID) := 1;
+      SAM3x8e.PMC.PMC_Periph.PMC_PCER1.PID.Arr(BBS.embed.due.dev.ADC_ID) := 1;
       --
       --  Setup some reasonable values for the ADC
       --
@@ -47,7 +47,7 @@ package body analogs is
       --
       --  Enable clock for ADC
       --
-      SAM3x8e.PMC.PMC_Periph.PMC_PCER1.PID.Arr(dev.DACC_ID) := 1;
+      SAM3x8e.PMC.PMC_Periph.PMC_PCER1.PID.Arr(BBS.embed.due.dev.DACC_ID) := 1;
       --
       --  Setup some reasonable values for the DAC
       --

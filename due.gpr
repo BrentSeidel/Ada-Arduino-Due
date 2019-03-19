@@ -1,3 +1,4 @@
+with "../BBS-BBB-Ada/bbs_embed_raven.gpr";
 with "../BBS-Ada/bbs_raven.gpr";
 
 project Due is
@@ -7,16 +8,19 @@ project Due is
    for Main use ("main.adb");
    for Target use "arm-eabi";
    for Runtime ("ada") use "ravenscar-sfp-sam3x8e";
+   for Exec_Dir use ".";
 
    package Compiler is
-      for Switches ("ada") use ("-gnat12");
+      for Switches ("ada") use ("-gnat12", "-fcallgraph-info=su,da");
    end Compiler;
-
-   for Exec_Dir use ".";
 
    package Builder is
       for Switches ("ada") use ("-s", "-j4");
    end Builder;
+
+   package Linker is
+      for Switches ("ada") use ("-Wl,--gc-sections");
+   end Linker;
 
 end Due;
 
