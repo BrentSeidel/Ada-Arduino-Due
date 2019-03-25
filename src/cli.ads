@@ -1,6 +1,6 @@
 with BBS.embed.due.serial.int;
 with strings;
-with BBS.embed.due.pio;
+with BBS.embed.GPIO.Due;
 with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
@@ -8,6 +8,7 @@ with BBS.embed;
 use type BBS.embed.uint8;
 with BBS.embed.i2c.BME280;
 with BBS.embed.i2c.BMP180;
+with BBS.embed.i2c.L3GD20H;
 --
 --  This package implementes a simple command line interpreter.
 --
@@ -23,6 +24,10 @@ package cli is
    bmp180_found     : i2c_device_location := absent;
    l3gd20_found     : i2c_device_location := absent;
    lsm303dlhc_found : i2c_device_location := absent;
+   --
+   --  GPIO Pin to operate on
+   --
+   gpio   : aliased BBS.embed.GPIO.Due.Due_GPIO_record;
    --
    --  Procedure for the command line interpreter
    --
@@ -44,6 +49,7 @@ private
    --
    BMP180 : aliased BBS.embed.i2c.BMP180.BMP180_record;
    BME280 : aliased BBS.embed.i2c.BME280.BME280_record;
+   L3GD20 : aliased BBS.embed.i2c.L3GD20H.L3GD20H_record;
    --
    --  Procedure to break up some of the functionality
    --
@@ -57,7 +63,7 @@ private
    --
    procedure handle_gpio(r : strings.bounded);
    --
-   function parse_pin(r : strings.bounded; err : out Boolean) return BBS.embed.due.pio.gpio_record;
+   procedure parse_pin(r : strings.bounded; err : out Boolean);
    --
    procedure show_status;
    --

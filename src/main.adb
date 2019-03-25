@@ -4,7 +4,8 @@ use type Ada.Real_Time.Time;
 use type Ada.Real_Time.Time_Span;
 with BBS.embed.due.serial.polled;
 with BBS.embed.due.serial.int;
-with BBS.embed.due.pio;
+with BBS.embed.GPIO.Due;
+with BBS.embed.due.GPIO;
 with utils;
 with analogs;
 with cli;
@@ -20,6 +21,7 @@ procedure Main is
    serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(3, 115_200);
    i2c_0   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(0);
    i2c_1   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(1);
+   RS485_pin : BBS.embed.GPIO.Due.Due_GPIO_ptr := BBS.embed.due.GPIO.pin22;
 
 begin
    stdout.put_line("Central Control Computer starting up:");
@@ -63,10 +65,10 @@ begin
    --  Other initializations
    --
    stdout.put_line("GPIO: Configuing RS485 control pin");
-   BBS.embed.due.pio.RS485_PIN.config(BBS.embed.due.pio.gpio_output);
-   BBS.embed.due.pio.RS485_PIN.set(0);
+   RS485_pin.config(BBS.embed.GPIO.Due.gpio_output);
+   RS485_pin.set(0);
    stdout.put_line("Serial: Enabling RS485 control on serial 1");
-   serial1.enable_rs485(BBS.embed.due.pio.rs485_pin);
+   serial1.enable_rs485(RS485_pin);
    stdout.put_line("LED: Starting LED flashing task");
    utils.ctrl_flasher(True);
    stdout.put_line("Serial: Enable receive on stdin");

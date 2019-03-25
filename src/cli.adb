@@ -269,19 +269,18 @@ package body cli is
       rest   : aliased strings.bounded(80);
       pin    : aliased strings.bounded(80);
       state  : aliased strings.bounded(80);
-      gpio   : aliased BBS.embed.due.pio.gpio_record;
       err    : Boolean := False;
    begin
       line.token(' ', cmd, rest);
       cmd.uppercase;
       rest.token(' ', pin, state);
-      gpio := parse_pin(pin, err);
+      parse_pin(pin, err);
       if err then
          stdout.put_line("<" & pin.to_string & "> is not a recognized pin");
          return;
       end if;
       if cmd.starts_with("SET") then
-         gpio.config(BBS.embed.due.pio.gpio_output);
+         gpio.config(BBS.embed.GPIO.Due.gpio_output);
          if state.str(1) = '0' then
             gpio.set(0);
          elsif state.str(1) = '1' then
@@ -290,14 +289,13 @@ package body cli is
             stdout.put_line("Unknown state <" & state.to_string & ">");
          end if;
       elsif cmd.starts_with("GET") then
-         stdout.put_line("Pin value is " & SAM3x8e.Bit'Image(gpio.get));
+         stdout.put_line("Pin value is " & BBS.embed.Bit'Image(gpio.get));
       else
          stdout.put_line("Unknown option <" & cmd.to_string & ">");
       end if;
    end;
    --
-   function parse_pin(r : strings.bounded; err : out Boolean) return BBS.embed.due.pio.gpio_record is
-      gpio : BBS.embed.due.pio.gpio_record := (ctrl => BBS.embed.due.pio.PIOA'Access, bit => 0);
+   procedure parse_pin(r : strings.bounded; err : out Boolean) is
       temp : Character := r.str(1);
    begin
       err := False;
@@ -306,13 +304,13 @@ package body cli is
       end if;
       case temp is
          when 'A' | 'a' =>
-            gpio.ctrl := BBS.embed.due.pio.PIOA'Access;
+            gpio.ctrl := BBS.embed.GPIO.Due.PIOA'Access;
          when 'B' | 'b' =>
-            gpio.ctrl := BBS.embed.due.pio.PIOB'Access;
+            gpio.ctrl := BBS.embed.GPIO.Due.PIOB'Access;
          when 'C' | 'c' =>
-            gpio.ctrl := BBS.embed.due.pio.PIOC'Access;
+            gpio.ctrl := BBS.embed.GPIO.Due.PIOC'Access;
          when 'D' | 'd' =>
-            gpio.ctrl := BBS.embed.due.pio.PIOD'Access;
+            gpio.ctrl := BBS.embed.GPIO.Due.PIOD'Access;
          when others =>
             err := True;
       end case;
@@ -320,7 +318,6 @@ package body cli is
       if (gpio.bit < 0) or (gpio.bit > 31) then
          err := True;
       end if;
-      return gpio;
    end;
    --
    procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
@@ -365,11 +362,17 @@ package body cli is
       if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
          if temp = 2#1101_0100# then
-            stdout.put_line("I2C: L3GD20 found.");
-            if c = 0 then
-               l3gd20_found := bus0;
+            stdout.put_line("I2C: L3GD20H found, configuring.");
+            L3GD20.configure(i2c_bus, BBS.embed.i2c.L3GD20H.addr, err);
+            if err = BBS.embed.i2c.none then
+               if c = 0 then
+                  l3gd20_found := bus0;
+               else
+                  l3gd20_found := bus1;
+               end if;
             else
-               l3gd20_found := bus1;
+               stdout.put_line("I2C: L3GD20H initialization failed - disabling.");
+               l3gd20_found := absent;
             end if;
          else
             stdout.put_line("I2C: Unrecognized device found at address 16#6B#.");
@@ -396,7 +399,7 @@ package body cli is
                end if;
             else
                stdout.put_line("I2C: BME280 initialization failed - disabling.");
-               cli.bme280_found := cli.absent;
+               bme280_found := absent;
             end if;
          elsif temp = 16#55# then
             stdout.put_line("I2C: BMP180 Found, configuring.");

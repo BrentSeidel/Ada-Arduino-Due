@@ -5,10 +5,10 @@ package body utils is
    --  Task to flash the LED.
    --
    task body flasher is
-      led : constant BBS.embed.due.pio.gpio_ptr := BBS.embed.due.pio.led_pin_obj'Access;
+      led : constant BBS.embed.GPIO.Due.Due_GPIO_ptr := BBS.embed.due.GPIO.LED_PIN;
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_flasher);
-      led.config(BBS.embed.due.pio.gpio_output);
+      led.config(BBS.embed.GPIO.Due.gpio_output);
       loop
          for i in Integer range 1 .. flash_count loop
             led.set(1);
@@ -39,10 +39,10 @@ package body utils is
    --  Task to toggle pin 23.
    --
    task body toggle is
-      pin : constant BBS.embed.due.pio.gpio_ptr := BBS.embed.due.pio.pin23;
+      pin : constant BBS.embed.GPIO.Due.Due_GPIO_ptr := BBS.embed.due.GPIO.pin23;
    begin
       Ada.Synchronous_Task_Control.Suspend_Until_True(enable_toggle);
-      pin.config(BBS.embed.due.pio.gpio_output);
+      pin.config(BBS.embed.GPIO.Due.gpio_output);
       loop
          pin.set(1);
          pin.set(0);
