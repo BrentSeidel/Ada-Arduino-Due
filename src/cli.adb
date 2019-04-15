@@ -7,6 +7,7 @@ with SAM3x8e;
 use type SAM3x8e.UInt12;
 with BBS.units;
 with Ada.Synchronous_Task_Control;
+with BBS.embed.AIN.due;
 
 package body cli is
 
@@ -42,6 +43,8 @@ package body cli is
       serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(1);
       serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(2);
       serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(3);
+      ain  : BBS.embed.AIN.due.Due_AIN_record;
+      ain_val : BBS.embed.uint12;
       line : aliased strings.bounded(80);
       cmd  : aliased strings.bounded(80);
       rest : aliased strings.bounded(80);
@@ -79,9 +82,11 @@ package body cli is
          elsif analog_enable and cmd.starts_with("ANALOG") then
             val := Integer'Value(rest.to_string);
             stdout.put_line("Analog input values:");
-            for i in analogs.AIN_Num'Range loop
+            for i in BBS.embed.AIN.due.AIN_Num'Range loop
+               ain.channel := i;
+               ain_val := ain.get;
                stdout.put_line("Channel " & Integer'Image(i) & " has value " &
-                                 Integer'Image(Integer(analogs.get(i))));
+                                 Integer'Image(Integer(ain_val)));
             end loop;
             stdout.put_line("Testing analog outputs.");
             analog_outs(val);

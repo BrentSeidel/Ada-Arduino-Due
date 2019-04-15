@@ -6,6 +6,7 @@ with BBS.embed.due.serial.polled;
 with BBS.embed.due.serial.int;
 with BBS.embed.GPIO.Due;
 with BBS.embed.due.GPIO;
+with BBS.embed.AIN.due;
 with utils;
 with analogs;
 with cli;
@@ -34,13 +35,13 @@ begin
    BBS.embed.log.info  := utils.info'Access;
    if cli.analog_enable then
       stdout.put_line("Analogs: Setting up inputs");
-      analogs.setup_ain;
+      BBS.embed.AIN.due.setup_ain;
       stdout.put_line("Analogs: Enabling inputs");
-      for i in analogs.AIN_Num'Range loop
-         analogs.enable_ain(i, True);
+      for i in BBS.embed.AIN.due.AIN_Num'Range loop
+         BBS.embed.AIN.due.enable_ain(i, True);
       end loop;
       stdout.put_line("Analogs: Free run");
-      analogs.free_run(True);
+      BBS.embed.AIN.due.free_run(True);
       stdout.put_line("Analogs: Setting up outputs");
       analogs.setup_aout;
       stdout.put_line("Analogs: Enabling outputs");
