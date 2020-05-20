@@ -1,3 +1,4 @@
+with "../Ada-Lisp/bbs_lisp.gpr";
 with "../BBS-BBB-Ada/bbs_embed_raven.gpr";
 with "../BBS-Ada/bbs_raven.gpr";
 

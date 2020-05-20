@@ -8,6 +8,8 @@ use type SAM3x8e.UInt12;
 with BBS.units;
 with Ada.Synchronous_Task_Control;
 with BBS.embed.AIN.due;
+with BBS.lisp;
+with lisp;
 
 package body cli is
 
@@ -53,6 +55,7 @@ package body cli is
       val  : Integer;
    begin
       stdout.put_line("Welcome to the Central Control Computer.");
+      lisp.init;
       loop
          stdout.put(username.to_string & "> ");
          stdin.get_line(s, l);
@@ -100,6 +103,10 @@ package body cli is
             handle_gpio(rest);
          elsif cmd.starts_with("STATUS") then
             show_status;
+         elsif cmd.starts_with("LISP") then
+            stdout.Put_Line("Tiny lisp interpreter written in Ada.");
+            bbs.lisp.repl;
+
          else
             stdout.put_line("Unrecognized command <" & cmd.to_string & ">.");
          end if;
