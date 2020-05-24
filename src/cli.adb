@@ -104,7 +104,7 @@ package body cli is
          elsif cmd.starts_with("STATUS") then
             show_status;
          elsif cmd.starts_with("LISP") then
-            stdout.Put_Line("Tiny lisp interpreter written in Ada.");
+            stdout.Put_Line("Tiny lisp interpreter.");
             bbs.lisp.repl;
 
          else

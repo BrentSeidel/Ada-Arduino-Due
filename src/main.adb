@@ -9,6 +9,7 @@ with BBS.embed.due.GPIO;
 with BBS.embed.AIN.due;
 with utils;
 with analogs;
+with discretes;
 with cli;
 with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
@@ -33,6 +34,7 @@ begin
    BBS.embed.log.debug := utils.dbg'Access;
    BBS.embed.log.error := utils.err'Access;
    BBS.embed.log.info  := utils.info'Access;
+   discretes.init;
    if cli.analog_enable then
       stdout.put_line("Analogs: Setting up inputs");
       BBS.embed.AIN.due.setup_ain;
