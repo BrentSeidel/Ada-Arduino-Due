@@ -74,6 +74,7 @@ package body lisp is
       if pin_elem.kind = BBS.lisp.ATOM_TYPE then
          if BBS.lisp.atom_table(pin_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
             pin := BBS.lisp.atom_table(pin_elem.pa).i;
+            BBS.lisp.memory.deref(pin_elem);
          else
             BBS.lisp.error("set-pin", "Pin number must be integer.");
             ok := False;
@@ -88,6 +89,7 @@ package body lisp is
       if state_elem.kind = BBS.lisp.ATOM_TYPE then
          if BBS.lisp.atom_table(state_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
             state := BBS.lisp.atom_table(state_elem.pa).i;
+            BBS.lisp.memory.deref(state_elem);
          else
             BBS.lisp.error("set-pin", "Pin state must be integer.");
             ok := False;
@@ -140,12 +142,13 @@ package body lisp is
       if param.kind = BBS.lisp.ATOM_TYPE then
          if BBS.lisp.atom_table(param.pa).kind = BBS.lisp.ATOM_INTEGER then
             pin := BBS.lisp.atom_table(param.pa).i;
+            BBS.lisp.memory.deref(param);
             value := discretes.pin(pin).all.get;
          else
-            BBS.lisp.error("due-flash", "Parameter must be integer.");
+            BBS.lisp.error("read-pin", "Parameter must be integer.");
          end if;
       else
-         BBS.lisp.error("due-flash", "Parameter must be an atom.");
+         BBS.lisp.error("read-pin", "Parameter must be an atom.");
          BBS.lisp.print(param, False, True);
       end if;
       flag := bbs.lisp.memory.alloc(a);
@@ -185,6 +188,7 @@ package body lisp is
       if pin_elem.kind = BBS.lisp.ATOM_TYPE then
          if BBS.lisp.atom_table(pin_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
             pin := BBS.lisp.atom_table(pin_elem.pa).i;
+            BBS.lisp.memory.deref(pin_elem);
          else
             BBS.lisp.error("pin-mode", "Pin number must be integer.");
             ok := False;
@@ -200,6 +204,7 @@ package body lisp is
       if mode_elem.kind = BBS.lisp.ATOM_TYPE then
          if BBS.lisp.atom_table(mode_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
             state := BBS.lisp.atom_table(mode_elem.pa).i;
+            BBS.lisp.memory.deref(mode_elem);
          else
             BBS.lisp.error("pin-mode", "Pin mode must be integer.");
             ok := False;
