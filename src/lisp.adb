@@ -6,6 +6,7 @@ with BBS.lisp.memory;
 with BBS.embed;
 with BBS.embed.due.serial.int;
 with BBS.embed.GPIO.Due;
+with BBS.embed.ain.due;
 with utils;
 with discretes;
 
@@ -20,6 +21,7 @@ package body lisp is
       BBS.lisp.add_builtin("set-pin", set_pin'Access);
       BBS.lisp.add_builtin("pin-mode", pin_mode'Access);
       BBS.lisp.add_builtin("read-pin", read_pin'Access);
+      BBS.lisp.add_builtin("read-analog", read_analog'Access);
    end;
    --
    --  Functions for custom lisp commands for the Arduino Due
@@ -131,6 +133,7 @@ package body lisp is
       el : BBS.lisp.element_type;
       value : BBS.embed.Bit;
       flag : Boolean;
+      ok : Boolean := True;
    begin
       --
       --  Get the first value
@@ -143,20 +146,39 @@ package body lisp is
          if BBS.lisp.atom_table(param.pa).kind = BBS.lisp.ATOM_INTEGER then
             pin := BBS.lisp.atom_table(param.pa).i;
             BBS.lisp.memory.deref(param);
-            value := discretes.pin(pin).all.get;
+      --
+      --  Check if the pin number is within range of the valid pins.  Not that
+      --  pin 4 cannot be used.
+      --
+            if (pin < 0) or (pin > discretes.max_pin) or (pin = 4) then
+               BBS.lisp.error("read-pin", "Pin number is out of range.");
+               ok := False;
+            end if;
          else
+            ok := False;
             BBS.lisp.error("read-pin", "Parameter must be integer.");
          end if;
       else
+         ok := False;
          BBS.lisp.error("read-pin", "Parameter must be an atom.");
          BBS.lisp.print(param, False, True);
       end if;
-      flag := bbs.lisp.memory.alloc(a);
-      if flag then
-         BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
-         el := (Kind => BBS.lisp.ATOM_TYPE, pa => a);
+      --
+      --  If the parameter is an integer and in range, then read the pin and try
+      --  to return the value.
+      --
+      if ok then
+         value := discretes.pin(pin).all.get;
+         flag := bbs.lisp.memory.alloc(a);
+         if flag then
+            BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
+            el := (Kind => BBS.lisp.ATOM_TYPE, pa => a);
+         else
+            BBS.lisp.error("read-pin", "Unable to allocate atom");
+            ok := False;
+            el := BBS.lisp.NIL_ELEM;
+         end if;
       else
-         BBS.lisp.error("read-pin", "Unable to allocate atom");
          el := BBS.lisp.NIL_ELEM;
       end if;
       return el;
@@ -235,6 +257,76 @@ package body lisp is
       return BBS.lisp.NIL_ELEM;
    end;
    --
+   --  Read the value of one of the analog inputs.
+   --
+   function read_analog(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+      param : BBS.lisp.element_type;
+      pin : Integer;
+      rest : BBS.lisp.element_type;
+      a : BBS.lisp.atom_index;
+      el : BBS.lisp.element_type;
+      value : BBS.embed.uint12;
+      flag : Boolean;
+      ok : Boolean := True;
+      ain  : BBS.embed.AIN.due.Due_AIN_record;
+   begin
+      --
+      --  Get the first value
+      --
+      BBS.lisp.utilities.first_value(e, param, rest);
+      --
+      --  Check if the first value is an integer atom.
+      --
+      if param.kind = BBS.lisp.ATOM_TYPE then
+         if BBS.lisp.atom_table(param.pa).kind = BBS.lisp.ATOM_INTEGER then
+            pin := BBS.lisp.atom_table(param.pa).i;
+            BBS.lisp.memory.deref(param);
+      --
+      --  Check if the pin number is within range of the valid pins.  Not that
+      --  pin 4 cannot be used.
+      --
+            if (pin < BBS.embed.ain.due.AIN_Num'First) or (pin > BBS.embed.ain.due.AIN_Num'Last) then
+               BBS.lisp.error("read-analog", "Pin number is out of range.");
+               ok := False;
+            end if;
+         else
+            ok := False;
+            BBS.lisp.error("read-analog", "Parameter must be integer.");
+         end if;
+      else
+         ok := False;
+         BBS.lisp.error("read-analog", "Parameter must be an atom.");
+         BBS.lisp.print(param, False, True);
+      end if;
+      --
+      --  If the parameter is an integer and in range, then read the pin and try
+      --  to return the value.
+      --
+      if ok then
+         ain.channel := pin;
+         value := ain.get;
+         flag := bbs.lisp.memory.alloc(a);
+         if flag then
+            BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
+            el := (Kind => BBS.lisp.ATOM_TYPE, pa => a);
+         else
+            BBS.lisp.error("read-analog", "Unable to allocate atom");
+            ok := False;
+            el := BBS.lisp.NIL_ELEM;
+         end if;
+      else
+         el := BBS.lisp.NIL_ELEM;
+      end if;
+      return el;
+   end;
+   --
+   --
+   --  Read the value of one of the analog inputs.
+   --
+   function set_analog(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   begin
+      return BBS.lisp.NIL_ELEM;
+   end;
 
 
 end lisp;
