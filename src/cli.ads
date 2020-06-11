@@ -25,6 +25,12 @@ package cli is
    l3gd20_found     : i2c_device_location := absent;
    lsm303dlhc_found : i2c_device_location := absent;
    --
+   --  Device records
+   --
+   BMP180 : aliased BBS.embed.i2c.BMP180.BMP180_record;
+   BME280 : aliased BBS.embed.i2c.BME280.BME280_record;
+   L3GD20 : aliased BBS.embed.i2c.L3GD20H.L3GD20H_record;
+   --
    --  GPIO Pin to operate on
    --
    gpio   : aliased BBS.embed.GPIO.Due.Due_GPIO_record;
@@ -44,12 +50,6 @@ private
    pass   : String(1 .. 20);
    l_pass : Integer := 0;
 
-   --
-   --  Device records
-   --
-   BMP180 : aliased BBS.embed.i2c.BMP180.BMP180_record;
-   BME280 : aliased BBS.embed.i2c.BME280.BME280_record;
-   L3GD20 : aliased BBS.embed.i2c.L3GD20H.L3GD20H_record;
    --
    --  Procedure to break up some of the functionality
    --

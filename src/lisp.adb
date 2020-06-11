@@ -7,12 +7,18 @@ with BBS.embed;
 with BBS.embed.due.serial.int;
 with BBS.embed.GPIO.Due;
 with BBS.embed.ain.due;
+with bbs.embed.i2c.due;
+use type bbs.embed.i2c.err_code;
+use type bbs.embed.i2c.due.port_id;
+with BBS.embed.i2c.BMP180;
 with utils;
 with discretes;
+with cli;
 
 package body lisp is
    --
    --  Initialize the lisp interpreter and install custom lisp commands
+   --
    procedure init is
    begin
       BBS.lisp.init(BBS.embed.due.serial.int.Put_Line'Access, BBS.embed.due.serial.int.Put'Access,
@@ -22,6 +28,9 @@ package body lisp is
       BBS.lisp.add_builtin("pin-mode", pin_mode'Access);
       BBS.lisp.add_builtin("read-pin", read_pin'Access);
       BBS.lisp.add_builtin("read-analog", read_analog'Access);
+      BBS.lisp.add_builtin("info-enable", info_enable'Access);
+      BBS.lisp.add_builtin("info-disable", info_disable'Access);
+      BBS.lisp.add_builtin("read-bmp180", read_bmp180'Access);
    end;
    --
    --  Functions for custom lisp commands for the Arduino Due
@@ -327,6 +336,128 @@ package body lisp is
    begin
       return BBS.lisp.NIL_ELEM;
    end;
+   --
+   --  Enable display of info messages
+   --
+   function info_enable(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   begin
+      utils.info.enable;
+      return BBS.lisp.NIL_ELEM;
+   end;
+   --
+   --  Disable display of info messages
+   --
+   function info_disable(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   begin
+      utils.info.disable;
+      return BBS.lisp.NIL_ELEM;
+   end;
+   --
+   --  Read the BMP180 sensor
+   --
+   function read_bmp180(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+      err    : BBS.embed.i2c.err_code;
+      flag   : Boolean;
+      temperature : Integer;
+      pressure : Integer;
+      temp_flag : Boolean := False;
+      press_flag : Boolean := False;
+      temp_cons : BBS.lisp.cons_index;
+      press_cons : BBS.lisp.cons_index;
+      temp_atom : BBS.lisp.atom_index;
+      press_atom : BBS.lisp.atom_index;
+   begin
+      --
+      --  First get values from the sensor
+      --
+      cli.BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_temp, err);
+      loop
+         flag := cli.BMP180.data_ready(err);
+         exit when flag;
+         exit when err /= BBS.embed.i2c.none;
+      end loop;
+      if err /= BBS.embed.i2c.none then
+         BBS.lisp.error("read-bmp180", "BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
+      else
+         temperature := cli.BMP180.get_temp(err)/10;
+         if err = BBS.embed.i2c.none then
+            temp_flag := True;
+         end if;
+         cli.BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_press0, err);
+         loop
+            flag := cli.BMP180.data_ready(err);
+            exit when flag;
+            exit when err /= BBS.embed.i2c.none;
+         end loop;
+         if err /= BBS.embed.i2c.none then
+            BBS.lisp.error("read-bmp180", "BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
+         else
+            pressure := cli.BMP180.get_press(err);
+            if err = BBS.embed.i2c.none then
+               press_flag := True;
+            end if;
+         end if;
+      end if;
+      --
+      --  Now, construct the return value.  There are 4 possibilities since
+      --  each of the two values can be present or absent.
+      --
+      --  If things failed and neither value is present (the simplest case):
+      --
+      if (not temp_flag) and (not press_flag) then
+         return BBS.lisp.NIL_ELEM;
+      end if;
+      --
+      --  Now need to allocate two conses for the list
+      --
+      flag := BBS.lisp.memory.alloc(temp_cons);
+      if not flag then
+         BBS.lisp.error("read-bmp180", "Unable to allocate cons for temperature");
+         return BBS.lisp.NIL_ELEM;
+      end if;
+      flag := BBS.lisp.memory.alloc(press_cons);
+      if not flag then
+         BBS.lisp.error("read-bmp180", "Unable to allocate cons for pressure");
+         BBS.lisp.memory.deref(temp_cons);
+         return BBS.lisp.NIL_ELEM;
+      end if;
+      --
+      --  The conses have been successfully allocated.  Now build the list.
+      --
+      BBS.lisp.cons_table(temp_cons).car := BBS.lisp.NIL_ELEM;
+      BBS.lisp.cons_table(temp_cons).cdr := (kind => BBS.lisp.CONS_TYPE, ps => press_cons);
+      BBS.lisp.cons_table(press_cons).car := BBS.lisp.NIL_ELEM;
+      BBS.lisp.cons_table(press_cons).cdr := BBS.lisp.NIL_ELEM;
+      --
+      --  Now, add the values to the list if they are present
+      --
+      if temp_flag then
+         flag := BBS.lisp.memory.alloc(temp_atom);
+         if flag then
+            BBS.lisp.atom_table(temp_atom) := (ref => 1,
+                                               kind => BBS.lisp.ATOM_INTEGER,
+                                               i => temperature);
+            BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.ATOM_TYPE,
+                                                   pa => temp_atom);
 
+         else
+            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
+         end if;
+      end if;
+      if press_flag then
+         flag := BBS.lisp.memory.alloc(press_atom);
+         if flag then
+            BBS.lisp.atom_table(press_atom) := (ref => 1,
+                                               kind => BBS.lisp.ATOM_INTEGER,
+                                               i => pressure);
+            BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.ATOM_TYPE,
+                                                   pa => press_atom);
 
+         else
+            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
+         end if;
+      end if;
+      return (kind => BBS.lisp.CONS_TYPE, ps => temp_cons);
+   end;
+   --
 end lisp;

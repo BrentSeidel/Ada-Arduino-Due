@@ -3,6 +3,7 @@ package lisp is
 
    procedure init;
 
+private
    --
    --  Functions for custom lisp operations for the Arduino Due
    --
@@ -57,12 +58,23 @@ package lisp is
    --    BBS.embed.ain.due.AIN_Num.  Returns the analog value of the pin.
    --
    --
-   --  Read the value of one of the analog inputs.
+   --  Sets the value of one of the analog outputs.
    --
    function set_analog(e : BBS.lisp.element_type) return BBS.lisp.element_type;
    --  (set-analog integer integer)
    --    The first integer is the pin number range checked to 0 or 1.  The second
    --    integer is the value to write to the output, range limited to 0-4095.
    --    Returns NIL.
-
+   --
+   function info_enable(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   function info_disable(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   --  (info-enable) and (info-disable)
+   --    Enable or disable the display of info messages.  Both return NIL.
+   --
+   function read_bmp180(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   --  (read-bmp180)
+   --    Reads the ambient temperature in degrees C and atmospheric pressure  in
+   --    Pascals from the BMP180 sensor.
 end lisp;

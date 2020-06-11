@@ -209,8 +209,9 @@ package body cli is
          if err /= BBS.embed.i2c.none then
             stdout.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
          else
-            stdout.put_line("BMEP10 Data:");
-            stdout.put_line("  Temperature is " & Integer'Image(BMP180.get_temp(err)/100));
+            stdout.put_line("BMP180 Data:");
+            stdout.put_line("  Temperature is " & Integer'Image(BMP180.get_temp(err)/10) &
+                           "C");
             BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_press0, err);
             loop
                flag := BMP180.data_ready(err);
@@ -220,7 +221,8 @@ package body cli is
             if err /= BBS.embed.i2c.none then
                stdout.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
             else
-               stdout.put_line("  Pressure is " & Integer'Image(BMP180.get_press(err)/256));
+               stdout.put_line("  Pressure is " & Integer'Image(BMP180.get_press(err)) &
+                              "Pa");
             end if;
          end if;
       else
