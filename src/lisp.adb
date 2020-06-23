@@ -1,6 +1,6 @@
 with BBS.lisp;
 use type BBS.lisp.ptr_type;
-use type BBS.lisp.atom_kind;
+use type BBS.lisp.value_type;
 with BBS.lisp.utilities;
 with BBS.lisp.memory;
 with BBS.embed;
@@ -49,9 +49,9 @@ package body lisp is
       --
       --  Check if the first value is an integer atom.
       --
-      if param.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(param.pa).kind = BBS.lisp.ATOM_INTEGER then
-            utils.flash_count := BBS.lisp.atom_table(param.pa).i;
+      if param.kind = BBS.lisp.E_VALUE then
+         if param.v.kind = BBS.lisp.V_INTEGER then
+            utils.flash_count := param.v.i;
          else
             BBS.lisp.error("due-flash", "Parameter must be integer.");
          end if;
@@ -82,10 +82,10 @@ package body lisp is
       --
       --  Check if the pin number value is an integer atom.
       --
-      if pin_elem.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(pin_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
-            pin := BBS.lisp.atom_table(pin_elem.pa).i;
-            BBS.lisp.memory.deref(pin_elem);
+      if pin_elem.kind = BBS.lisp.E_VALUE then
+         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
+            pin := pin_elem.v.i;
+--            BBS.lisp.memory.deref(pin_elem);
          else
             BBS.lisp.error("set-pin", "Pin number must be integer.");
             ok := False;
@@ -97,10 +97,10 @@ package body lisp is
       --
       --  Check if the pin state is an integer atom.
       --
-      if state_elem.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(state_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
-            state := BBS.lisp.atom_table(state_elem.pa).i;
-            BBS.lisp.memory.deref(state_elem);
+      if state_elem.kind = BBS.lisp.E_VALUE then
+         if state_elem.v.kind = BBS.lisp.V_INTEGER then
+            state := state_elem.v.i;
+--            BBS.lisp.memory.deref(state_elem);
          else
             BBS.lisp.error("set-pin", "Pin state must be integer.");
             ok := False;
@@ -138,10 +138,8 @@ package body lisp is
       param : BBS.lisp.element_type;
       pin : Integer;
       rest : BBS.lisp.element_type;
-      a : BBS.lisp.atom_index;
       el : BBS.lisp.element_type;
       value : BBS.embed.Bit;
-      flag : Boolean;
       ok : Boolean := True;
    begin
       --
@@ -151,10 +149,9 @@ package body lisp is
       --
       --  Check if the first value is an integer atom.
       --
-      if param.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(param.pa).kind = BBS.lisp.ATOM_INTEGER then
-            pin := BBS.lisp.atom_table(param.pa).i;
-            BBS.lisp.memory.deref(param);
+      if param.kind = BBS.lisp.E_VALUE then
+         if param.v.kind = BBS.lisp.V_INTEGER then
+            pin := param.v.i;
       --
       --  Check if the pin number is within range of the valid pins.  Not that
       --  pin 4 cannot be used.
@@ -178,15 +175,7 @@ package body lisp is
       --
       if ok then
          value := discretes.pin(pin).all.get;
-         flag := bbs.lisp.memory.alloc(a);
-         if flag then
-            BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
-            el := (Kind => BBS.lisp.ATOM_TYPE, pa => a);
-         else
-            BBS.lisp.error("read-pin", "Unable to allocate atom");
-            ok := False;
-            el := BBS.lisp.NIL_ELEM;
-         end if;
+         el := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => Integer(value)));
       else
          el := BBS.lisp.NIL_ELEM;
       end if;
@@ -216,10 +205,9 @@ package body lisp is
       --
       --  Check if the pin number value is an integer atom.
       --
-      if pin_elem.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(pin_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
-            pin := BBS.lisp.atom_table(pin_elem.pa).i;
-            BBS.lisp.memory.deref(pin_elem);
+      if pin_elem.kind = BBS.lisp.E_VALUE then
+         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
+            pin := pin_elem.v.i;
          else
             BBS.lisp.error("pin-mode", "Pin number must be integer.");
             ok := False;
@@ -232,10 +220,9 @@ package body lisp is
       --
       --  Check if the pin state is an integer atom.
       --
-      if mode_elem.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(mode_elem.pa).kind = BBS.lisp.ATOM_INTEGER then
-            state := BBS.lisp.atom_table(mode_elem.pa).i;
-            BBS.lisp.memory.deref(mode_elem);
+      if mode_elem.kind = BBS.lisp.E_VALUE then
+         if mode_elem.v.kind = BBS.lisp.V_INTEGER then
+            state := mode_elem.v.i;
          else
             BBS.lisp.error("pin-mode", "Pin mode must be integer.");
             ok := False;
@@ -272,10 +259,10 @@ package body lisp is
       param : BBS.lisp.element_type;
       pin : Integer;
       rest : BBS.lisp.element_type;
-      a : BBS.lisp.atom_index;
+----      a : BBS.lisp.atom_index;
       el : BBS.lisp.element_type;
       value : BBS.embed.uint12;
-      flag : Boolean;
+--      flag : Boolean;
       ok : Boolean := True;
       ain  : BBS.embed.AIN.due.Due_AIN_record;
    begin
@@ -286,10 +273,10 @@ package body lisp is
       --
       --  Check if the first value is an integer atom.
       --
-      if param.kind = BBS.lisp.ATOM_TYPE then
-         if BBS.lisp.atom_table(param.pa).kind = BBS.lisp.ATOM_INTEGER then
-            pin := BBS.lisp.atom_table(param.pa).i;
-            BBS.lisp.memory.deref(param);
+      if param.kind = BBS.lisp.E_VALUE then
+         if param.v.kind = BBS.lisp.V_INTEGER then
+            pin := param.v.i;
+--            BBS.lisp.memory.deref(param);
       --
       --  Check if the pin number is within range of the valid pins.  Not that
       --  pin 4 cannot be used.
@@ -314,15 +301,15 @@ package body lisp is
       if ok then
          ain.channel := pin;
          value := ain.get;
-         flag := bbs.lisp.memory.alloc(a);
-         if flag then
-            BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
-            el := (Kind => BBS.lisp.ATOM_TYPE, pa => a);
-         else
-            BBS.lisp.error("read-analog", "Unable to allocate atom");
-            ok := False;
-            el := BBS.lisp.NIL_ELEM;
-         end if;
+--         flag := bbs.lisp.memory.alloc(a);
+--         if flag then
+--            BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
+            el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => Integer(value)));
+--         else
+--            BBS.lisp.error("read-analog", "Unable to allocate atom");
+--            ok := False;
+--            el := BBS.lisp.NIL_ELEM;
+--         end if;
       else
          el := BBS.lisp.NIL_ELEM;
       end if;
@@ -364,8 +351,6 @@ package body lisp is
       press_flag : Boolean := False;
       temp_cons : BBS.lisp.cons_index;
       press_cons : BBS.lisp.cons_index;
-      temp_atom : BBS.lisp.atom_index;
-      press_atom : BBS.lisp.atom_index;
    begin
       --
       --  First get values from the sensor
@@ -425,39 +410,40 @@ package body lisp is
       --  The conses have been successfully allocated.  Now build the list.
       --
       BBS.lisp.cons_table(temp_cons).car := BBS.lisp.NIL_ELEM;
-      BBS.lisp.cons_table(temp_cons).cdr := (kind => BBS.lisp.CONS_TYPE, ps => press_cons);
+      BBS.lisp.cons_table(temp_cons).cdr := (kind => BBS.lisp.E_CONS, ps => press_cons);
       BBS.lisp.cons_table(press_cons).car := BBS.lisp.NIL_ELEM;
       BBS.lisp.cons_table(press_cons).cdr := BBS.lisp.NIL_ELEM;
       --
       --  Now, add the values to the list if they are present
       --
       if temp_flag then
-         flag := BBS.lisp.memory.alloc(temp_atom);
-         if flag then
-            BBS.lisp.atom_table(temp_atom) := (ref => 1,
-                                               kind => BBS.lisp.ATOM_INTEGER,
-                                               i => temperature);
-            BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.ATOM_TYPE,
-                                                   pa => temp_atom);
+--         flag := BBS.lisp.memory.alloc(temp_atom);
+--         if flag then
+--            BBS.lisp.atom_table(temp_atom) := (ref => 1,
+--                                               kind => BBS.lisp.ATOM_INTEGER,
+--                                               i => temperature);
+            BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.E_VALUE,
+                                                   v => (kind => BBS.lisp.V_INTEGER,
+                                                         i => temperature));
 
-         else
-            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
-         end if;
+--         else
+--            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
+--         end if;
       end if;
       if press_flag then
-         flag := BBS.lisp.memory.alloc(press_atom);
-         if flag then
-            BBS.lisp.atom_table(press_atom) := (ref => 1,
-                                               kind => BBS.lisp.ATOM_INTEGER,
-                                               i => pressure);
-            BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.ATOM_TYPE,
-                                                   pa => press_atom);
-
-         else
-            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
-         end if;
+--         flag := BBS.lisp.memory.alloc(press_atom);
+--         if flag then
+--            BBS.lisp.atom_table(press_atom) := (ref => 1,
+--                                               kind => BBS.lisp.ATOM_INTEGER,
+--                                               i => pressure);
+            BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.E_VALUE,
+                                                    v => (kind => BBS.lisp.V_INTEGER,
+                                                          i => pressure));
+--         else
+--            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
+--         end if;
       end if;
-      return (kind => BBS.lisp.CONS_TYPE, ps => temp_cons);
+      return (kind => BBS.lisp.E_CONS, ps => temp_cons);
    end;
    --
 end lisp;
