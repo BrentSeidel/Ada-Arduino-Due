@@ -11,6 +11,7 @@ with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed.i2c.BMP180;
+with BBS.embed.i2c.PCA9685;
 with utils;
 with discretes;
 with cli;
@@ -31,6 +32,7 @@ package body lisp is
       BBS.lisp.add_builtin("info-enable", info_enable'Access);
       BBS.lisp.add_builtin("info-disable", info_disable'Access);
       BBS.lisp.add_builtin("read-bmp180", read_bmp180'Access);
+      BBS.lisp.add_builtin("set-pca9685", set_pca9685'Access);
    end;
    --
    --  Functions for custom lisp commands for the Arduino Due
@@ -85,7 +87,6 @@ package body lisp is
       if pin_elem.kind = BBS.lisp.E_VALUE then
          if pin_elem.v.kind = BBS.lisp.V_INTEGER then
             pin := pin_elem.v.i;
---            BBS.lisp.memory.deref(pin_elem);
          else
             BBS.lisp.error("set-pin", "Pin number must be integer.");
             ok := False;
@@ -100,7 +101,6 @@ package body lisp is
       if state_elem.kind = BBS.lisp.E_VALUE then
          if state_elem.v.kind = BBS.lisp.V_INTEGER then
             state := state_elem.v.i;
---            BBS.lisp.memory.deref(state_elem);
          else
             BBS.lisp.error("set-pin", "Pin state must be integer.");
             ok := False;
@@ -259,10 +259,8 @@ package body lisp is
       param : BBS.lisp.element_type;
       pin : Integer;
       rest : BBS.lisp.element_type;
-----      a : BBS.lisp.atom_index;
       el : BBS.lisp.element_type;
       value : BBS.embed.uint12;
---      flag : Boolean;
       ok : Boolean := True;
       ain  : BBS.embed.AIN.due.Due_AIN_record;
    begin
@@ -276,9 +274,8 @@ package body lisp is
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
             pin := param.v.i;
---            BBS.lisp.memory.deref(param);
       --
-      --  Check if the pin number is within range of the valid pins.  Not that
+      --  Check if the pin number is within range of the valid pins.  Note that
       --  pin 4 cannot be used.
       --
             if (pin < BBS.embed.ain.due.AIN_Num'First) or (pin > BBS.embed.ain.due.AIN_Num'Last) then
@@ -301,15 +298,7 @@ package body lisp is
       if ok then
          ain.channel := pin;
          value := ain.get;
---         flag := bbs.lisp.memory.alloc(a);
---         if flag then
---            BBS.lisp.atom_table(a) := (ref => 1, Kind => BBS.lisp.ATOM_INTEGER, i => Integer(value));
-            el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => Integer(value)));
---         else
---            BBS.lisp.error("read-analog", "Unable to allocate atom");
---            ok := False;
---            el := BBS.lisp.NIL_ELEM;
---         end if;
+         el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => Integer(value)));
       else
          el := BBS.lisp.NIL_ELEM;
       end if;
@@ -417,33 +406,95 @@ package body lisp is
       --  Now, add the values to the list if they are present
       --
       if temp_flag then
---         flag := BBS.lisp.memory.alloc(temp_atom);
---         if flag then
---            BBS.lisp.atom_table(temp_atom) := (ref => 1,
---                                               kind => BBS.lisp.ATOM_INTEGER,
---                                               i => temperature);
             BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.E_VALUE,
                                                    v => (kind => BBS.lisp.V_INTEGER,
                                                          i => temperature));
-
---         else
---            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
---         end if;
       end if;
       if press_flag then
---         flag := BBS.lisp.memory.alloc(press_atom);
---         if flag then
---            BBS.lisp.atom_table(press_atom) := (ref => 1,
---                                               kind => BBS.lisp.ATOM_INTEGER,
---                                               i => pressure);
             BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.E_VALUE,
                                                     v => (kind => BBS.lisp.V_INTEGER,
                                                           i => pressure));
---         else
---            BBS.lisp.error("read-bmp180", "Unable to allocate atom for temperature");
---         end if;
       end if;
       return (kind => BBS.lisp.E_CONS, ps => temp_cons);
+   end;
+   --
+   --  (set-pca9685 integer integer)
+   --    The first integer is the channel number (0-15).  The second integer is
+   --    the PWM value to set (0-4095).  Sets the specified PCA9685 PWM channel
+   --    to the specified value.  Returns NIL.
+   --
+   function set_pca9685(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+      err    : BBS.embed.i2c.err_code;
+      chan_elem : BBS.lisp.element_type;
+      value_elem  : BBS.lisp.element_type;
+      channel : Integer;
+      value : Integer;
+      rest : BBS.lisp.element_type;
+      ok : Boolean := True;
+   begin
+      --
+      --  Get the first value
+      --
+      BBS.lisp.utilities.first_value(e, chan_elem, rest);
+      --
+      --  Get the second value
+      --
+      BBS.lisp.utilities.first_value(rest, value_elem, rest);
+      --
+      --  Check if the channel number value is an integer atom.
+      --
+      if chan_elem.kind = BBS.lisp.E_VALUE then
+         if chan_elem.v.kind = BBS.lisp.V_INTEGER then
+            channel := chan_elem.v.i;
+         else
+            BBS.lisp.error("set-pca9685", "PCA9685 channel must be integer.");
+            ok := False;
+         end if;
+      else
+         BBS.lisp.error("set-pca9685", "PCA9685 channel must be an element.");
+         BBS.lisp.print(chan_elem, False, True);
+         ok := False;
+      end if;
+      --
+      --  Check if the channel value is an integer atom.
+      --
+      if value_elem.kind = BBS.lisp.E_VALUE then
+         if value_elem.v.kind = BBS.lisp.V_INTEGER then
+            value := value_elem.v.i;
+         else
+            BBS.lisp.error("sset-pca9685", "PCA9685 channel value must be integer.");
+            ok := False;
+         end if;
+      else
+         BBS.lisp.error("set-pca9685", "PCA9685 channel value must be an atom.");
+         BBS.lisp.print(value_elem, False, True);
+         ok := False;
+      end if;
+      --
+      --  Check if the channel number is within range of the valid pins.
+      --
+      if (channel < 0) or (channel > 15) then
+         BBS.lisp.error("set-pca9685", "PCA9685 channel number is out of range.");
+         ok := False;
+      end if;
+      --
+      --  Check that the cannel value is within the range 0-4095.
+      --
+      if (value < 0) or (value > 4095) then
+         BBS.lisp.error("set-pca9685", "PCA9685 channel value is out of range.");
+         ok := False;
+      end if;
+      --
+      --  If everything is OK, then set the channel
+      --
+      if ok then
+         cli.PCA9685.set(BBS.embed.i2c.PCA9685.channel(channel), 0,
+                         BBS.embed.uint12(value), err);
+         if err /= BBS.embed.i2c.none then
+            BBS.lisp.error("set-pca9685", "PCA9685 Error: " & BBS.embed.i2c.err_code'Image(err));
+         end if;
+      end if;
+      return BBS.lisp.NIL_ELEM;
    end;
    --
 end lisp;

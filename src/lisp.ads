@@ -77,4 +77,12 @@ private
    --  (read-bmp180)
    --    Reads the ambient temperature in degrees C and atmospheric pressure  in
    --    Pascals from the BMP180 sensor.
+   --
+   function set_pca9685(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   --  (set-pca9685 integer integer)
+   --    The first integer is the channel number (0-15).  The second integer is
+   --    the PWM value to set (0-4095).  Sets the specified PCA9685 PWM channel
+   --    to the specified value.  Returns NIL.
+   --
 end lisp;

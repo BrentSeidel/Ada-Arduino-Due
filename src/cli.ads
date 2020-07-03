@@ -9,6 +9,7 @@ use type BBS.embed.uint8;
 with BBS.embed.i2c.BME280;
 with BBS.embed.i2c.BMP180;
 with BBS.embed.i2c.L3GD20H;
+with BBS.embed.i2c.PCA9685;
 --
 --  This package implementes a simple command line interpreter.
 --
@@ -23,6 +24,7 @@ package cli is
    bme280_found     : i2c_device_location := absent;
    bmp180_found     : i2c_device_location := absent;
    l3gd20_found     : i2c_device_location := absent;
+   pca9685_found    : i2c_device_location := absent;
    lsm303dlhc_found : i2c_device_location := absent;
    --
    --  Device records
@@ -30,6 +32,7 @@ package cli is
    BMP180 : aliased BBS.embed.i2c.BMP180.BMP180_record;
    BME280 : aliased BBS.embed.i2c.BME280.BME280_record;
    L3GD20 : aliased BBS.embed.i2c.L3GD20H.L3GD20H_record;
+   PCA9685 : aliased BBS.embed.i2c.PCA9685.PS9685_record;
    --
    --  GPIO Pin to operate on
    --

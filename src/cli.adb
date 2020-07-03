@@ -143,6 +143,7 @@ package body cli is
    --  I2C related operations.  Currently supported commands are:
    --    SCAN
    --    BME280
+   --    BMP180
    --
    procedure process_i2c(r : strings.bounded) is
       i2c0   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(0);
@@ -370,7 +371,7 @@ package body cli is
       --
       --  Looking for L3GD20
       --
-      stdout.put_line("I2C: Probing address 16#6B#.");
+      stdout.put_line("I2C: Probing address 16#6B# for L3GD20.");
       temp := i2c_bus.read(BBS.embed.i2c.L3GD20H.addr,
                            BBS.embed.i2c.L3GD20H.who_am_i, err);
       if err = BBS.embed.i2c.none then
@@ -397,7 +398,7 @@ package body cli is
       --
       --  Looking for BMP180 or BME280
       --
-      stdout.put_line("I2C: Getting device ID at 16#77#.");
+      stdout.put_line("I2C: Getting device ID at 16#77# for BMP180 or BME280.");
       temp := i2c_bus.read(BBS.embed.i2c.BME280.addr, BBS.embed.i2c.BME280.id, err);
       stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
       if err = BBS.embed.i2c.none then
@@ -435,6 +436,26 @@ package body cli is
       else
          stdout.put_line("I2C: No device found at address 16#77#.");
       end if;
+      --
+      --  Looking for with PCA9685
+      --
+      stdout.put_line("I2C: probing address 16#40# for PCA9685.");
+      temp := i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, err);
+      if err = BBS.embed.i2c.none then
+         stdout.put_line("I2C: PCA9685 Found, configuring");
+         PCA9685.configure(i2c_bus, BBS.embed.i2c.PCA9685.addr_0, err);
+         stdout.put_line("I2C: PCA9685 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
+         if err = BBS.embed.i2c.none then
+            if c = 0 then
+               pca9685_found := bus0;
+            else
+               pca9685_found := bus1;
+            end if;
+         else
+            stdout.put_line("I2C: PCA9685 initialization failed - disabling.");
+            pca9685_found := absent;
+         end if;
+      end if;
    end;
    --
    procedure show_status is
@@ -460,6 +481,7 @@ package body cli is
       stdout.put_line("BME280     " & i2c_device_location'Image(bme280_found));
       stdout.put_line("L3GD20     " & i2c_device_location'Image(l3gd20_found));
       stdout.put_line("LSM303DLHC " & i2c_device_location'Image(lsm303dlhc_found));
+      stdout.put_line("PCA9685    " & i2c_device_location'Image(pca9685_found));
    end;
    --
 
