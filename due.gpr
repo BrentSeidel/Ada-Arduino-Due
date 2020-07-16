@@ -12,16 +12,20 @@ project Due is
    for Exec_Dir use ".";
 
    package Compiler is
-      for Switches ("ada") use ("-gnat12", "-fcallgraph-info=su,da");
+      for Switches ("ada") use ("-gnat12", "-fcallgraph-info=su,da", "-g", "-O");
    end Compiler;
 
    package Builder is
-      for Switches ("ada") use ("-s", "-j4");
+      for Switches ("ada") use ("-s", "-j4", "-g");
    end Builder;
 
    package Linker is
-      for Switches ("ada") use ("-Wl,--gc-sections");
+      for Switches ("ada") use ("-Wl,--gc-sections", "-g");
    end Linker;
+
+   package Binder is
+      for Switches ("ada") use ("-E", "-r");
+   end Binder;
 
 end Due;
 

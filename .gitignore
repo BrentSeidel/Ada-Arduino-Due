@@ -1,6 +1,9 @@
 # Object directory
 obj/
 
+# Gnat stuff
+gnatinspect.db
+
 # Binary for bossac - Arduino Due software loader
 bossac
 
