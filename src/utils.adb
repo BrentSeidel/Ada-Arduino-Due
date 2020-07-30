@@ -1,4 +1,6 @@
 with BBS.embed.due.serial.int;
+with BBS.embed.GPIO.Due;
+with BBS.embed.due.GPIO;
 with SAM3x8e.CHIPID;
 package body utils is
    --
@@ -68,7 +70,7 @@ package body utils is
    --  Print some information about the CPU
    --
    procedure cpu_info is
-      stdout : BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
    begin
       stdout.put_line("Processor is " &
                         SAM3x8e.CHIPID.CIDR_EPROC_Field'image(SAM3x8e.CHIPID.CHIPID_Periph.CIDR.EPROC));
@@ -87,7 +89,7 @@ package body utils is
    --  Decode the I2C status register
    --
    procedure print_i2c_sr(s : SAM3x8e.TWI.TWI0_SR_Register) is
-      stdout : BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       flag   : Boolean := False;
    begin
       if s.TXCOMP = 1 then

@@ -1,4 +1,4 @@
-with SAM3x8e.ADC;
+--with SAM3x8e.ADC;
 with SAM3x8e.DACC;
 with SAM3x8e.PMC;
 

@@ -20,6 +20,7 @@ package body lisp is
    --
    --  Initialize the lisp interpreter and install custom lisp commands
    --
+   --
    procedure init is
    begin
       BBS.lisp.init(BBS.embed.due.serial.int.Put_Line'Access, BBS.embed.due.serial.int.Put'Access,
@@ -53,7 +54,7 @@ package body lisp is
       --
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
-            utils.flash_count := param.v.i;
+            utils.flash_count := Integer(param.v.i);
          else
             BBS.lisp.error("due-flash", "Parameter must be integer.");
          end if;
@@ -86,7 +87,7 @@ package body lisp is
       --
       if pin_elem.kind = BBS.lisp.E_VALUE then
          if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin := pin_elem.v.i;
+            pin := Integer(pin_elem.v.i);
          else
             BBS.lisp.error("set-pin", "Pin number must be integer.");
             ok := False;
@@ -100,7 +101,7 @@ package body lisp is
       --
       if state_elem.kind = BBS.lisp.E_VALUE then
          if state_elem.v.kind = BBS.lisp.V_INTEGER then
-            state := state_elem.v.i;
+            state := Integer(state_elem.v.i);
          else
             BBS.lisp.error("set-pin", "Pin state must be integer.");
             ok := False;
@@ -151,7 +152,7 @@ package body lisp is
       --
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
-            pin := param.v.i;
+            pin := Integer(param.v.i);
       --
       --  Check if the pin number is within range of the valid pins.  Not that
       --  pin 4 cannot be used.
@@ -175,7 +176,7 @@ package body lisp is
       --
       if ok then
          value := discretes.pin(pin).all.get;
-         el := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => Integer(value)));
+         el := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
       else
          el := BBS.lisp.NIL_ELEM;
       end if;
@@ -207,7 +208,7 @@ package body lisp is
       --
       if pin_elem.kind = BBS.lisp.E_VALUE then
          if pin_elem.v.kind = BBS.lisp.V_INTEGER then
-            pin := pin_elem.v.i;
+            pin := Integer(pin_elem.v.i);
          else
             BBS.lisp.error("pin-mode", "Pin number must be integer.");
             ok := False;
@@ -222,7 +223,7 @@ package body lisp is
       --
       if mode_elem.kind = BBS.lisp.E_VALUE then
          if mode_elem.v.kind = BBS.lisp.V_INTEGER then
-            state := mode_elem.v.i;
+            state := Integer(mode_elem.v.i);
          else
             BBS.lisp.error("pin-mode", "Pin mode must be integer.");
             ok := False;
@@ -273,7 +274,7 @@ package body lisp is
       --
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
-            pin := param.v.i;
+            pin := Integer(param.v.i);
       --
       --  Check if the pin number is within range of the valid pins.  Note that
       --  pin 4 cannot be used.
@@ -298,7 +299,7 @@ package body lisp is
       if ok then
          ain.channel := pin;
          value := ain.get;
-         el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => Integer(value)));
+         el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
       else
          el := BBS.lisp.NIL_ELEM;
       end if;
@@ -408,12 +409,12 @@ package body lisp is
       if temp_flag then
             BBS.lisp.cons_table(temp_cons).car := (kind => BBS.lisp.E_VALUE,
                                                    v => (kind => BBS.lisp.V_INTEGER,
-                                                         i => temperature));
+                                                         i => BBS.lisp.int32(temperature)));
       end if;
       if press_flag then
             BBS.lisp.cons_table(press_cons).car := (kind => BBS.lisp.E_VALUE,
                                                     v => (kind => BBS.lisp.V_INTEGER,
-                                                          i => pressure));
+                                                          i => BBS.lisp.int32(pressure)));
       end if;
       return (kind => BBS.lisp.E_CONS, ps => temp_cons);
    end;
@@ -445,7 +446,7 @@ package body lisp is
       --
       if chan_elem.kind = BBS.lisp.E_VALUE then
          if chan_elem.v.kind = BBS.lisp.V_INTEGER then
-            channel := chan_elem.v.i;
+            channel := Integer(chan_elem.v.i);
          else
             BBS.lisp.error("set-pca9685", "PCA9685 channel must be integer.");
             ok := False;
@@ -460,7 +461,7 @@ package body lisp is
       --
       if value_elem.kind = BBS.lisp.E_VALUE then
          if value_elem.v.kind = BBS.lisp.V_INTEGER then
-            value := value_elem.v.i;
+            value := Integer(value_elem.v.i);
          else
             BBS.lisp.error("sset-pca9685", "PCA9685 channel value must be integer.");
             ok := False;

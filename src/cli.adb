@@ -1,12 +1,13 @@
+with BBS.embed.due.serial.int;
 with utils;
-with BBS.embed.i2c.BME280;
+--with BBS.embed.i2c.BME280;
 --with BBS.embed.i2c.LSM303DLHC;
-with BBS.embed.i2c.L3GD20H;
+--with BBS.embed.i2c.L3GD20H;
 with analogs;
 with SAM3x8e;
 use type SAM3x8e.UInt12;
-with BBS.units;
-with Ada.Synchronous_Task_Control;
+--with BBS.units;
+--with Ada.Synchronous_Task_Control;
 with BBS.embed.AIN.due;
 with BBS.lisp;
 with lisp;
@@ -44,7 +45,7 @@ package body cli is
       stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(1);
       serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(2);
-      serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(3);
+--      serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(3);
       ain  : BBS.embed.AIN.due.Due_AIN_record;
       ain_val : BBS.embed.uint12;
       line : aliased strings.bounded(80);
@@ -146,8 +147,8 @@ package body cli is
    --    BMP180
    --
    procedure process_i2c(r : strings.bounded) is
-      i2c0   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(0);
-      i2c1   : aliased BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(1);
+      i2c0   : aliased constant BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(0);
+      i2c1   : aliased constant BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(1);
       stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
@@ -311,7 +312,7 @@ package body cli is
    end;
    --
    procedure parse_pin(r : strings.bounded; err : out Boolean) is
-      temp : Character := r.str(1);
+      temp : constant Character := r.str(1);
    begin
       err := False;
       if (r.len < 2) or (r.len > 3) then
