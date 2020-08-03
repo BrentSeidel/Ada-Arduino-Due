@@ -105,3 +105,27 @@
     (set-pca9685 pin value)
     (setq value (+ value 10)))
   (setq pin (+ pin 1)))
+;
+;  Test PEEK operation by reading analog inputs.  The 16 Analog Channel Data
+;  Registers start at address #x400C0050 and are four bytes wide.  Only the
+;  12 least significan bits are used so a PEEK16 is used to read the address.
+;
+;  Important Note:  The analog channel numbers do not match the numbers on the
+;  Arduino Due connectors.
+;  Pin  Chan
+;   0     7
+;   1     6
+;   2     5
+;   3     4
+;   4     3
+;   5     2
+;   6     1
+;   7     0
+;   8    10
+;   9    11
+;  10    12
+;  11    13
+;
+(defun ain (chan)
+    (peek16 (+ #x400C0050 (* chan 4))))
+
