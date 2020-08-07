@@ -128,4 +128,41 @@
 ;
 (defun ain (chan)
     (peek16 (+ #x400C0050 (* chan 4))))
+;
+;  Try to toggle Arduino Pin 11.
+;     pin11_rec : ctrl => BBS.embed.GPIO.Due.PIOC'Access, bit => 29
+;   procedure set(self : Due_GPIO_record; val : Bit) is
+;   begin
+;      if val = 1 then
+;         self.ctrl.SODR.Arr(self.bit) := 1;
+;      else
+;         self.ctrl.CODR.Arr(self.bit) := 1;
+;      end if;
+;   end;
+;
+;  PIOA base address: #x400E0E00
+;  PIOB base addressL #x400E1000
+;  PIOC base address: #x400E1200
+;  PIOD base address: #x400E1400
+;  PIOE base addressL #x400E1500
+;  PIOF base address: #x400E1600
+;  SODR offset: #x0030
+;  CODR offset: #x0034
+;
+(defun set-25 (value)
+  (if (= 0 value)
+    (poke32 #x400E1434 #x01)
+    (poke32 #x400E1430 #x01)))
+
+(defun toggle (count)
+  (pin-mode 25 1)
+  (dotimes (n count)
+    (set-25 0)
+    (set-25 1)))
+;
+;  Measuring discretes with an oscilloscope,
+;  (dowhile (= 1 1) (set-pin 25 0) (set-pin 25 1)) toggles about 10kHz
+;  (dotimes (n 1000000) (set-pin 25 0) (set-pin 25 1)) toggles about 15kHz
+;  (toggle 10000) toggles about 3kHz
+;
 

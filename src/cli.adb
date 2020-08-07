@@ -45,7 +45,6 @@ package body cli is
       stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(1);
       serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(2);
---      serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(3);
       ain  : BBS.embed.AIN.due.Due_AIN_record;
       ain_val : BBS.embed.uint12;
       line : aliased strings.bounded(80);

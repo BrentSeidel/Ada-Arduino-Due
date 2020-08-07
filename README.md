@@ -45,6 +45,31 @@ will probably be enhanced sometime in the future.
 ### Tasking
 Moved the LED flasher into a separate task - multiple tasks are working.
 
+### Lisp
+The Tiny-Lisp interpreter has been incorporated and operations have been created
+for accessing some of the hardware.  These can be used as examples for creating
+your own.
+
+The (peek) and (poke) operations have been tested.  Using (poke) to set discrete
+output values with:
+1. (dowhile (= 1 1) (set-pin 25 0) (set-pin 25 1))
+2. (dotimes (n 1000000) (set-pin 25 0) (set-pin 25 1))
+3. (defun set-25 (value)
+    (if (= 0 value)
+      (poke32 #x400E1434 #x01)
+      (poke32 #x400E1430 #x01)))
+  (defun toggle (count)
+    (pin-mode 25 1)
+    (dotimes (n count)
+      (set-25 0)
+      (set-25 1)))
+
+Measuring discretes with an oscilloscope,
+1. dowhile toggles about 10kHz
+2. dotimes toggles about 15kHz
+3. toggles about 3kHz
+4. A similar loop in Ada was measured about 384kHz
+
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,
 please contact the author.  Note that the files with the names sam3x8s*.ads have been
