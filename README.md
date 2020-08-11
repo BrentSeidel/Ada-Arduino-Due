@@ -63,12 +63,19 @@ output values with:
     (dotimes (n count)
       (set-25 0)
       (set-25 1)))
+4. (defun toggle (count)
+     (pin-mode 25 1)
+     (dotimes (n count) (poke32 #x400E1434 #x01) (poke32 #x400E1430 #x01)))
 
 Measuring discretes with an oscilloscope,
 1. dowhile toggles about 10kHz
 2. dotimes toggles about 15kHz
 3. toggles about 3kHz
-4. A similar loop in Ada was measured about 384kHz
+4. toggles about 15hKz
+0. A similar loop in Ada was measured about 384kHz
+
+The timing differences should give a little idea of the overhead of different
+Lisp operations.
 
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,

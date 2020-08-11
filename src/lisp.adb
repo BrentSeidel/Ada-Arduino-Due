@@ -127,6 +127,8 @@ package body lisp is
          else
             discretes.pin(pin).all.set(1);
          end if;
+      else
+         return (kind => BBS.lisp.E_ERROR);
       end if;
       return BBS.lisp.NIL_ELEM;
    end;
@@ -178,7 +180,7 @@ package body lisp is
          value := discretes.pin(pin).all.get;
          el := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
       else
-         el := BBS.lisp.NIL_ELEM;
+         el := (kind => BBS.lisp.E_ERROR);
       end if;
       return el;
    end;
@@ -250,6 +252,8 @@ package body lisp is
          else
             discretes.pin(pin).all.config(BBS.embed.GPIO.Due.gpio_output);
          end if;
+      else
+         return (kind => BBS.lisp.E_ERROR);
       end if;
       return BBS.lisp.NIL_ELEM;
    end;
@@ -301,7 +305,7 @@ package body lisp is
          value := ain.get;
          el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
       else
-         el := BBS.lisp.NIL_ELEM;
+         el := (kind => BBS.lisp.E_ERROR);
       end if;
       return el;
    end;
@@ -388,13 +392,13 @@ package body lisp is
       flag := BBS.lisp.memory.alloc(temp_cons);
       if not flag then
          BBS.lisp.error("read-bmp180", "Unable to allocate cons for temperature");
-         return BBS.lisp.NIL_ELEM;
+         return (kind => BBS.lisp.E_ERROR);
       end if;
       flag := BBS.lisp.memory.alloc(press_cons);
       if not flag then
          BBS.lisp.error("read-bmp180", "Unable to allocate cons for pressure");
          BBS.lisp.memory.deref(temp_cons);
-         return BBS.lisp.NIL_ELEM;
+         return (kind => BBS.lisp.E_ERROR);
       end if;
       --
       --  The conses have been successfully allocated.  Now build the list.
@@ -494,6 +498,8 @@ package body lisp is
          if err /= BBS.embed.i2c.none then
             BBS.lisp.error("set-pca9685", "PCA9685 Error: " & BBS.embed.i2c.err_code'Image(err));
          end if;
+      else
+         return (kind => BBS.lisp.E_ERROR);
       end if;
       return BBS.lisp.NIL_ELEM;
    end;

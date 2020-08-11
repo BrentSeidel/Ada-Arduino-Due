@@ -1,7 +1,3 @@
---with Ada.Text_IO;
---with Ada.Real_Time;
---use type Ada.Real_Time.Time;
---use type Ada.Real_Time.Time_Span;
 --with BBS.embed.due.serial.polled;
 with BBS.embed.due.serial.int;
 with BBS.embed.GPIO.Due;
