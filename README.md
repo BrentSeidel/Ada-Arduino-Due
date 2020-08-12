@@ -77,6 +77,25 @@ Measuring discretes with an oscilloscope,
 The timing differences should give a little idea of the overhead of different
 Lisp operations.
 
+## Command Line
+You can login by typing anything as the user name and "override" as the password.
+The user name will be used as a command prompt.  Internally, all commands are
+converted to upper case before processing.  At the command line, there are
+some commands that may or may not be useful:
+LOGOUT, LOGOFF, BYE - These commands all return to the username prompt.
+FLASH <number> - Sets the number of times the LED flashes
+EXIT, QUIT - Don't do much
+INFO - Prints the CPU info
+HELP - Doesn't help
+SERIAL - Sends a message out on serial lines 1, 2, and 3.
+ANALOG <number> - Prints values of the analog inputs and cycles analog outputs
+I2C - I2C related commands
+STOP - Stops tasks
+START - Starts tasks
+GPIO - GPIO related commands
+STATUS - Prints system status
+LISP - Enters the Tiny Lisp interpreter.
+
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,
 please contact the author.  Note that the files with the names sam3x8s*.ads have been

@@ -10,6 +10,7 @@ with BBS.embed.i2c.BME280;
 with BBS.embed.i2c.BMP180;
 with BBS.embed.i2c.L3GD20H;
 with BBS.embed.i2c.PCA9685;
+with BBS.embed.due.serial.int;
 --
 --  This package implementes a simple command line interpreter.
 --
@@ -58,7 +59,7 @@ private
    --
    procedure analog_outs(v : Integer);
    --
-   procedure process_i2c(r : strings.bounded);
+   procedure process_i2c(s : BBS.embed.due.serial.int.serial_port; r : strings.bounded);
    --
    procedure stop_task(r : strings.bounded);
    --
@@ -68,6 +69,6 @@ private
    --
    procedure parse_pin(r : strings.bounded; err : out Boolean);
    --
-   procedure show_status;
+   procedure show_status(s : BBS.embed.due.serial.int.serial_port);
    --
 end cli;

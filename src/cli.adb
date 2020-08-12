@@ -45,6 +45,7 @@ package body cli is
       stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(1);
       serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(2);
+      serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(3);
       ain  : BBS.embed.AIN.due.Due_AIN_record;
       ain_val : BBS.embed.uint12;
       line : aliased strings.bounded(80);
@@ -81,7 +82,7 @@ package body cli is
          elsif cmd.starts_with("SERIAL") then
             serial1.put_line("Hello 1 from Ada.");
             serial2.put_line("Hello 2 from Ada.");
-            serial2.put_line("Hello 3 from Ada.");
+            serial3.put_line("Hello 3 from Ada.");
          elsif analog_enable and cmd.starts_with("ANALOG") then
             val := Integer'Value(rest.to_string);
             stdout.put_line("Analog input values:");
@@ -94,7 +95,7 @@ package body cli is
             stdout.put_line("Testing analog outputs.");
             analog_outs(val);
          elsif cmd.starts_with("I2C") then
-            process_i2c(rest);
+            process_i2c(stdout, rest);
          elsif cmd.starts_with("STOP") then
             stop_task(rest);
          elsif cmd.starts_with("START") then
@@ -102,11 +103,10 @@ package body cli is
          elsif cmd.starts_with("GPIO") then
             handle_gpio(rest);
          elsif cmd.starts_with("STATUS") then
-            show_status;
+            show_status(stdout);
          elsif cmd.starts_with("LISP") then
             stdout.Put_Line("Tiny lisp interpreter.");
             bbs.lisp.repl;
-
          else
             stdout.put_line("Unrecognized command <" & cmd.to_string & ">.");
          end if;
@@ -142,46 +142,52 @@ package body cli is
    --
    --  I2C related operations.  Currently supported commands are:
    --    SCAN
+   --    PROBE
    --    BME280
    --    BMP180
    --
-   procedure process_i2c(r : strings.bounded) is
+   procedure process_i2c(s : BBS.embed.due.serial.int.serial_port; r : strings.bounded) is
       i2c0   : aliased constant BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(0);
       i2c1   : aliased constant BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(1);
-      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       line   : aliased strings.bounded := r;
       cmd    : aliased strings.bounded(80);
       rest   : aliased strings.bounded(80);
       err    : BBS.embed.i2c.err_code;
       flag   : Boolean;
+      temp   : BBS.embed.uint8;
    begin
       line.token(' ', cmd, rest);
       cmd.uppercase;
       if cmd.starts_with("SCAN") then
-         stdout.put_line("Scanning I2C bus 0");
+         s.put_line("Scanning I2C bus 0");
          flag := False;
          for i in BBS.embed.addr7 range 16#0E# .. 16#77# loop
-            i2c0.read(i, 0, 1, err);
+--            i2c0.read(i, 0, 1, err);
+            temp := i2c0.read(i, 0, err);
             if err = BBS.embed.i2c.none then
-               stdout.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
+               s.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
                flag := True;
             end if;
          end loop;
          if not flag then
-            stdout.put_line("No devices found on bus 0");
+            s.put_line("No devices found on bus 0");
          end if;
-         stdout.put_line("Scanning I2C bus 1");
+         s.put_line("Scanning I2C bus 1");
          flag := False;
          for i in BBS.embed.addr7 range 16#0E# .. 16#77# loop
-            i2c1.read(i, 0, 1, err);
+--            i2c1.read(i, 0, 1, err);
+            temp := i2c1.read(i, 0, err);
             if err = BBS.embed.i2c.none then
-               stdout.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
+               s.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
                flag := True;
             end if;
          end loop;
          if not flag then
-            stdout.put_line("No devices found on bus 1");
+            s.put_line("No devices found on bus 1");
          end if;
+      elsif cmd.starts_with("PROBE") then
+         i2c_probe(0);
+         i2c_probe(1);
       elsif cmd.starts_with("READ") then
          null;
       elsif (bme280_found /= absent) and cmd.starts_with("BME280") then
@@ -192,13 +198,13 @@ package body cli is
             exit when err /= BBS.embed.i2c.none;
          end loop;
          if err /= BBS.embed.i2c.none then
-            stdout.put_line("BME280 Error: " & BBS.embed.i2c.err_code'Image(err));
+            s.put_line("BME280 Error: " & BBS.embed.i2c.err_code'Image(err));
          else
             BME280.read_data(err);
-            stdout.put_line("BME280 Data:");
-            stdout.put_line("  Temperature is " & Integer'Image(BME280.get_temp/100));
-            stdout.put_line("  Pressure is " & Integer'Image(BME280.get_press/256));
-            stdout.put_line("  Humidity is " & Integer'Image(BME280.get_hum/1024));
+            s.put_line("BME280 Data:");
+            s.put_line("  Temperature is " & Integer'Image(BME280.get_temp/100));
+            s.put_line("  Pressure is " & Integer'Image(BME280.get_press/256));
+            s.put_line("  Humidity is " & Integer'Image(BME280.get_hum/1024));
          end if;
       elsif (bmp180_found /= absent) and cmd.starts_with("BMP180") then
          BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_temp, err);
@@ -208,11 +214,11 @@ package body cli is
             exit when err /= BBS.embed.i2c.none;
          end loop;
          if err /= BBS.embed.i2c.none then
-            stdout.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
+            s.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
          else
-            stdout.put_line("BMP180 Data:");
-            stdout.put_line("  Temperature is " & Integer'Image(BMP180.get_temp(err)/10) &
-                           "C");
+            s.put_line("BMP180 Data:");
+            s.put_line("  Temperature is " & Integer'Image(BMP180.get_temp(err)/10) &
+                         "C");
             BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_press0, err);
             loop
                flag := BMP180.data_ready(err);
@@ -220,14 +226,14 @@ package body cli is
                exit when err /= BBS.embed.i2c.none;
             end loop;
             if err /= BBS.embed.i2c.none then
-               stdout.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
+               s.put_line("BMP180 Error: " & BBS.embed.i2c.err_code'Image(err));
             else
-               stdout.put_line("  Pressure is " & Integer'Image(BMP180.get_press(err)) &
+               s.put_line("  Pressure is " & Integer'Image(BMP180.get_press(err)) &
                               "Pa");
             end if;
          end if;
       else
-         stdout.put_line("Unrecognized option <" & cmd.to_string & ">");
+         s.put_line("Unrecognized option <" & cmd.to_string & ">");
       end if;
    end;
    --
@@ -336,8 +342,9 @@ package body cli is
    end;
    --
    procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
-      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
+      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
+--      i2c_bus : constant BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(c);
       err     : BBS.embed.i2c.err_code;
       temp    : BBS.embed.uint8;
    begin
@@ -371,7 +378,9 @@ package body cli is
       --
       --  Looking for L3GD20
       --
-      stdout.put_line("I2C: Probing address 16#6B# for L3GD20.");
+      stdout.put_line("I2C: Probing address 16#" &
+                        utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) &
+                        "# for L3GD20.");
       temp := i2c_bus.read(BBS.embed.i2c.L3GD20H.addr,
                            BBS.embed.i2c.L3GD20H.who_am_i, err);
       if err = BBS.embed.i2c.none then
@@ -390,15 +399,20 @@ package body cli is
                l3gd20_found := absent;
             end if;
          else
-            stdout.put_line("I2C: Unrecognized device found at address 16#6B#.");
+            stdout.put_line("I2C: Unrecognized device found at address 16#" &
+                              utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) & "#.");
          end if;
       else
-         stdout.put_line("I2C: No device found at address 16#6B#.");
+         stdout.put_line("I2C: No device found at address 16#" &
+                           utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) & "#.");
+         stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
       --
       --  Looking for BMP180 or BME280
       --
-      stdout.put_line("I2C: Getting device ID at 16#77# for BMP180 or BME280.");
+      stdout.put_line("I2C: Getting device ID at 16#" &
+                        utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.BME280.addr)) &
+                        "# for BMP180 or BME280.");
       temp := i2c_bus.read(BBS.embed.i2c.BME280.addr, BBS.embed.i2c.BME280.id, err);
       stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
       if err = BBS.embed.i2c.none then
@@ -431,16 +445,22 @@ package body cli is
                cli.bmp180_found := cli.absent;
             end if;
          else
-            stdout.put_line("I2C: Unrecognized device found at address 16#77#.");
+            stdout.put_line("I2C: Unrecognized device found at address 16#" &
+                              utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.BME280.addr)) & "#.");
          end if;
       else
-         stdout.put_line("I2C: No device found at address 16#77#.");
+         stdout.put_line("I2C: No device found at address 16#" &
+                           utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.BME280.addr)) & "#.");
+         stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
       --
-      --  Looking for with PCA9685
+      --  Looking for PCA9685
       --
-      stdout.put_line("I2C: probing address 16#40# for PCA9685.");
-      temp := i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, err);
+      stdout.put_line("I2C: probing address 16#" &
+                        utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.PCA9685.addr_0)) &
+                        "# for PCA9685.");
+--      temp := i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, err);
+      i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, 1, err);
       if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: PCA9685 Found, configuring");
          PCA9685.configure(i2c_bus, BBS.embed.i2c.PCA9685.addr_0, err);
@@ -455,33 +475,36 @@ package body cli is
             stdout.put_line("I2C: PCA9685 initialization failed - disabling.");
             pca9685_found := absent;
          end if;
+      else
+         stdout.put_line("I2C: No device found at address 16#" &
+                           utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.PCA9685.addr_0)) & "#.");
+         stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
    end;
    --
-   procedure show_status is
-      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
+   procedure show_status(s : BBS.embed.due.serial.int.serial_port) is
    begin
-      stdout.put_line("System Status Report");
-      stdout.put_line("Task List");
-      stdout.put("FLASHER  ");
+      s.put_line("System Status Report");
+      s.put_line("Task List");
+      s.put("FLASHER  ");
       if utils.state_flasher then
-         stdout.put_line("running");
+         s.put_line("running");
       else
-         stdout.put_line("paused");
+         s.put_line("paused");
       end if;
-      stdout.put("TOGGLE   ");
+      s.put("TOGGLE   ");
       if utils.state_toggle then
-         stdout.put_line("running");
+         s.put_line("running");
       else
-         stdout.put_line("paused");
+         s.put_line("paused");
       end if;
-      stdout.new_line;
-      stdout.put_line("Device list");
-      stdout.put_line("BMP180     " & i2c_device_location'Image(bmp180_found));
-      stdout.put_line("BME280     " & i2c_device_location'Image(bme280_found));
-      stdout.put_line("L3GD20     " & i2c_device_location'Image(l3gd20_found));
-      stdout.put_line("LSM303DLHC " & i2c_device_location'Image(lsm303dlhc_found));
-      stdout.put_line("PCA9685    " & i2c_device_location'Image(pca9685_found));
+      s.new_line;
+      s.put_line("Device list");
+      s.put_line("BMP180     " & i2c_device_location'Image(bmp180_found));
+      s.put_line("BME280     " & i2c_device_location'Image(bme280_found));
+      s.put_line("L3GD20     " & i2c_device_location'Image(l3gd20_found));
+      s.put_line("LSM303DLHC " & i2c_device_location'Image(lsm303dlhc_found));
+      s.put_line("PCA9685    " & i2c_device_location'Image(pca9685_found));
    end;
    --
 

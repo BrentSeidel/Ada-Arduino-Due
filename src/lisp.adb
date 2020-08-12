@@ -15,6 +15,7 @@ with BBS.embed.i2c.PCA9685;
 with utils;
 with discretes;
 with cli;
+use type cli.i2c_device_location;
 
 package body lisp is
    --
@@ -23,8 +24,10 @@ package body lisp is
    --
    procedure init is
    begin
-      BBS.lisp.init(BBS.embed.due.serial.int.Put_Line'Access, BBS.embed.due.serial.int.Put'Access,
-                    BBS.embed.due.serial.int.New_Line'Access, BBS.embed.due.serial.int.Get_Line'Access);
+      BBS.lisp.init(BBS.embed.due.serial.int.Put_Line'Access,
+                    BBS.embed.due.serial.int.Put'Access,
+                    BBS.embed.due.serial.int.New_Line'Access,
+                    BBS.embed.due.serial.int.Get_Line'Access);
       BBS.lisp.add_builtin("due-flash", due_flash'Access);
       BBS.lisp.add_builtin("set-pin", set_pin'Access);
       BBS.lisp.add_builtin("pin-mode", pin_mode'Access);
@@ -347,7 +350,14 @@ package body lisp is
       press_cons : BBS.lisp.cons_index;
    begin
       --
-      --  First get values from the sensor
+      --  First check if the BMP180 is present
+      --
+      if cli.bmp180_found = cli.absent then
+         BBS.lisp.error("read_bmp180", "BMP180 not configured in system");
+         return (kind => BBS.lisp.E_ERROR);
+      end if;
+      --
+      --  Then get values from the sensor
       --
       cli.BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_temp, err);
       loop
@@ -437,6 +447,13 @@ package body lisp is
       rest : BBS.lisp.element_type;
       ok : Boolean := True;
    begin
+      --
+      --  First check if the PCA9685 is present
+      --
+      if cli.pca9685_found = cli.absent then
+         BBS.lisp.error("set-pca9685", "PCA9685 not configured in system");
+         return (kind => BBS.lisp.E_ERROR);
+      end if;
       --
       --  Get the first value
       --

@@ -50,7 +50,7 @@
 ;
 (defun set-leds (n)
   (dotimes (pin 8)
-    (set-pca9685 pin n)))
+    (set-pca9685 (+ pin 8) n)))
 ;
 (defun cycle-leds (n)
   (setq count 0)
@@ -87,13 +87,13 @@
     (dotimes (pin 8)
       (setq value 0)
       (dowhile (< value 4095)
-        (set-pca9685 pin value)
+        (set-pca9685 (+ pin 8) value)
         (setq value (+ value 100))))
     (setq value 4095)
     (dotimes (pin 8)
       (setq value 4095)
       (dowhile (> value 0)
-        (set-pca9685 pin value)
+        (set-pca9685 (+ pin 8) value)
         (setq value (- value 100))))
     (set-leds 0)))
 ;
