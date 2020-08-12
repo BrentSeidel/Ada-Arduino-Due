@@ -82,19 +82,31 @@ You can login by typing anything as the user name and "override" as the password
 The user name will be used as a command prompt.  Internally, all commands are
 converted to upper case before processing.  At the command line, there are
 some commands that may or may not be useful:
-LOGOUT, LOGOFF, BYE - These commands all return to the username prompt.
-FLASH <number> - Sets the number of times the LED flashes
-EXIT, QUIT - Don't do much
-INFO - Prints the CPU info
-HELP - Doesn't help
-SERIAL - Sends a message out on serial lines 1, 2, and 3.
-ANALOG <number> - Prints values of the analog inputs and cycles analog outputs
-I2C - I2C related commands
-STOP - Stops tasks
-START - Starts tasks
-GPIO - GPIO related commands
-STATUS - Prints system status
-LISP - Enters the Tiny Lisp interpreter.
+* LOGOUT, LOGOFF, BYE - These commands all return to the username prompt.
+* FLASH <number> - Sets the number of times the LED flashes
+* EXIT, QUIT - Don't do much
+* INFO - Prints the CPU info
+* HELP - Doesn't help
+* SERIAL - Sends a message out on serial lines 1, 2, and 3.
+* ANALOG <number> - Prints values of the analog inputs and cycles analog outputs
+* I2C - I2C related commands
+* STOP - Stops tasks
+* START - Starts tasks
+* GPIO - GPIO related commands
+* STATUS - Prints system status
+* LISP - Enters the Tiny Lisp interpreter.
+
+## Lisp
+The following Lisp operations are added.
+* (due-flash <number>) - Sets number of times for LED to flash
+* (set-pin <pin number> <state 0 or 1>) - Sets digital output pin to specified level
+* (pin-mode <pin number> <mode 0 or 1>) - Sets digital pin 0 = input, 1 = output
+* (read-pin <pin number>) - Returns the state of a digital pin
+* (read-analog <analog input>) - Returns the value of an analog input
+* (info-enable) - Turns on some debugging information
+* (info-disable) - Turns off some debugging information
+* (read-bmp180) - Returns temperature and pressure from BMP180 sensor
+* (set-pca9685 <pin> <value>) - Sets PWM value for the specified PCA9685 pin.
 
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,
