@@ -1,6 +1,7 @@
 with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
+with BBS.lisp.evaluate;
 with BBS.lisp.utilities;
 with BBS.lisp.memory;
 with BBS.embed;
@@ -51,9 +52,9 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.utilities.first_value(e, param, rest);
+      BBS.lisp.evaluate.first_value(e, param, rest);
       --
-      --  Check if the first value is an integer atom.
+      --  Check if the first value is an integer element.
       --
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
@@ -62,7 +63,7 @@ package body lisp is
             BBS.lisp.error("due-flash", "Parameter must be integer.");
          end if;
       else
-         BBS.lisp.error("due-flash", "Parameter must be an atom.");
+         BBS.lisp.error("due-flash", "Parameter must be an element.");
          BBS.lisp.print(param, False, True);
       end if;
       return BBS.lisp.NIL_ELEM;
@@ -83,10 +84,10 @@ package body lisp is
       --
       --  Get the first and second values
       --
-      BBS.lisp.utilities.first_value(e, pin_elem, rest);
-      BBS.lisp.utilities.first_value(rest, state_elem, rest);
+      BBS.lisp.evaluate.first_value(e, pin_elem, rest);
+      BBS.lisp.evaluate.first_value(rest, state_elem, rest);
       --
-      --  Check if the pin number value is an integer atom.
+      --  Check if the pin number value is an integer element.
       --
       if pin_elem.kind = BBS.lisp.E_VALUE then
          if pin_elem.v.kind = BBS.lisp.V_INTEGER then
@@ -96,11 +97,11 @@ package body lisp is
             ok := False;
          end if;
       else
-         BBS.lisp.error("set-pin", "Pin number must be an atom.");
+         BBS.lisp.error("set-pin", "Pin number must be an element.");
          ok := False;
       end if;
       --
-      --  Check if the pin state is an integer atom.
+      --  Check if the pin state is an integer element.
       --
       if state_elem.kind = BBS.lisp.E_VALUE then
          if state_elem.v.kind = BBS.lisp.V_INTEGER then
@@ -110,7 +111,7 @@ package body lisp is
             ok := False;
          end if;
       else
-         BBS.lisp.error("set-pin", "Pin state must be an atom.");
+         BBS.lisp.error("set-pin", "Pin state must be an element.");
          ok := False;
       end if;
       --
@@ -151,9 +152,9 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.utilities.first_value(e, param, rest);
+      BBS.lisp.evaluate.first_value(e, param, rest);
       --
-      --  Check if the first value is an integer atom.
+      --  Check if the first value is an integer element.
       --
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
@@ -172,7 +173,7 @@ package body lisp is
          end if;
       else
          ok := False;
-         BBS.lisp.error("read-pin", "Parameter must be an atom.");
+         BBS.lisp.error("read-pin", "Parameter must be an element.");
          BBS.lisp.print(param, False, True);
       end if;
       --
@@ -203,13 +204,13 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.utilities.first_value(e, pin_elem, rest);
+      BBS.lisp.evaluate.first_value(e, pin_elem, rest);
       --
       --  Get the second value
       --
-      BBS.lisp.utilities.first_value(rest, mode_elem, rest);
+      BBS.lisp.evaluate.first_value(rest, mode_elem, rest);
       --
-      --  Check if the pin number value is an integer atom.
+      --  Check if the pin number value is an integer element.
       --
       if pin_elem.kind = BBS.lisp.E_VALUE then
          if pin_elem.v.kind = BBS.lisp.V_INTEGER then
@@ -219,12 +220,12 @@ package body lisp is
             ok := False;
          end if;
       else
-         BBS.lisp.error("pin-mode", "Pin number must be an atom.");
+         BBS.lisp.error("pin-mode", "Pin number must be an element.");
          BBS.lisp.print(pin_elem, False, True);
          ok := False;
       end if;
       --
-      --  Check if the pin state is an integer atom.
+      --  Check if the pin state is an integer element.
       --
       if mode_elem.kind = BBS.lisp.E_VALUE then
          if mode_elem.v.kind = BBS.lisp.V_INTEGER then
@@ -234,7 +235,7 @@ package body lisp is
             ok := False;
          end if;
       else
-         BBS.lisp.error("pin-mode", "Pin mode must be an atom.");
+         BBS.lisp.error("pin-mode", "Pin mode must be an element.");
          BBS.lisp.print(mode_elem, False, True);
          ok := False;
       end if;
@@ -275,9 +276,9 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.utilities.first_value(e, param, rest);
+      BBS.lisp.evaluate.first_value(e, param, rest);
       --
-      --  Check if the first value is an integer atom.
+      --  Check if the first value is an integer element.
       --
       if param.kind = BBS.lisp.E_VALUE then
          if param.v.kind = BBS.lisp.V_INTEGER then
@@ -296,7 +297,7 @@ package body lisp is
          end if;
       else
          ok := False;
-         BBS.lisp.error("read-analog", "Parameter must be an atom.");
+         BBS.lisp.error("read-analog", "Parameter must be an element.");
          BBS.lisp.print(param, False, True);
       end if;
       --
@@ -457,11 +458,11 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.utilities.first_value(e, chan_elem, rest);
+      BBS.lisp.evaluate.first_value(e, chan_elem, rest);
       --
       --  Get the second value
       --
-      BBS.lisp.utilities.first_value(rest, value_elem, rest);
+      BBS.lisp.evaluate.first_value(rest, value_elem, rest);
       --
       --  Check if the channel number value is an integer atom.
       --

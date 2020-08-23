@@ -48,9 +48,6 @@
 ;
 ;  Rewritten to use dotimes
 ;
-(defun set-leds (n)
-  (dotimes (pin 8)
-    (set-pca9685 (+ pin 8) n)))
 ;
 (defun cycle-leds (n)
   (setq count 0)
@@ -87,13 +84,13 @@
     (dotimes (pin 8)
       (setq value 0)
       (dowhile (< value 4095)
-        (set-pca9685 (+ pin 8) value)
+        (set-pca9685 pin value)
         (setq value (+ value 100))))
     (setq value 4095)
     (dotimes (pin 8)
       (setq value 4095)
       (dowhile (> value 0)
-        (set-pca9685 (+ pin 8) value)
+        (set-pca9685 pin value)
         (setq value (- value 100))))
     (set-leds 0)))
 ;
@@ -165,4 +162,36 @@
 ;  (dotimes (n 1000000) (set-pin 25 0) (set-pin 25 1)) toggles about 15kHz
 ;  (toggle 10000) toggles about 3kHz
 ;
+;
+;  Read an analog pin and display the upper 7 bits of the binary value in LEDs.
+;  Digital pin 10 is tied high to keep looping and tied low to exit the loop.
+;
+(defun monitor-analog (ana ctrl)
+  (pin-mode ctrl 0)
+  (local (value)
+    (dowhile (= (read-pin ctrl) 0)
+      (setq value (read-analog ana))
+      (if (= 0 (and value #x0800))
+        (set-pca9685 6 0)
+        (set-pca9685 6 #x0FFF))
+      (if (= 0 (and value #x0400))
+        (set-pca9685 5 0)
+        (set-pca9685 5 #x0FFF))
+      (if (= 0 (and value #x0200))
+        (set-pca9685 4 0)
+        (set-pca9685 4 #x0FFF))
+      (if (= 0 (and value #x0100))
+        (set-pca9685 3 0)
+        (set-pca9685 3 #x0FFF))
+      (if (= 0 (and value #x0080))
+        (set-pca9685 2 0)
+        (set-pca9685 2 #x0FFF))
+      (if (= 0 (and value #x0040))
+        (set-pca9685 1 0)
+        (set-pca9685 1 #x0FFF))
+      (if (= 0 (and value #x0020))
+        (set-pca9685 0 0)
+        (set-pca9685 0 #x0FFF))))
+  (print "Exiting")
+  (terpri))
 

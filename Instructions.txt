@@ -16,10 +16,24 @@ Convert the Ada binary into a binary that can be loaded onto the board:
 
 $ /opt/local/arm-elf/bin/objcopy -O binary main main.bin
 
+To find the usb device on a Mac, do
+
+$ ls -l /dev/cu.usbmodem*
+
+There will be a number following the "usbmodem" that changes from time to time.
+If you have only one Arduino plugged in and no other USB serial ports, there
+should only be one entry.  If there are more than one, it will take a little
+more research.  One possibility would be to fire up the Arduino IDE and look at
+the ports.
+
 Press the erase button on the board to erase the flash memory.  The press the reset
 button and enter the following command to load the binary onto the board:
 
 $ ./bossac -p cu.usbmodem145150 -U false -e -w -v -b main.bin -R
+
+Once the software is installed, I use picocom to communicate with it.
+
+$ picocom -b 115200 /dev/cu.usbmodem*
 
 Notes:
 1. objcopy can be installed from MacPorts in the arm-elf-binutils.
