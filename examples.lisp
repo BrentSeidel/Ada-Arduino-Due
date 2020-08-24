@@ -164,12 +164,11 @@
 ;
 ;
 ;  Read an analog pin and display the upper 7 bits of the binary value in LEDs.
-;  Digital pin 10 is tied high to keep looping and tied low to exit the loop.
+;  Analog pin 0 is tied high to keep looping and tied low to exit the loop.
 ;
 (defun monitor-analog (ana ctrl)
-  (pin-mode ctrl 0)
-  (local (value)
-    (dowhile (= (read-pin ctrl) 0)
+  (let (value)
+    (dowhile (> (read-analog ctrl) 2000)
       (setq value (read-analog ana))
       (if (= 0 (and value #x0800))
         (set-pca9685 6 0)
