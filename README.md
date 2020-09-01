@@ -105,8 +105,10 @@ The following Lisp operations are added.
 * (read-analog <analog input>) - Returns the value of an analog input
 * (info-enable) - Turns on some debugging information
 * (info-disable) - Turns off some debugging information
-* (read-bmp180) - Returns temperature and pressure from BMP180 sensor
+* (read-bmp180) - Returns temperature (in tenth of a degree C) and pressure
+  (in Pascals) from BMP180 sensor
 * (set-pca9685 <pin> <value>) - Sets PWM value for the specified PCA9685 pin.
+* (read-l3gd20) - Returns x, y, and z rotation rates in tenth of a degree per second.
 
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,
