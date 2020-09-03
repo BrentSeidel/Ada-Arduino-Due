@@ -385,7 +385,7 @@ package body cli is
                            BBS.embed.i2c.L3GD20H.who_am_i, err);
       if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
-         if temp = 2#1101_0100# then
+--         if temp = 2#1101_0100# then
             stdout.put_line("I2C: L3GD20H found, configuring.");
             L3GD20.configure(i2c_bus, BBS.embed.i2c.L3GD20H.addr, err);
             if err = BBS.embed.i2c.none then
@@ -398,10 +398,10 @@ package body cli is
                stdout.put_line("I2C: L3GD20H initialization failed - disabling.");
                l3gd20_found := absent;
             end if;
-         else
-            stdout.put_line("I2C: Unrecognized device found at address 16#" &
-                              utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) & "#.");
-         end if;
+--         else
+--            stdout.put_line("I2C: Unrecognized device found at address 16#" &
+--                              utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) & "#.");
+--         end if;
       else
          stdout.put_line("I2C: No device found at address 16#" &
                            utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) & "#.");

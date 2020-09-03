@@ -51,12 +51,12 @@ package body lisp is
    --
    function due_flash(e : BBS.lisp.element_type) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
-      rest : BBS.lisp.element_type;
+      rest : BBS.lisp.element_type := e;
    begin
       --
       --  Get the first value
       --
-      BBS.lisp.evaluate.first_value(e, param, rest);
+      param := BBS.lisp.evaluate.first_value(rest);
       --
       --  Check if the first value is an integer element.
       --
@@ -82,14 +82,14 @@ package body lisp is
       state_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.element_type;
+      rest : BBS.lisp.element_type := e;
       ok : Boolean := True;
    begin
       --
       --  Get the first and second values
       --
-      BBS.lisp.evaluate.first_value(e, pin_elem, rest);
-      BBS.lisp.evaluate.first_value(rest, state_elem, rest);
+      pin_elem := BBS.lisp.evaluate.first_value(rest);
+      state_elem := BBS.lisp.evaluate.first_value(rest);
       --
       --  Check if the pin number value is an integer element.
       --
@@ -148,7 +148,7 @@ package body lisp is
    function read_pin(e : BBS.lisp.element_type) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
       pin : Integer;
-      rest : BBS.lisp.element_type;
+      rest : BBS.lisp.element_type := e;
       el : BBS.lisp.element_type;
       value : BBS.embed.Bit;
       ok : Boolean := True;
@@ -156,7 +156,7 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.evaluate.first_value(e, param, rest);
+      param := BBS.lisp.evaluate.first_value(rest);
       --
       --  Check if the first value is an integer element.
       --
@@ -202,17 +202,17 @@ package body lisp is
       mode_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.element_type;
+      rest : BBS.lisp.element_type := e;
       ok : Boolean := True;
    begin
       --
       --  Get the first value
       --
-      BBS.lisp.evaluate.first_value(e, pin_elem, rest);
+      pin_elem := BBS.lisp.evaluate.first_value(rest);
       --
       --  Get the second value
       --
-      BBS.lisp.evaluate.first_value(rest, mode_elem, rest);
+      mode_elem := BBS.lisp.evaluate.first_value(rest);
       --
       --  Check if the pin number value is an integer element.
       --
@@ -271,7 +271,7 @@ package body lisp is
    function read_analog(e : BBS.lisp.element_type) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
       pin : Integer;
-      rest : BBS.lisp.element_type;
+      rest : BBS.lisp.element_type := e;
       el : BBS.lisp.element_type;
       value : BBS.embed.uint12;
       ok : Boolean := True;
@@ -280,7 +280,7 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.evaluate.first_value(e, param, rest);
+      param := BBS.lisp.evaluate.first_value(rest);
       --
       --  Check if the first value is an integer element.
       --
@@ -449,7 +449,7 @@ package body lisp is
       value_elem  : BBS.lisp.element_type;
       channel : Integer;
       value : Integer;
-      rest : BBS.lisp.element_type;
+      rest : BBS.lisp.element_type := e;
       ok : Boolean := True;
    begin
       --
@@ -462,11 +462,11 @@ package body lisp is
       --
       --  Get the first value
       --
-      BBS.lisp.evaluate.first_value(e, chan_elem, rest);
+      chan_elem := BBS.lisp.evaluate.first_value(rest);
       --
       --  Get the second value
       --
-      BBS.lisp.evaluate.first_value(rest, value_elem, rest);
+      value_elem := BBS.lisp.evaluate.first_value(rest);
       --
       --  Check if the channel number value is an integer atom.
       --

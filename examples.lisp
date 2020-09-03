@@ -48,6 +48,11 @@
 ;
 ;  Rewritten to use dotimes
 ;
+(defun set-leds (n)
+  (dotimes (pin 8)
+    (set-pca9685 pin n)))
+;
+;  Cycle the LEDs, turn them on one by one and then off one by one.
 ;
 (defun cycle-leds (n)
   (setq count 0)
@@ -92,6 +97,21 @@
       (dowhile (> value 0)
         (set-pca9685 pin value)
         (setq value (- value 100))))
+    (set-leds 0)))
+;
+;  Cycle the LEDs using sleep time set by analog input 1
+;
+(defun cycle-leds (n)
+  (dotimes (count n)
+    (print "Starting cycle " count)
+    (terpri)
+    (set-leds 0)
+    (dotimes (pin 8)
+      (set-pca9685 pin 4095)
+      (sleep (read-analog 1)))
+    (dotimes (pin 8)
+      (set-pca9685 pin 0)
+      (sleep (read-analog 1)))
     (set-leds 0)))
 ;
 (setq pin 0)
