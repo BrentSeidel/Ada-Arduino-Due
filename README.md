@@ -83,7 +83,7 @@ The user name will be used as a command prompt.  Internally, all commands are
 converted to upper case before processing.  At the command line, there are
 some commands that may or may not be useful:
 * LOGOUT, LOGOFF, BYE - These commands all return to the username prompt.
-* FLASH <number> - Sets the number of times the LED flashes
+* FLASH &lt;number&gt; - Sets the number of times the LED flashes
 * EXIT, QUIT - Don't do much
 * INFO - Prints the CPU info
 * HELP - Doesn't help
@@ -98,16 +98,16 @@ some commands that may or may not be useful:
 
 ## Lisp
 The following Lisp operations are added.
-* (due-flash <number>) - Sets number of times for LED to flash
-* (set-pin <pin number> <state 0 or 1>) - Sets digital output pin to specified level
-* (pin-mode <pin number> <mode 0 or 1>) - Sets digital pin 0 = input, 1 = output
-* (read-pin <pin number>) - Returns the state of a digital pin
-* (read-analog <analog input>) - Returns the value of an analog input
+* (due-flash &lt;number&gt;) - Sets number of times for LED to flash
+* (set-pin &lt;pin number&gt; &lt;state 0 or 1&gt;) - Sets digital output pin to specified level
+* (pin-mode &lt;pin number&gt; &lt;mode 0 or 1&gt;) - Sets digital pin 0 = input, 1 = output
+* (read-pin &lt;pin number&gt;) - Returns the state of a digital pin
+* (read-analog &lt;analog input&gt;) - Returns the value of an analog input
 * (info-enable) - Turns on some debugging information
 * (info-disable) - Turns off some debugging information
 * (read-bmp180) - Returns temperature (in tenth of a degree C) and pressure
   (in Pascals) from BMP180 sensor
-* (set-pca9685 <pin> <value>) - Sets PWM value for the specified PCA9685 pin.
+* (set-pca9685 &lt;pin&gt; &lt;value&gt;) - Sets PWM value for the specified PCA9685 pin.
 * (read-l3gd20) - Returns x, y, and z rotation rates in tenth of a degree per second.
 
 ## License
