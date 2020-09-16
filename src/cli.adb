@@ -1,13 +1,8 @@
 with BBS.embed.due.serial.int;
 with utils;
---with BBS.embed.i2c.BME280;
---with BBS.embed.i2c.LSM303DLHC;
---with BBS.embed.i2c.L3GD20H;
 with analogs;
 with SAM3x8e;
 use type SAM3x8e.UInt12;
---with BBS.units;
---with Ada.Synchronous_Task_Control;
 with BBS.embed.AIN.due;
 with BBS.lisp;
 with lisp;
@@ -162,7 +157,6 @@ package body cli is
          s.put_line("Scanning I2C bus 0");
          flag := False;
          for i in BBS.embed.addr7 range 16#0E# .. 16#77# loop
---            i2c0.read(i, 0, 1, err);
             temp := i2c0.read(i, 0, err);
             if err = BBS.embed.i2c.none then
                s.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
@@ -175,7 +169,6 @@ package body cli is
          s.put_line("Scanning I2C bus 1");
          flag := False;
          for i in BBS.embed.addr7 range 16#0E# .. 16#77# loop
---            i2c1.read(i, 0, 1, err);
             temp := i2c1.read(i, 0, err);
             if err = BBS.embed.i2c.none then
                s.put_line(" I2C device found at " & utils.byte_to_str(SAM3x8e.Byte(i)));
@@ -344,7 +337,6 @@ package body cli is
    procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
       stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
---      i2c_bus : constant BBS.embed.i2c.due.due_i2c_interface := BBS.embed.i2c.due.get_interface(c);
       err     : BBS.embed.i2c.err_code;
       temp    : BBS.embed.uint8;
    begin
@@ -459,7 +451,6 @@ package body cli is
       stdout.put_line("I2C: probing address 16#" &
                         utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.PCA9685.addr_0)) &
                         "# for PCA9685.");
---      temp := i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, err);
       i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, 1, err);
       if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: PCA9685 Found, configuring");
@@ -478,6 +469,55 @@ package body cli is
       else
          stdout.put_line("I2C: No device found at address 16#" &
                            utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.PCA9685.addr_0)) & "#.");
+         stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
+      end if;
+      --
+      --  Look for MCP23017 devices
+      --
+      probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_0, MCP23017_0, mcp23017_0_found);
+      MCP23017_0.set_dir(16#FFFF#, err);
+      stdout.put_line("I2C: MCP23017-0 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
+      MCP23017_0.set_data(16#FFFF#, err);
+      stdout.put_line("I2C: MCP23017-0 Set data error code is " & BBS.embed.i2c.err_code'Image(err));
+      probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_2, MCP23017_2, mcp23017_2_found);
+      MCP23017_2.set_dir(16#0000#, err);
+      stdout.put_line("I2C: MCP23017-2 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
+      stdout.put_line("I2C: MCP23017-2 Read data is: " &
+                        BBS.embed.uint16'Image(MCP23017_2.read_data(err)));
+      stdout.put_line("I2C: MCP23017-2 Set data error code is " & BBS.embed.i2c.err_code'Image(err));
+      probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_6, MCP23017_6, mcp23017_6_found);
+   end;
+   --
+   procedure probe_mcp23017(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
+                            d : in out BBS.embed.i2c.MCP23017.MCP23017_record;
+                            f : out i2c_device_location) is
+      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
+      err     : BBS.embed.i2c.err_code;
+   begin
+      stdout.put_line("I2C: --------");
+      stdout.put_line("I2C: Probing address 16#" &
+                        utils.byte_to_str(BBS.embed.uint8(a)) &
+                        "# for MCP23017.");
+      i2c_bus.read(a, BBS.embed.i2c.MCP23017.IOCON, 1, err);
+      if err = BBS.embed.i2c.none then
+         stdout.put_line("I2C: MCP23017 Found, configuring");
+         d.configure(i2c_bus, a, err);
+         d.set_dir(0, err);
+         stdout.put_line("I2C: MCP23017 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
+         if err = BBS.embed.i2c.none then
+            if c = 0 then
+               f := bus0;
+            else
+               f := bus1;
+            end if;
+         else
+            stdout.put_line("I2C: MCP23017 initialization failed - disabling.");
+            f := absent;
+         end if;
+      else
+         stdout.put_line("I2C: No device found at address 16#" &
+                           utils.byte_to_str(BBS.embed.uint8(a)) & "#.");
          stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
    end;
@@ -505,6 +545,9 @@ package body cli is
       s.put_line("L3GD20     " & i2c_device_location'Image(l3gd20_found));
       s.put_line("LSM303DLHC " & i2c_device_location'Image(lsm303dlhc_found));
       s.put_line("PCA9685    " & i2c_device_location'Image(pca9685_found));
+      s.put_line("MCP23017-0 " & i2c_device_location'Image(mcp23017_0_found));
+      s.put_line("MCP23017-2 " & i2c_device_location'Image(mcp23017_2_found));
+      s.put_line("MCP23017-6 " & i2c_device_location'Image(mcp23017_6_found));
    end;
    --
 

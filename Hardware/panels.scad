@@ -29,7 +29,7 @@ module panel_switch(start)
           y = a*(width - 30)/8;
           translate([15, y, -0.1]) bbs_spdt_switch_cutout(2.2);
           translate([40, y, -0.1]) bbs_led_cutout(5, 2.2);
-          translate([27, y, 1.8]) linear_extrude(height = 0.3) rotate([0, 0, -90])
+          translate([27, y, 1.5]) linear_extrude(height = 0.6) rotate([0, 0, -90])
               text(str(a + start), halign="center", valign="center", size=5);
         }
       }

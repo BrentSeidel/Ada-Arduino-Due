@@ -1,3 +1,3 @@
 use <../../Things/bbs_rack.scad>
 
-bbs_rack(10, 7, 7);
+rotate([0, 0, 90]) bbs_rack(10, 5, 7);
