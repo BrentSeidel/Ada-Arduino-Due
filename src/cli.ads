@@ -79,8 +79,15 @@ private
    --
    procedure show_status(s : BBS.embed.due.serial.int.serial_port);
    --
+   procedure probe_bme280_bmp180(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7);
+   procedure probe_l3gd20(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
+                            d : in out BBS.embed.i2c.L3GD20H.L3GD20H_record;
+                            f : out i2c_device_location);
    procedure probe_mcp23017(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
                             d : in out BBS.embed.i2c.MCP23017.MCP23017_record;
+                            f : out i2c_device_location);
+   procedure probe_pca9685(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
+                            d : in out BBS.embed.i2c.PCA9685.PS9685_record;
                             f : out i2c_device_location);
    --
 end cli;

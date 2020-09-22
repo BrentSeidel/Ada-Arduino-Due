@@ -20,6 +20,7 @@ with utils;
 with discretes;
 with cli;
 use type cli.i2c_device_location;
+with lisp.mcp23017;
 
 package body lisp is
    --
@@ -42,6 +43,11 @@ package body lisp is
       BBS.lisp.add_builtin("read-bmp180", read_bmp180'Access);
       BBS.lisp.add_builtin("read-l3gd20", read_l3gd20'Access);
       BBS.lisp.add_builtin("set-pca9685", set_pca9685'Access);
+      BBS.lisp.add_builtin("mcp23017-dir", lisp.mcp23017.mcp23017_dir'Access);
+      BBS.lisp.add_builtin("mcp23017-pullup", lisp.mcp23017.mcp23017_pullup'Access);
+      BBS.lisp.add_builtin("mcp23017-polarity", lisp.mcp23017.mcp23017_polarity'Access);
+      BBS.lisp.add_builtin("mcp23017-data", lisp.mcp23017.mcp23017_data'Access);
+      BBS.lisp.add_builtin("mcp23017-read", lisp.mcp23017.mcp23017_read'Access);
    end;
    --
    --  Functions for custom lisp commands for the Arduino Due
