@@ -2,7 +2,7 @@ package lisp.mcp23017 is
 
    --
    --  Set direction of bits in the MCP23017 port.
-   --  (mcp23017-set-dir addr dir)
+   --  (mcp23017-dir addr dir)
    --    addr is the device address
    --    dir is the direction (0-read, 1-write) bit encoded into a 16 bit
    --      unsigned integer

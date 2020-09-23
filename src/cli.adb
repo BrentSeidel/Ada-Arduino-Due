@@ -379,7 +379,7 @@ package body cli is
          MCP23017_2.set_dir(16#0000#, err);
          stdout.put_line("I2C: MCP23017-2 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
          stdout.put_line("I2C: MCP23017-2 Read data is: " &
-                           BBS.embed.uint16'Image(MCP23017_2.read_data(err)));
+                           BBS.embed.uint16'Image(MCP23017_2.get_data(err)));
          stdout.put_line("I2C: MCP23017-2 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
       end if;
       if mcp23017_0_found /= absent then
@@ -388,8 +388,8 @@ package body cli is
          MCP23017_0.set_pullup(16#FFFF#, err);
          stdout.put_line("I2C: MCP23017-0 Set pullup error code is " & BBS.embed.i2c.err_code'Image(err));
          stdout.put_line("I2C: MCP23017-0 Installed LEDs are " &
-                           BBS.embed.uint16'Image(MCP23017_0.read_data(err)));
-         stdout.put_line("I2C: MCP23017-2 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
+                           BBS.embed.uint16'Image(MCP23017_0.get_data(err)));
+         stdout.put_line("I2C: MCP23017-0 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
          MCP23017_0.set_dir(16#FFFF#, err);
          stdout.put_line("I2C: MCP23017-0 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
          MCP23017_0.set_data(16#5555#, err);
