@@ -337,7 +337,7 @@ package body cli is
    procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
       stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
-      err     : BBS.embed.i2c.err_code;
+--      err     : BBS.embed.i2c.err_code;
    begin
       stdout.put_line("I2C: Probing bus " & BBS.embed.i2c.due.port_id'Image(c));
       --
@@ -375,26 +375,26 @@ package body cli is
       probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_2, MCP23017_2, mcp23017_2_found);
       probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_0, MCP23017_0, mcp23017_0_found);
 --
-      if mcp23017_2_found /= absent then
-         MCP23017_2.set_dir(16#0000#, err);
-         stdout.put_line("I2C: MCP23017-2 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
-         stdout.put_line("I2C: MCP23017-2 Read data is: " &
-                           BBS.embed.uint16'Image(MCP23017_2.get_data(err)));
-         stdout.put_line("I2C: MCP23017-2 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
-      end if;
-      if mcp23017_0_found /= absent then
-         MCP23017_0.set_dir(16#0000#, err);
-         stdout.put_line("I2C: MCP23017-0 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
-         MCP23017_0.set_pullup(16#FFFF#, err);
-         stdout.put_line("I2C: MCP23017-0 Set pullup error code is " & BBS.embed.i2c.err_code'Image(err));
-         stdout.put_line("I2C: MCP23017-0 Installed LEDs are " &
-                           BBS.embed.uint16'Image(MCP23017_0.get_data(err)));
-         stdout.put_line("I2C: MCP23017-0 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
-         MCP23017_0.set_dir(16#FFFF#, err);
-         stdout.put_line("I2C: MCP23017-0 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
-         MCP23017_0.set_data(16#5555#, err);
-         stdout.put_line("I2C: MCP23017-0 Set data error code is " & BBS.embed.i2c.err_code'Image(err));
-      end if;
+--      if mcp23017_2_found /= absent then
+--         MCP23017_2.set_dir(16#0000#, err);
+--         stdout.put_line("I2C: MCP23017-2 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
+--         stdout.put_line("I2C: MCP23017-2 Read data is: " &
+--                           BBS.embed.uint16'Image(MCP23017_2.get_data(err)));
+--         stdout.put_line("I2C: MCP23017-2 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
+--      end if;
+--      if mcp23017_0_found /= absent then
+--         MCP23017_0.set_dir(16#0000#, err);
+--         stdout.put_line("I2C: MCP23017-0 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
+--         MCP23017_0.set_pullup(16#FFFF#, err);
+--         stdout.put_line("I2C: MCP23017-0 Set pullup error code is " & BBS.embed.i2c.err_code'Image(err));
+--         stdout.put_line("I2C: MCP23017-0 Installed LEDs are " &
+--                           BBS.embed.uint16'Image(MCP23017_0.get_data(err)));
+--         stdout.put_line("I2C: MCP23017-0 Read data error code is " & BBS.embed.i2c.err_code'Image(err));
+--         MCP23017_0.set_dir(16#FFFF#, err);
+--         stdout.put_line("I2C: MCP23017-0 Set dir error code is " & BBS.embed.i2c.err_code'Image(err));
+--         MCP23017_0.set_data(16#5555#, err);
+--         stdout.put_line("I2C: MCP23017-0 Set data error code is " & BBS.embed.i2c.err_code'Image(err));
+--      end if;
    end;
    --
    procedure probe_bme280_bmp180(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7) is

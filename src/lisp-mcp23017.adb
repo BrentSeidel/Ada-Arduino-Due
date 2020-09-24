@@ -1,4 +1,5 @@
 with cli;
+use type cli.i2c_device_location;
 with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
@@ -22,13 +23,13 @@ package body lisp.mcp23017 is
       if p.kind = BBS.lisp.E_VALUE then
          if p.v.kind = BBS.lisp.V_INTEGER then
             addr := p.v.i;
-            if addr = 0 then
+            if (addr = 0) and (cli.mcp23017_0_found /= cli.absent) then
                device := cli.MCP23017_0;
                return True;
-            elsif addr = 2 then
+            elsif (addr = 2) and (cli.mcp23017_2_found /= cli.absent) then
                device := cli.MCP23017_2;
                return True;
-            elsif addr = 6 then
+            elsif (addr = 6) and (cli.mcp23017_6_found /= cli.absent) then
                device := cli.MCP23017_6;
                return True;
             else
@@ -103,14 +104,14 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_dir(data, err);
       if err = BBS.embed.i2c.none then
-         data := MCP23017.get_dir(err);
-         if err = BBS.embed.i2c.none then
+--         data := MCP23017.get_dir(err);
+--         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
-         end if;
-         BBS.lisp.error("mcp23017-dir", "Error getting direction: " &
-                       BBS.embed.i2c.err_code'Image(err));
-         return (kind => BBS.lisp.E_ERROR);
+--         end if;
+--         BBS.lisp.error("mcp23017-dir", "Error getting direction: " &
+--                       BBS.embed.i2c.err_code'Image(err));
+--         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-dir", "Error setting direction: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -151,14 +152,14 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_pullup(data, err);
       if err = BBS.embed.i2c.none then
-         data := MCP23017.get_pullup(err);
-         if err = BBS.embed.i2c.none then
+--         data := MCP23017.get_pullup(err);
+--         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
-         end if;
-         BBS.lisp.error("mcp23017-pullup", "Error getting pullup: " &
-                       BBS.embed.i2c.err_code'Image(err));
-         return (kind => BBS.lisp.E_ERROR);
+--         end if;
+--         BBS.lisp.error("mcp23017-pullup", "Error getting pullup: " &
+--                       BBS.embed.i2c.err_code'Image(err));
+--         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-pullup", "Error setting pullup: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -199,14 +200,14 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_polarity(data, err);
       if err = BBS.embed.i2c.none then
-         data := MCP23017.get_polarity(err);
-         if err = BBS.embed.i2c.none then
+--         data := MCP23017.get_polarity(err);
+--         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
-         end if;
-         BBS.lisp.error("mcp23017-polarity", "Error getting polarity: " &
-                       BBS.embed.i2c.err_code'Image(err));
-         return (kind => BBS.lisp.E_ERROR);
+--         end if;
+--         BBS.lisp.error("mcp23017-polarity", "Error getting polarity: " &
+--                       BBS.embed.i2c.err_code'Image(err));
+--         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-polarity", "Error setting polarity: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -246,14 +247,14 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_data(data, err);
       if err = BBS.embed.i2c.none then
-         data := MCP23017.get_data(err);
-         if err = BBS.embed.i2c.none then
+--         data := MCP23017.get_data(err);
+--         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
-         end if;
-         BBS.lisp.error("mcp23017-data", "Error getting data: " &
-                       BBS.embed.i2c.err_code'Image(err));
-         return (kind => BBS.lisp.E_ERROR);
+--         end if;
+--         BBS.lisp.error("mcp23017-data", "Error getting data: " &
+--                       BBS.embed.i2c.err_code'Image(err));
+--         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-data", "Error setting data: " &
                        BBS.embed.i2c.err_code'Image(err));

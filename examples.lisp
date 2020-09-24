@@ -213,4 +213,28 @@
         (set-pca9685 0 #x0FFF))))
   (print "Exiting")
   (terpri))
+;
+;  Stuff for the MCP23017.
+;    Address 0 is LEDs
+;    Address 2 is switches
+;
+(defun setup ()
+  (mcp23017-dir 0 0)
+  (mcp23017-pullup 0 #xffff)
+  (mcp23017-data 0 0)
+  (mcp23017-dir 2 #xffff)
+  (mcp23017-polarity 2 #xffff))
+;
+(defun count (time)
+  (dotimes (x 256)
+    (mcp23017-data 0 (* x 255))
+    (sleep time)))
+;
+(defun copy (time)
+  (let ((switch))
+    (dowhile t
+      (setq switch (mcp23017-read 2))
+      (mcp23017-data 0 switch)
+      (sleep time))))
+
 

@@ -85,10 +85,4 @@ private
    --    the PWM value to set (0-4095).  Sets the specified PCA9685 PWM channel
    --    to the specified value.  Returns NIL.
    --
-      function read_l3gd20(e : BBS.lisp.element_type) return BBS.lisp.element_type;
-   --
-   --  (read-l3gd20)
-   --    Reads the gyroscope and returns a list of three items containing the
-   --    x, y, and z rotations in integer values of degrees per second.
-   --
 end lisp;
