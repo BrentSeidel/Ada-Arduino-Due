@@ -1,6 +1,6 @@
 # Here are some pictures of what I am using for development on the Arduino Due.
 
-![Original Setup](./Pictures/DSC_8733.JPG)
+![Original Setup](/BrentSeidel/Ada-Arduino-Due/tree/master/Pictures/DSC_8733.JPG)
 This is the original rat's nest of wiring on a breadboard.  It got to be a little
 unwieldly so I 3D printed some panels and racks.
 
