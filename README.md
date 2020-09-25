@@ -110,6 +110,17 @@ The following Lisp operations are added.
 * (set-pca9685 &lt;pin&gt; &lt;value&gt;) - Sets PWM value for the specified PCA9685 pin.
 * (read-l3gd20) - Returns x, y, and z rotation rates in tenth of a degree per second.
 
+## Dependencies
+The material in this repository depends on the following other repositories:
+* https://github.com/BrentSeidel/BBS-Ada - The root of all my Ada packages
+* https://github.com/BrentSeidel/bb-runtimes - The Ada runtime for the Arduino Due.  This
+  should get folded in to AdaCore's bb-runtimes, but it is unclear when or if it will
+  ever happen.
+* https://github.com/BrentSeidel/BBS-BBB-Ada - Device drivers in Ada for a number of
+  devices.
+* https://github.com/BrentSeidel/Things - Definitions for 3D printed objects.  Only
+  needed if you want to 3D print items.
+
 ## License
 This software is available under GPL 3.  If you wish to use it under another license,
 please contact the author.  Note that the files with the names sam3x8s*.ads have been

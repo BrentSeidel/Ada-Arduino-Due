@@ -22,7 +22,7 @@ package body lisp.l3gd20 is
       t2   : BBS.lisp.cons_index;
    begin
       --
-      --  First check if the BMP180 is present
+      --  First check if the L3GD20 is present
       --
       if cli.l3gd20_found = cli.absent then
          BBS.lisp.error("read_l3gd20", "L3GD20 not configured in system");

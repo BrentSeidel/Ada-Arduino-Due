@@ -218,17 +218,14 @@
 ;    Address 0 is LEDs
 ;    Address 2 is switches
 ;
-(defun setup ()
-  (mcp23017-dir 0 0)
-  (mcp23017-pullup 0 #xffff)
-  (mcp23017-data 0 0)
-  (mcp23017-dir 2 #xffff)
-  (mcp23017-polarity 2 #xffff))
+;  Counts on the LEDs.
 ;
 (defun count (time)
   (dotimes (x 256)
     (mcp23017-data 0 (* x 255))
     (sleep time)))
+;
+;  Copies the switch value to the LEDs
 ;
 (defun copy (time)
   (let ((switch))
@@ -236,5 +233,36 @@
       (setq switch (mcp23017-read 2))
       (mcp23017-data 0 switch)
       (sleep time))))
-
+;
+;  Cycle LEDs for MCP23017 - upper 8 bits
+;  Cycles the lights from right to left.
+;
+(defun cycle-leds (n)
+  (let (value)
+    (dotimes (count n)
+      (mcp23017-data 0 0)
+      (setq value 128)
+      (dotimes (x 8)
+        (setq value (* value 2))
+        (mcp23017-data 0 value)
+        (sleep 50))))
+  (mcp23017-data 0 0))
+;
+;  Cycles the LEDs from right to left and then back.
+;
+(defun bounce (n delay)
+  (let (value)
+    (dotimes (count n)
+      (mcp23017-data 0 0)
+      (setq value 128)
+      (dotimes (x 8)
+        (setq value (* value 2))
+        (mcp23017-data 0 value)
+        (sleep delay))
+      (setq value #x10000)
+      (dotimes (x 8)
+        (setq value (/ value 2))
+        (mcp23017-data 0 value)
+        (sleep delay))))
+  (mcp23017-data 0 0))
 
