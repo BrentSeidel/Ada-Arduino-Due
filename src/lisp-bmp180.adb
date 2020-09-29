@@ -1,4 +1,4 @@
-with BBS.embed.due.serial.int;
+--with BBS.embed.due.serial.int;
 with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
@@ -11,7 +11,7 @@ package body lisp.bmp180 is
    --  Read the BMP180 sensor
    --
    function read_bmp180(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+      pragma Unreferenced (e);
       err    : BBS.embed.i2c.err_code;
       flag   : Boolean;
       temperature : Integer;
@@ -33,7 +33,6 @@ package body lisp.bmp180 is
       --
       cli.BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_temp, err);
       loop
-         stdout.put_line("read-bmp180: Checking for data ready.");
          flag := cli.BMP180.data_ready(err);
          exit when flag;
          exit when err /= BBS.embed.i2c.none;
@@ -47,7 +46,6 @@ package body lisp.bmp180 is
          end if;
          cli.BMP180.start_conversion(BBS.embed.i2c.BMP180.cvt_press0, err);
          loop
-            stdout.put_line("read-bmp180: Checking for data ready.");
             flag := cli.BMP180.data_ready(err);
             exit when flag;
             exit when err /= BBS.embed.i2c.none;

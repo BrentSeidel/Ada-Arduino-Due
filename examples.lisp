@@ -248,11 +248,15 @@
         (sleep 50))))
   (mcp23017-data 0 0))
 ;
-;  Cycles the LEDs from right to left and then back.
+;  Cycles the LEDs from right to left and then back.  Stop when the switches
+;  return anything other than 0.
 ;
-(defun bounce (n delay)
-  (let (value)
-    (dotimes (count n)
+(defun bounce ()
+  (let ((value) (delay))
+    (setq delay (/ (mcp23017-read 2) 256))
+    (print "Delay set to " delay "mS")
+    (terpri)
+    (dowhile (/= delay 0)
       (mcp23017-data 0 0)
       (setq value 128)
       (dotimes (x 8)
@@ -263,6 +267,90 @@
       (dotimes (x 8)
         (setq value (/ value 2))
         (mcp23017-data 0 value)
-        (sleep delay))))
-  (mcp23017-data 0 0))
+        (sleep delay))
+      (setq delay (/ (mcp23017-read 2) 256)))
+  (mcp23017-data 0 0)
+  (mcp23017-read 2)))
+;
+;  Setup MCP23017 #0 as output and #2 as input.
+;
+(defun setup ()
+  (mcp23017-dir 0 0)
+  (sleep 10)
+  (mcp23017-dir 2 #xffff)
+  (sleep 10))
+;
+;  Check for bit 16 clear from MCP23017 #2.
+;
+(defun test-exit ()
+  (sleep 10)
+  (let ((x (mcp23017-read 2)))
+    (/= (and x #x8000) 0)))
+;
+;  Sleep the number of mS specified by bits 9-15 of MCP23017 #2.
+;
+(defun example-work ()
+  (sleep 100))
+;
+;  Bounce calling functions.
+;
+(defun bounce ()
+  (let ((value))
+    (dowhile (test-exit)
+      (mcp23017-data 0 0)
+      (setq value 128)
+      (dotimes (x 8)
+        (setq value (* value 2))
+        (mcp23017-data 0 value)
+        (example-work))
+      (setq value #x10000)
+      (dotimes (x 8)
+        (setq value (/ value 2))
+        (mcp23017-data 0 value)
+        (example-work))))
+  (mcp23017-data 0 0)
+  (mcp23017-read 2))
+;
+;  Bounce using lambdas.  Functions passed in for the test to continue processing
+;  and the work.  This does not work properly yet.
+;
+(defun bounce (test-fun work-fun)
+  (let ((value))
+    (dowhile (test-fun)
+      (mcp23017-data 0 0)
+      (setq value 128)
+      (dotimes (x 8)
+        (setq value (* value 2))
+        (mcp23017-data 0 value)
+        (work-fun))
+      (setq value #x10000)
+      (dotimes (x 8)
+        (setq value (/ value 2))
+        (mcp23017-data 0 value)
+        (work-fun))))
+  (mcp23017-data 0 0)
+  (mcp23017-read 2))
+;
+;  Example command
+;
+(bounce (lambda () (test-exit)) (lambda () (example-work)))
+
+;
+;  Example of a lambda as a condition.
+;
+(setq *value* 10)
+
+(defun test-example ()
+  (setq *value* (- *value* 1))
+  (< 0 *value*))
+
+(defun test-work ()
+  (print "Value is " *value*)
+  (terpri))
+
+(defun test-lam (test-func work-func)
+  (dowhile (test-func) (work-func)))
+
+(test-lam (lambda () (test-example)) (lambda () (test-work)))
+
 

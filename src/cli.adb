@@ -1,4 +1,4 @@
-with BBS.embed.due.serial.int;
+--with BBS.embed.due.serial.int;
 with utils;
 with analogs;
 with SAM3x8e;
@@ -336,7 +336,7 @@ package body cli is
    --
    procedure i2c_probe(c : BBS.embed.i2c.due.port_id) is
       stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
-      i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
+--      i2c_bus : constant BBS.embed.i2c.i2c_interface := BBS.embed.i2c.i2c_interface(BBS.embed.i2c.due.get_interface(c));
 --      err     : BBS.embed.i2c.err_code;
    begin
       stdout.put_line("I2C: Probing bus " & BBS.embed.i2c.due.port_id'Image(c));
@@ -407,14 +407,14 @@ package body cli is
       bmp180_found := absent;
       stdout.put_line("I2C: --------");
       stdout.put_line("I2C: Getting device ID at 16#" &
-                        utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.BME280.addr)) &
+                        utils.byte_to_str(BBS.embed.uint8(a)) &
                         "# for BMP180 or BME280.");
-      temp := i2c_bus.read(BBS.embed.i2c.BME280.addr, BBS.embed.i2c.BME280.id, err);
+      temp := i2c_bus.read(a, BBS.embed.i2c.BME280.id, err);
       stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
       if err = BBS.embed.i2c.none then
          if temp = 16#60# then
             stdout.put_line("I2C: BME280 Found, configuring");
-            BME280.configure(i2c_bus, BBS.embed.i2c.BME280.addr, err);
+            BME280.configure(i2c_bus, a, err);
             stdout.put_line("I2C: BME280 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
             if err = BBS.embed.i2c.none then
                if c = 0 then
@@ -427,7 +427,7 @@ package body cli is
             end if;
          elsif temp = 16#55# then
             stdout.put_line("I2C: BMP180 Found, configuring.");
-            BMP180.configure(i2c_bus, BBS.embed.i2c.BMP180.addr, err);
+            BMP180.configure(i2c_bus, a, err);
             stdout.put_line("I2C: BMP180 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
             if err = BBS.embed.i2c.none then
                if c = 0 then
@@ -440,11 +440,11 @@ package body cli is
             end if;
          else
             stdout.put_line("I2C: Unrecognized device found at address 16#" &
-                              utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.BME280.addr)) & "#.");
+                              utils.byte_to_str(BBS.embed.uint8(a)) & "#.");
          end if;
       else
          stdout.put_line("I2C: No device found at address 16#" &
-                           utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.BME280.addr)) & "#.");
+                           utils.byte_to_str(BBS.embed.uint8(a)) & "#.");
          stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
    end;
@@ -460,7 +460,7 @@ package body cli is
       f := absent;
       stdout.put_line("I2C: --------");
       stdout.put_line("I2C: Probing address 16#" &
-                        utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) &
+                        utils.byte_to_str(BBS.embed.uint8(a)) &
                         "# for L3GD20.");
       temp := i2c_bus.read(BBS.embed.i2c.L3GD20H.addr,
                            BBS.embed.i2c.L3GD20H.who_am_i, err);
@@ -468,7 +468,7 @@ package body cli is
          stdout.put_line("I2C: Device ID is " & utils.byte_to_str(temp));
 --         if temp = 2#1101_0100# then
             stdout.put_line("I2C: L3GD20H found, configuring.");
-            d.configure(i2c_bus, BBS.embed.i2c.L3GD20H.addr, err);
+            d.configure(i2c_bus, a, err);
             if err = BBS.embed.i2c.none then
                if c = 0 then
                   f := bus0;
@@ -484,7 +484,7 @@ package body cli is
 --         end if;
       else
          stdout.put_line("I2C: No device found at address 16#" &
-                           utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.L3GD20H.addr)) & "#.");
+                           utils.byte_to_str(BBS.embed.uint8(a)) & "#.");
          stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
 
@@ -534,7 +534,7 @@ package body cli is
       f := absent;
       stdout.put_line("I2C: --------");
       stdout.put_line("I2C: probing address 16#" &
-                        utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.PCA9685.addr_0)) &
+                        utils.byte_to_str(BBS.embed.uint8(a)) &
                         "# for PCA9685.");
       i2c_bus.read(BBS.embed.i2c.PCA9685.addr_0, BBS.embed.i2c.PCA9685.MODE1, 1, err);
       if err = BBS.embed.i2c.none then
@@ -552,7 +552,7 @@ package body cli is
          end if;
       else
          stdout.put_line("I2C: No device found at address 16#" &
-                           utils.byte_to_str(BBS.embed.uint8(BBS.embed.i2c.PCA9685.addr_0)) & "#.");
+                           utils.byte_to_str(BBS.embed.uint8(a)) & "#.");
          stdout.put_line("I2C: Error code returned: " & BBS.embed.i2c.err_code'Image(err));
       end if;
    end;

@@ -5,7 +5,7 @@ with bbs.embed.i2c.due;
 use type bbs.embed.i2c.err_code;
 use type bbs.embed.i2c.due.port_id;
 with BBS.embed;
-use type BBS.embed.addr7;
+--use type BBS.embed.addr7;
 use type BBS.embed.uint8;
 with BBS.embed.i2c.BME280;
 with BBS.embed.i2c.BMP180;

@@ -29,8 +29,8 @@ module panel_switch(start)
           y = a*(width - 30)/8;
           translate([15, y, -0.1]) bbs_spdt_switch_cutout(2.2);
           translate([40, y, -0.1]) bbs_led_cutout(5, 2.2);
-          translate([27, y, 1.5]) linear_extrude(height = 0.6) rotate([0, 0, -90])
-              text(str(a + start), halign="center", valign="center", size=5);
+          translate([28, y, 1.5]) linear_extrude(height = 0.6) rotate([0, 0, -90])
+              text(str(a + start), halign="center", valign="center", size=6);
         }
       }
     }
@@ -58,24 +58,42 @@ module panel_lcd7()
 module panel_lcd20x4()
 {
   switch_x = 20;
-  switch_space = 30;
-  difference()
+  switch_y = 150;
+  switch_space_y = 30;
+  switch_space_x = 25;
+  union()
   {
-    bbs_panel(10, 4);
-    union()
+    difference()
     {
-      translate([70, 30, -0.1]) rotate([0, 0, 90]) bbs_20x4_lcd_cutouts(2.2, 10);
-      translate([switch_x, switch_space*5, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
-      translate([switch_x, switch_space*6, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
-      translate([switch_x+switch_space, switch_space*5, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
-      translate([switch_x+switch_space, switch_space*6, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
+      union()
+      {
+        bbs_panel(10, 4);
+      }
+      union()
+      {
+        translate([70, 30, -0.1]) rotate([0, 0, 90]) bbs_20x4_lcd_cutouts(2.2, 10);
+        translate([switch_x, switch_y, -0.1]) bbs_spdt_switch_cutout(2.2);
+        translate([switch_x, switch_y + switch_space_y, -0.1]) rotate([0, 0, 270]) bbs_spdt_switch_cutout(2.2);
+        translate([switch_x+switch_space_x, switch_y, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
+        translate([switch_x+switch_space_x, switch_y + switch_space_y, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
+        for(a = [6:8])
+        {
+          y = a*(width - 30)/8;
+          translate([65, y, -0.1]) bbs_led_cutout(5, 3);
+        }
+      }
+    }
+    for(a = [6:8])
+    {
+      y = a*(width - 30)/8;
+      translate([65, y, 0]) bbs_led_mount(5, 2);
     }
   }
 }
 rotate([0, 0, 90])
 {
-  panel_switch(0);
-  translate([70, 0, 0]) panel_switch(8);
+//  panel_switch(0);
+//  translate([70, 0, 0]) panel_switch(8);
   //translate([140, 0, 0]) panel_lcd7();
-  //translate([140, 0, 0]) panel_lcd20x4();
+  translate([0, 0, 0]) panel_lcd20x4();
 }

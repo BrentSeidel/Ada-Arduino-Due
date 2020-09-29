@@ -6,7 +6,6 @@ with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 with BBS.lisp.evaluate;
-with BBS.lisp.memory;
 with cli;
 use type cli.i2c_device_location;
 package body lisp.pca9685 is
