@@ -11,8 +11,6 @@ use type SAM3x8e.UInt16;
 with SAM3x8e.TWI;
 with BBS.embed;
 use type BBS.embed.uint8;
---with BBS.embed.GPIO.Due;
---with BBS.embed.due.GPIO;
 with BBS.embed.log.due;
 --
 --  This package contains a random collection of utility functions used when

@@ -1,7 +1,6 @@
 with BBS.lisp;
 use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
---with BBS.embed.GPIO.Due;
 with BBS.lisp.evaluate;
 with BBS.embed;
 with BBS.embed.due.serial.int;

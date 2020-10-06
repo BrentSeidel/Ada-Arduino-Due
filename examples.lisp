@@ -218,14 +218,36 @@
 ;    Address 0 is LEDs
 ;    Address 2 is switches
 ;
+;  Test for installed LEDs.
+;  Set the LED discretes to inputs, enable the pullup resistors, and read
+;  the values.  If no LED is installed, that bit should have a high (1) value
+;  while if an LED is installed, there should be a low value.  Note that if
+;  an input is shorted or otherwise pulled to ground, it will show as an installed
+;  LED.
+;
+(defun installed-leds ()
+  (mcp23017-dir 0 #xffff)
+  (mcp23017-pullup 0 #xffff)
+  (print "Uninstalled LEDs at bits " (mcp23017-read 0))
+  (mcp23017-dir 0 0)
+  (mcp23017-data 0 #xffff))
+;
+;  Setup MCP23017 #0 as output and #2 as input.
+;
+(defun setup ()
+  (mcp23017-dir 0 0)
+  (sleep 10)
+  (mcp23017-dir 2 #xffff)
+  (sleep 10))
+;
 ;  Counts on the LEDs.
 ;
 (defun count (time)
-  (dotimes (x 256)
-    (mcp23017-data 0 (* x 255))
+  (dotimes (x 65536)
+    (mcp23017-data 0 x)
     (sleep time)))
 ;
-;  Copies the switch value to the LEDs
+;  Copies the switch value to the LEDs.
 ;
 (defun copy (time)
   (let ((switch))
@@ -249,36 +271,32 @@
   (mcp23017-data 0 0))
 ;
 ;  Cycles the LEDs from right to left and then back.  Stop when the switches
-;  return anything other than 0.
+;  return 0.
 ;
 (defun bounce ()
-  (let ((value) (delay))
-    (setq delay (/ (mcp23017-read 2) 256))
+  (let ((v1) (v2) (delay))
+    (setq delay (and (mcp23017-read 2) #x0fff))
     (print "Delay set to " delay "mS")
     (terpri)
     (dowhile (/= delay 0)
       (mcp23017-data 0 0)
-      (setq value 128)
+      (setq v1 #x0001)
+      (setq v2 #x8000)
       (dotimes (x 8)
-        (setq value (* value 2))
-        (mcp23017-data 0 value)
+        (mcp23017-data 0 (or v1 v2))
+        (setq v1 (* v1 2))
+        (setq v2 (/ v2 2))
         (sleep delay))
-      (setq value #x10000)
+      (setq v1 #x0080)
+      (setq v2 #x0100)
       (dotimes (x 8)
-        (setq value (/ value 2))
-        (mcp23017-data 0 value)
+        (mcp23017-data 0 (or v1 v2))
+        (setq v1 (/ v1 2))
+        (setq v2 (* v2 2))
         (sleep delay))
-      (setq delay (/ (mcp23017-read 2) 256)))
+      (setq delay (and (mcp23017-read 2) #x0fff)))
   (mcp23017-data 0 0)
   (mcp23017-read 2)))
-;
-;  Setup MCP23017 #0 as output and #2 as input.
-;
-(defun setup ()
-  (mcp23017-dir 0 0)
-  (sleep 10)
-  (mcp23017-dir 2 #xffff)
-  (sleep 10))
 ;
 ;  Check for bit 16 clear from MCP23017 #2.
 ;

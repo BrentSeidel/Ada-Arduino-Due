@@ -8,22 +8,17 @@ with analogs;
 with discretes;
 with cli;
 with bbs.embed.i2c.due;
---use type bbs.embed.i2c.err_code;
 with BBS.embed.log;
 
 procedure Main is
    stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
    stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
    serial1 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(1, 115_200);
---   serial2 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(2, 115_200);
---   serial3 : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(3, 115_200);
---   i2c_0   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(0);
---   i2c_1   : aliased bbs.embed.i2c.due.due_i2c_interface := bbs.embed.i2c.due.get_interface(1);
    RS485_pin : constant BBS.embed.GPIO.Due.Due_GPIO_ptr := BBS.embed.due.GPIO.pin22;
 
 begin
    stdout.put_line("Central Control Computer starting up:");
-   stdout.put_line("Configuing Logging.");
+   stdout.put_line("Configuring Logging.");
    utils.dbg.enable;
    utils.err.enable;
    utils.info.enable;
