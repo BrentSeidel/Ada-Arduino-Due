@@ -13,7 +13,7 @@ the resistors for the LEDs, two boards with MCP23017 port extenders installed, a
 board where another MCP23017 can be installed.  This shot is with only one of the front
 panels installed.
 
-![Back View](https://github.com/BrentSeidel/Ada-Arduino-Due/blob/master/Pictures/Back1.jpg)
+![Back View](https://github.com/BrentSeidel/Ada-Arduino-Due/blob/master/Pictures/Back1.JPG)
 This shows some of the wiring for the front panels.  I'm in the process of installing
 connectors to make it easier to remove and replace the panels.
 
