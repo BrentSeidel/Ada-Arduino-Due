@@ -26,6 +26,7 @@ package body lisp is
       BBS.lisp.add_builtin("due-flash", due_flash'Access);
       BBS.lisp.add_builtin("set-pin", lisp.gpio.set_pin'Access);
       BBS.lisp.add_builtin("pin-mode", lisp.gpio.pin_mode'Access);
+      BBS.lisp.add_builtin("pin-pullup", lisp.gpio.pin_pullup'Access);
       BBS.lisp.add_builtin("read-pin", lisp.gpio.read_pin'Access);
       BBS.lisp.add_builtin("read-analog", read_analog'Access);
       BBS.lisp.add_builtin("info-enable", info_enable'Access);

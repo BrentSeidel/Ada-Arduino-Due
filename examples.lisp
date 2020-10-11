@@ -271,15 +271,16 @@
   (mcp23017-data 0 0))
 ;
 ;  Cycles the LEDs from right to left and then back.  Stop when the switches
-;  return 0.
+;  return 0.  Updated for all 16 switches and LEDs.  The lower 12 bits of the
+;  switch register sets the delay time in mS.  The upper bit is an exit flag.
 ;
 (defun bounce ()
-  (let ((v1) (v2) (delay))
-    (setq delay (and (mcp23017-read 2) #x0fff))
+  (let ((v1) (v2) (switch) (delay))
+    (setq switch (mcp23017-read 2))
+    (setq delay (and switch #x0fff))
     (print "Delay set to " delay "mS")
     (terpri)
-    (dowhile (/= delay 0)
-      (mcp23017-data 0 0)
+    (dowhile (= (and switch #x8000) 0)
       (setq v1 #x0001)
       (setq v2 #x8000)
       (dotimes (x 8)
@@ -294,7 +295,8 @@
         (setq v1 (/ v1 2))
         (setq v2 (* v2 2))
         (sleep delay))
-      (setq delay (and (mcp23017-read 2) #x0fff)))
+      (setq switch (mcp23017-read 2))
+      (setq delay (and switch #x0fff)))
   (mcp23017-data 0 0)
   (mcp23017-read 2)))
 ;

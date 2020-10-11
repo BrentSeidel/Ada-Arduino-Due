@@ -7,7 +7,8 @@ use <../../Things/bbs_arduino.scad>
 use <../../Things/bbs_constants.scad>
 use <../../Things/bbs_boards.scad>
 
-payload_x = 15;
+arduino_x = 15;
+payload_x = 5;
 payload_y = 15;
 proto1_y = 90;
 proto2_y = 145;
@@ -20,7 +21,7 @@ module arduino_due_tray()
     union()
     {
       bbs_tray(10, 5, false);
-      translate([payload_x, payload_y, 3]) bbs_arduino_mega2560_standoffs(5, screw_size, 12);
+      translate([arduino_x, payload_y, 3]) bbs_arduino_mega2560_standoffs(5, screw_size, 12);
       translate([payload_x + 55, proto1_y, 3]) bbs_quarter_permaprotoboard_standoffs(5, screw_size, 12);
       translate([payload_x + 55, proto2_y, 3]) bbs_quarter_permaprotoboard_standoffs(5, screw_size, 12);
       translate([payload_x + 5, proto2_y, 3]) bbs_quarter_permaprotoboard_standoffs(5, screw_size, 12);
@@ -28,12 +29,12 @@ module arduino_due_tray()
     }
     union()
     {
-      translate([payload_x, payload_y, -2]) bbs_arduino_mega2560_standoffs(5 + 6, screw_hole, 12);
+      translate([arduino_x, payload_y, -2]) bbs_arduino_mega2560_standoffs(5 + 6, screw_hole, 12);
       translate([payload_x + 55, proto1_y, -2])  bbs_quarter_permaprotoboard_standoffs(5 + 6, screw_hole, 12);
       translate([payload_x + 55, proto2_y, -2]) bbs_quarter_permaprotoboard_standoffs(5 + 6, screw_hole, 12);
       translate([payload_x + 5, proto2_y, -2]) bbs_quarter_permaprotoboard_standoffs(5 + 6, screw_hole, 12);
       translate([payload_x + 5, proto1_y, -2]) bbs_quarter_permaprotoboard_standoffs(5 + 6, screw_hole, 12);
-      translate([payload_x + 20, 10, -1]) minkowski()
+      translate([arduino_x + 20, 10, -1]) minkowski()
       {
         cube([40, 65, 10]);
         cylinder(r=1, h=10);
@@ -124,15 +125,13 @@ module misc_tray()
 rotate([0, 0, 90])
 union()
 {
-//  arduino_due_tray();
-//  translate([payload_x, payload_y, 7]) color("red") bbs_arduino_mega2560();
+  arduino_due_tray();
+//  translate([arduino_x, payload_y, 7]) color("red") bbs_arduino_mega2560();
 //  translate([payload_x + 55, proto1_y, 7]) color("red") bbs_quarter_permaprotoboard();
 //  translate([payload_x + 55, proto2_y, 7]) color("red") bbs_quarter_permaprotoboard();
 //  translate([payload_x + 5, proto1_y, 7]) color("red") bbs_quarter_permaprotoboard();
 //  translate([payload_x + 5, proto2_y, 7]) color("red") bbs_quarter_permaprotoboard();
-//  translate([payload_x - 10, proto1_y + 25, 7]) color("red") bbs_pwm16();
-//  translate([payload_x + 30, proto1_y, 7]) color("red") bbs_bme280();
-  sensor_tray();
+//  sensor_tray();
 //  translate([half_proto_x, half_proto_y, 7]) rotate([0, 0, 90]) color("red") bbs_half_permaprotoboard();
 //  translate([pwm_x, pwm_y, 7]) rotate([0, 0, 90]) color("red") bbs_pwm16();
 //  translate([bme280_x, bme280_y, 7]) color("red") bbs_bme280();

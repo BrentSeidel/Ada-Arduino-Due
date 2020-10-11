@@ -35,4 +35,15 @@ package lisp.gpio is
    --    to output mode.
    function pin_mode(e : BBS.lisp.element_type) return BBS.lisp.element_type;
    --
+   --
+   --  Enable or disable the pullup resistor of a digital pin.  Two parameters are read.
+   --  The first parameter is the pin number (0 .. discretes.max_pin).  The
+   --  second is the mode (NIL is disable, T is enable).
+   --
+   --  (pullup-pin integer boolean)
+   --    The integer is the pin number range checked as above.
+   --    The boolean enables or disables the pullup resistor for the specified pin.
+   --
+   function pin_pullup(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
 end;

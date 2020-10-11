@@ -199,4 +199,82 @@ package body lisp.gpio is
       end if;
       return BBS.lisp.NIL_ELEM;
    end;
+   --
+   --
+   --  Enable or disable the pullup resistor of a digital pin.  Two parameters are read.
+   --  The first parameter is the pin number (0 .. discretes.max_pin).  The
+   --  second is the mode (NIL is disable, T is enable).
+   --
+   --  (pullup-pin integer boolean)
+   --    The integer is the pin number range checked as above.
+   --    The boolean enables or disables the pullup resistor for the specified pin.
+   --
+   function pin_pullup(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+      pin_elem : BBS.lisp.element_type;
+      pullup_elem  : BBS.lisp.element_type;
+      pin : Integer;
+      pullup : Boolean;
+      rest : BBS.lisp.element_type := e;
+      ok : Boolean := True;
+   begin
+      --
+      --  Get the first value
+      --
+      pin_elem := BBS.lisp.evaluate.first_value(rest);
+      --
+      --  Get the second value
+      --
+      pullup_elem := BBS.lisp.evaluate.first_value(rest);
+      --
+      --  Check if the pin number value is an integer element.
+      --
+      if pin_elem.kind = BBS.lisp.E_VALUE then
+         if pin_elem.v.kind = BBS.lisp.V_INTEGER then
+            pin := Integer(pin_elem.v.i);
+         else
+            BBS.lisp.error("pin-pullup", "Pin number must be integer.");
+            ok := False;
+         end if;
+      else
+         BBS.lisp.error("pin-pullup", "Pin number must be an element.");
+         BBS.lisp.print(pin_elem, False, True);
+         ok := False;
+      end if;
+      --
+      --  Check if the pin state is an integer element.
+      --
+      if pullup_elem.kind = BBS.lisp.E_VALUE then
+         if pullup_elem.v.kind = BBS.lisp.V_BOOLEAN then
+            pullup := pullup_elem.v.b;
+         else
+            BBS.lisp.error("pin-pullup", "Pin pullup must be boolean.");
+            ok := False;
+         end if;
+      else
+         BBS.lisp.error("pin-pullup", "Pin pullup must be an element.");
+         BBS.lisp.print(pullup_elem, False, True);
+         ok := False;
+      end if;
+      --
+      --  Check if the pin number is within range of the valid pins.  Not that
+      --  pin 4 cannot be used.
+      --
+      if (pin < 0) or (pin > discretes.max_pin) or (pin = 4) then
+         BBS.lisp.error("pin-pullup", "Pin number is out of range.");
+         ok := False;
+      end if;
+      --
+      --  If everything is OK, then set the pullup resistor for the pin
+      --
+      if ok then
+         if pullup then
+            discretes.pin(pin).all.pullup(1);
+         else
+            discretes.pin(pin).all.pullup(0);
+         end if;
+      else
+         return (kind => BBS.lisp.E_ERROR);
+      end if;
+      return BBS.lisp.NIL_ELEM;
+   end;
 end;
