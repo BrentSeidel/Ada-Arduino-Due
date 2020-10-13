@@ -6,6 +6,7 @@ with BBS.embed;
 with BBS.embed.due.serial.int;
 with BBS.embed.ain.due;
 with utils;
+with lisp.bme280;
 with lisp.bmp180;
 with lisp.l3gd20;
 with lisp.mcp23017;
@@ -31,6 +32,7 @@ package body lisp is
       BBS.lisp.add_builtin("read-analog", read_analog'Access);
       BBS.lisp.add_builtin("info-enable", info_enable'Access);
       BBS.lisp.add_builtin("info-disable", info_disable'Access);
+      BBS.lisp.add_builtin("read-bme280", lisp.bme280.read_bme280'Access);
       BBS.lisp.add_builtin("read-bmp180", lisp.bmp180.read_bmp180'Access);
       BBS.lisp.add_builtin("read-l3gd20", lisp.l3gd20.read_l3gd20'Access);
       BBS.lisp.add_builtin("set-pca9685", lisp.pca9685.set_pca9685'Access);

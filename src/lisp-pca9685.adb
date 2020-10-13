@@ -61,7 +61,7 @@ package body lisp.pca9685 is
          if value_elem.v.kind = BBS.lisp.V_INTEGER then
             value := Integer(value_elem.v.i);
          else
-            BBS.lisp.error("sset-pca9685", "PCA9685 channel value must be integer.");
+            BBS.lisp.error("set-pca9685", "PCA9685 channel value must be integer.");
             ok := False;
          end if;
       else

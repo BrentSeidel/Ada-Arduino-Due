@@ -50,6 +50,14 @@ begin
       stdout.put_line("I2C: Initialization");
       bbs.embed.i2c.due.init(0, bbs.embed.i2c.due.low100);
       bbs.embed.i2c.due.init(1, bbs.embed.i2c.due.low100);
+      cli.bme280_found     := cli.absent;
+      cli.bmp180_found     := cli.absent;
+      cli.l3gd20_found     := cli.absent;
+      cli.pca9685_found    := cli.absent;
+      cli.lsm303dlhc_found := cli.absent;
+      cli.mcp23017_0_found := cli.absent;
+      cli.mcp23017_2_found := cli.absent;
+      cli.mcp23017_6_found := cli.absent;
       cli.i2c_probe(0);
       cli.i2c_probe(1);
    else
