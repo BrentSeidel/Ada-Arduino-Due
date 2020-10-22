@@ -19,7 +19,8 @@ package body cli is
       l_user : Integer := 0;
    begin
       loop
-         stdout.put_line("MovieOS V27.5.2 Central Control Computer");
+         stdout.put_line("MovieOS V27.5.3 Central Control Computer");
+         stdout.put_line("Now with lisp");
          stdout.put("Username: ");
          stdin.get_line(user, l_user);
          strings.uppercase(user);

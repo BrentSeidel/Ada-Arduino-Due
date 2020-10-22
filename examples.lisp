@@ -232,13 +232,16 @@
   (mcp23017-dir 0 0)
   (mcp23017-data 0 #xffff))
 ;
-;  Setup MCP23017 #0 as output and #2 as input.
+;  Setup MCP23017 #0 as output and #2 as input.  Discrete pins 51 and 52 are set
+;  as outputs.
 ;
 (defun setup ()
   (mcp23017-dir 0 0)
   (sleep 10)
   (mcp23017-dir 2 #xffff)
-  (sleep 10))
+  (sleep 10)
+  (pin-mode 51 1)
+  (pin-mode 53 1))
 ;
 ;  Counts on the LEDs.
 ;
@@ -300,17 +303,18 @@
   (mcp23017-data 0 0)
   (mcp23017-read 2)))
 ;
-;  Check for bit 16 clear from MCP23017 #2.
+;  An example test function.  This just checks for bit 16 set from MCP23017 #2.
 ;
 (defun test-exit ()
   (sleep 10)
   (let ((x (mcp23017-read 2)))
-    (/= (and x #x8000) 0)))
+    (= (and x #x8000) 0)))
 ;
-;  Sleep the number of mS specified by bits 9-15 of MCP23017 #2.
+;  An example work function.  This just sleeps for a few milliseconds.  It could
+;  do other things.
 ;
 (defun example-work ()
-  (sleep 100))
+  (sleep 50))
 ;
 ;  Bounce calling functions.
 ;
@@ -335,18 +339,22 @@
 ;  and the work.  This does not work properly yet.
 ;
 (defun bounce (test-fun work-fun)
-  (let ((value))
+  (let ((v1) (v2))
     (dowhile (test-fun)
       (mcp23017-data 0 0)
-      (setq value 128)
+      (setq v1 #x0001)
+      (setq v2 #x8000)
       (dotimes (x 8)
-        (setq value (* value 2))
-        (mcp23017-data 0 value)
+        (mcp23017-data 0 (or v1 v2))
+        (setq v1 (* v1 2))
+        (setq v2 (/ v2 2))
         (work-fun))
-      (setq value #x10000)
+      (setq v1 #x0080)
+      (setq v2 #x0100)
       (dotimes (x 8)
-        (setq value (/ value 2))
-        (mcp23017-data 0 value)
+        (mcp23017-data 0 (or v1 v2))
+        (setq v1 (/ v1 2))
+        (setq v2 (* v2 2))
         (work-fun))))
   (mcp23017-data 0 0)
   (mcp23017-read 2))
@@ -354,7 +362,32 @@
 ;  Example command
 ;
 (bounce (lambda () (test-exit)) (lambda () (example-work)))
+;
+;  Display values.  This can be used to display sensor values on the LEDs for
+;  test purposes.
+;
+(defun display-val (test-fun work-fun)
+  (let ((temp))
+    (dowhile (test-fun)
+      (setq temp (work-fun))
+      (mcp23017-data 0 temp)
+      (sleep 10))))
+;
+;  Examples to read the analog inputs
+;
+(defun analog1 ()
+  (read-analog 1))
+;
+(defun analog2 ()
+  (read-analog 2))
+;
+(defun analog ()
+  (sleep 10)
+  (read-analog (and (mcp23017-read 2) 15)))
 
+(display-val (lambda () (test-exit)) (lambda () (analog1)))
+
+;
 ;
 ;  Example of a lambda as a condition.
 ;
