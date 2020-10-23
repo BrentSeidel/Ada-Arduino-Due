@@ -2,8 +2,14 @@ with BBS.lisp;
 package lisp.bme280 is
    --
    --  (read-bme280)
-   --    Reads the gyroscope and returns a list of three items containing the
-   --    x, y, and z rotations in integer values of degrees per second.
+   --    Reads the sensors and returns a list of three items containing the
+   --    temperature (C), pressure (Pa), and humidity (%), in that order.
    --
    function read_bme280(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   -- (read-bme280-raw)
+   --    Reads the sensors and returns a list of three items containing the raw
+   --    values for temperature, pressure, and humidity, in that order.
+   --
+   function read_bme280_raw(e : BBS.lisp.element_type) return BBS.lisp.element_type;
 end;

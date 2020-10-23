@@ -57,9 +57,9 @@ module panel_lcd7()
 
 module panel_lcd20x4()
 {
-  switch_x = 20;
+  switch_x = 15;
   switch_y = 150;
-  switch_space_y = 30;
+  switch_space_y = 35;
   switch_space_x = 25;
   union()
   {
@@ -73,9 +73,9 @@ module panel_lcd20x4()
       {
         translate([70, 30, -0.1]) rotate([0, 0, 90]) bbs_20x4_lcd_cutouts(2.2, 10);
         translate([switch_x, switch_y, -0.1]) bbs_spdt_switch_cutout(2.2);
-        translate([switch_x, switch_y + switch_space_y, -0.1]) rotate([0, 0, 270]) bbs_spdt_switch_cutout(2.2);
-        translate([switch_x+switch_space_x, switch_y, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
-        translate([switch_x+switch_space_x, switch_y + switch_space_y, -0.1]) rotate([0, 0, 270]) bbs_10k_pot_cutout(2.2);
+        translate([switch_x, switch_y + switch_space_y, -0.1]) bbs_spdt_switch_cutout(2.2);
+        translate([switch_x+switch_space_x, switch_y, -0.1]) rotate([0, 0, 270]) bbs_pot2_cutout(2.2);
+        translate([switch_x+switch_space_x, switch_y + switch_space_y, -0.1]) rotate([0, 0, 270]) bbs_pot2_cutout(2.2);
         for(a = [6:8])
         {
           y = a*(width - 30)/8;
@@ -96,4 +96,8 @@ rotate([0, 0, 90])
 //  translate([70, 0, 0]) panel_switch(8);
   //translate([140, 0, 0]) panel_lcd7();
   translate([0, 0, 0]) panel_lcd20x4();
+//  translate([40, 150, -0.1]) rotate([0, 0, 270]) color("red") bbs_pot2();
+//  translate([40, 185, -0.1]) rotate([0, 0, 270]) color("red") bbs_pot2();
+//  translate([15, 150, -0.1]) color("red") bbs_spdt_switch();
+//  translate([15, 185, -0.1]) color("red") bbs_spdt_switch();
 }

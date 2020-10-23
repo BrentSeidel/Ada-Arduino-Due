@@ -33,6 +33,7 @@ package body lisp is
       BBS.lisp.add_builtin("info-enable", info_enable'Access);
       BBS.lisp.add_builtin("info-disable", info_disable'Access);
       BBS.lisp.add_builtin("read-bme280", lisp.bme280.read_bme280'Access);
+      BBS.lisp.add_builtin("read-bme280-raw", lisp.bme280.read_bme280_raw'Access);
       BBS.lisp.add_builtin("read-bmp180", lisp.bmp180.read_bmp180'Access);
       BBS.lisp.add_builtin("read-l3gd20", lisp.l3gd20.read_l3gd20'Access);
       BBS.lisp.add_builtin("set-pca9685", lisp.pca9685.set_pca9685'Access);

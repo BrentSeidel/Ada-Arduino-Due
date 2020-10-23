@@ -240,7 +240,11 @@
   (sleep 10)
   (mcp23017-dir 2 #xffff)
   (sleep 10)
+  (pin-mode 50 0)
+  (pin-pullup 50 t)
   (pin-mode 51 1)
+  (pin-mode 52 0)
+  (pin-pullup 52 t)
   (pin-mode 53 1))
 ;
 ;  Counts on the LEDs.
@@ -303,12 +307,10 @@
   (mcp23017-data 0 0)
   (mcp23017-read 2)))
 ;
-;  An example test function.  This just checks for bit 16 set from MCP23017 #2.
+;  An example test function.  This just checks for GPIO bit 52 to be set.
 ;
 (defun test-exit ()
-  (sleep 10)
-  (let ((x (mcp23017-read 2)))
-    (= (and x #x8000) 0)))
+  (= (read-pin 52) 0))
 ;
 ;  An example work function.  This just sleeps for a few milliseconds.  It could
 ;  do other things.
@@ -373,19 +375,21 @@
       (mcp23017-data 0 temp)
       (sleep 10))))
 ;
-;  Examples to read the analog inputs
+;  Examples to read the analog inputs.  Right now the following are configured:
+:  0 - No connection
+;  1 - Phototransistor
+;  2 - Potentiometer
+;  3 - Potentiometer
+;  4-11 - No connection
 ;
-(defun analog1 ()
-  (read-analog 1))
 ;
-(defun analog2 ()
-  (read-analog 2))
-;
-(defun analog ()
+(defun analog (n)
   (sleep 10)
-  (read-analog (and (mcp23017-read 2) 15)))
+  (read-analog n))
 
-(display-val (lambda () (test-exit)) (lambda () (analog1)))
+(display-val (lambda () (test-exit)) (lambda () (analog 1)))
+(display-val (lambda () (test-exit)) (lambda () (analog 2)))
+(display-val (lambda () (test-exit)) (lambda () (analog 3)))
 
 ;
 ;
