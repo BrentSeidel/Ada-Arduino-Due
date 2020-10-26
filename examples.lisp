@@ -310,13 +310,28 @@
 ;  An example test function.  This just checks for GPIO bit 52 to be set.
 ;
 (defun test-exit ()
+  (= (read-pin 52) 1))
+(defun run ()
+  (= (read-pin 52) 1))
+(defun run ()
   (= (read-pin 52) 0))
+
 ;
-;  An example work function.  This just sleeps for a few milliseconds.  It could
-;  do other things.
+;  An example work function.  This reads analog input 2 and sleeps for a tenth
+;  of that value.
 ;
 (defun example-work ()
-  (sleep 50))
+  (sleep (/ (read-analog 2) 10)))
+;
+;  A more elaborate work function.  This checks the light level on analog
+;  channel 1.  If above a threshold, set the PWM channel output to the value
+;  from analog channel 3.  Then sleep for a tenth of the value of ananlog
+;  channel 2 in mS.
+;
+(defun example-work2 ()
+  (if (> (read-analog 1) 64)
+    (set-pca9685 15 (read-analog 3)))
+  (sleep (/ (read-analog 2) 10)))
 ;
 ;  Bounce calling functions.
 ;
@@ -338,7 +353,7 @@
   (mcp23017-read 2))
 ;
 ;  Bounce using lambdas.  Functions passed in for the test to continue processing
-;  and the work.  This does not work properly yet.
+;  and the work.
 ;
 (defun bounce (test-fun work-fun)
   (let ((v1) (v2))

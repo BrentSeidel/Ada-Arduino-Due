@@ -94,8 +94,9 @@ rotate([0, 0, 90])
 {
 //  panel_switch(0);
 //  translate([70, 0, 0]) panel_switch(8);
-  //translate([140, 0, 0]) panel_lcd7();
-  translate([0, 0, 0]) panel_lcd20x4();
+//  translate([140, 0, 0]) panel_lcd7();
+//  translate([0, 0, 0]) panel_lcd20x4();
+    bbs_pot2_knob();
 //  translate([40, 150, -0.1]) rotate([0, 0, 270]) color("red") bbs_pot2();
 //  translate([40, 185, -0.1]) rotate([0, 0, 270]) color("red") bbs_pot2();
 //  translate([15, 150, -0.1]) color("red") bbs_spdt_switch();
