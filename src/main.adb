@@ -10,6 +10,7 @@ with cli;
 with bbs.embed.i2c.due;
 with BBS.embed.log;
 
+
 procedure Main is
    stdout  : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.init(0, 115_200);
    stdin   : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);

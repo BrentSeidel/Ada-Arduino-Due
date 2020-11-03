@@ -333,6 +333,15 @@
     (set-pca9685 15 (read-analog 3)))
   (sleep (/ (read-analog 2) 10)))
 ;
+(defun example-work2 ()
+  (if (> (read-analog 1) 64)
+    (set-pin 51 0)
+    (set-pin 51 1))
+  (if (> (read-analog 1) 128)
+    (set-pin 53 0)
+    (set-pin 53 1))
+  (sleep (/ (read-analog 2) 10)))
+;
 ;  Bounce calling functions.
 ;
 (defun bounce ()
@@ -378,7 +387,7 @@
 ;
 ;  Example command
 ;
-(bounce (lambda () (test-exit)) (lambda () (example-work)))
+(bounce (lambda () (test-exit)) (lambda () (example-work2)))
 ;
 ;  Display values.  This can be used to display sensor values on the LEDs for
 ;  test purposes.
