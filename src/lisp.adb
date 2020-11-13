@@ -8,10 +8,11 @@ with BBS.embed.ain.due;
 with utils;
 with lisp.bme280;
 with lisp.bmp180;
+with lisp.gpio;
 with lisp.l3gd20;
 with lisp.mcp23017;
 with lisp.pca9685;
-with lisp.gpio;
+with lisp.stepper;
 
 package body lisp is
    --
@@ -42,6 +43,10 @@ package body lisp is
       BBS.lisp.add_builtin("mcp23017-polarity", lisp.mcp23017.mcp23017_polarity'Access);
       BBS.lisp.add_builtin("mcp23017-data", lisp.mcp23017.mcp23017_data'Access);
       BBS.lisp.add_builtin("mcp23017-read", lisp.mcp23017.mcp23017_read'Access);
+      BBS.lisp.add_builtin("stepper-init", lisp.stepper.stepper_init'Access);
+      BBS.lisp.add_builtin("stepper-delay", lisp.stepper.stepper_delay'Access);
+      BBS.lisp.add_builtin("stepper-off", lisp.stepper.stepper_off'Access);
+      BBS.lisp.add_builtin("step", lisp.stepper.stepper_step'Access);
    end;
    --
    --  Functions for custom lisp commands for the Arduino Due

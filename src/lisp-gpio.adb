@@ -53,7 +53,7 @@ package body lisp.gpio is
          ok := False;
       end if;
       --
-      --  Check if the pin number is within range of the valid pins.  Not that
+      --  Check if the pin number is within range of the valid pins.  Note that
       --  pin 4 cannot be used.
       --
       if (pin < 0) or (pin > discretes.max_pin) or (pin = 4) then
