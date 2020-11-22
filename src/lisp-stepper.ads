@@ -2,6 +2,7 @@
 --  This package contains code for the lisp interpreter to run stepper motors.
 --
 with BBS.embed;
+with BBS.embed.GPIO.tb6612;
 with BBS.lisp;
 package lisp.stepper is
 
@@ -11,16 +12,7 @@ package lisp.stepper is
    --  num_steppers to 4.  Change if you have more, or less.
    --
    num_steppers : constant Integer := 4;
-   type stepper_rec is record
-      initialized : Boolean := False;
-      pin_a : Integer;
-      pin_b : Integer;
-      pin_c : Integer;
-      pin_d : Integer;
-      phase : Integer;
-      time  : Integer := 5;
-   end record;
-   steppers : array (1 .. num_steppers) of stepper_rec;
+   steppers : array (1 .. num_steppers) of BBS.embed.GPIO.tb6612.TB6612_record;
    --
    --  (stepper-init num a b c d)
    --    Initializes stepper controller num and sets the pin numbers for pins a,
@@ -46,30 +38,4 @@ package lisp.stepper is
    --
    function stepper_off(e : BBS.lisp.element_type) return BBS.lisp.element_type;
 
-private
-   step_phase : constant array (1 .. 8, 1 .. 4) of BBS.embed.bit :=
-     ((1, 0, 1, 0),  --  1. +A +B
-      (1, 0, 0, 0),  --  2. +A 0B
-      (1, 0, 0, 1),  --  3. +A -B
-      (0, 0, 0, 1),  --  4. 0A -B
-      (0, 1, 0, 1),  --  5. -A -B
-      (0, 1, 0, 0),  --  6. -A 0B
-      (0, 1, 1, 0),  --  7. -A +B
-      (0, 0, 1, 0)); --  8. 0A +B
---     ((1, 0, 1, 0),  --  +A +B
---      (1, 0, 0, 0),  --  +A 0B
---      (1, 0, 0, 1),  --  +A -B
---      (0, 0, 0, 1),  --  0A -B
---      (0, 1, 0, 1),  --  -A -B
---      (0, 1, 0, 0),  --  -A 0B
---      (0, 1, 1, 0),  --  -A +B
---      (0, 0, 1, 0)); --  0A +B
---     ((1, 0, 0, 1),  --  +A -B
---      (1, 0, 0, 0),  --  +A 0B
---      (1, 1, 0, 0),  --  0A 0B
---      (0, 1, 0, 0),  --  -A 0B
---      (0, 1, 1, 0),  --  -A +B
---      (0, 0, 1, 0),  --  0A +B
---      (0, 0, 1, 1),  --  0A 0B
---      (0, 0, 0, 1)); --  0A -B
 end;

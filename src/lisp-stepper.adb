@@ -129,20 +129,14 @@ package body lisp.stepper is
       --  If everything is OK, then setup the stepper
       --
       if ok then
-         steppers(stepper).pin_a := pin_a;
-         steppers(stepper).pin_b := pin_b;
-         steppers(stepper).pin_c := pin_c;
-         steppers(stepper).pin_d := pin_d;
-         steppers(stepper).phase := 1;
-         steppers(stepper).initialized := True;
          discretes.pin(pin_a).all.config(BBS.embed.GPIO.Due.gpio_output);
          discretes.pin(pin_b).all.config(BBS.embed.GPIO.Due.gpio_output);
          discretes.pin(pin_c).all.config(BBS.embed.GPIO.Due.gpio_output);
          discretes.pin(pin_d).all.config(BBS.embed.GPIO.Due.gpio_output);
-         discretes.pin(pin_a).all.set(step_phase(1, 1));
-         discretes.pin(pin_b).all.set(step_phase(1, 2));
-         discretes.pin(pin_c).all.set(step_phase(1, 3));
-         discretes.pin(pin_d).all.set(step_phase(1, 4));
+         steppers(stepper).init(discretes.pin(pin_a).all'Access,
+                                discretes.pin(pin_b).all'Access,
+                                discretes.pin(pin_c).all'Access,
+                                discretes.pin(pin_d).all'Access);
       else
          return (kind => BBS.lisp.E_ERROR);
       end if;
@@ -196,7 +190,8 @@ package body lisp.stepper is
          ok := False;
       end if;
       if ok then
-         steppers(stepper).time := delay_time;
+         steppers(stepper).set_delay(delay_time);
+--         steppers(stepper).time := delay_time;
       else
          return (kind => BBS.lisp.E_ERROR);
       end if;
@@ -254,43 +249,7 @@ package body lisp.stepper is
          --
          --  Check for stepping one way or the other.  Zero steps does nothing.
          --
-         if amount > 0 then
-            for step in 1 .. amount loop
-               if steppers(stepper).phase = 8 then
-                  steppers(stepper).phase := 1;
-               else
-                  steppers(stepper).phase := steppers(stepper).phase + 1;
-               end if;
---               BBs.lisp.error("step", "Stepping up to phase " & Integer'Image(steppers(stepper).phase) &
---                                ", A =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 1))) &
---                                ", B =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 2))) &
---                                ", C =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 3))) &
---                                ", D =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 4))));
-               discretes.pin(steppers(stepper).pin_a).all.set(step_phase(steppers(stepper).phase, 1));
-               discretes.pin(steppers(stepper).pin_b).all.set(step_phase(steppers(stepper).phase, 2));
-               discretes.pin(steppers(stepper).pin_c).all.set(step_phase(steppers(stepper).phase, 3));
-               discretes.pin(steppers(stepper).pin_d).all.set(step_phase(steppers(stepper).phase, 4));
-               delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(Duration(steppers(stepper).time)/1000.0);
-            end loop;
-         elsif amount < 0 then
-            for step in 1 .. -amount loop
-               if steppers(stepper).phase = 1 then
-                  steppers(stepper).phase := 8;
-               else
-                  steppers(stepper).phase := steppers(stepper).phase - 1;
-               end if;
---               BBs.lisp.error("step", "Stepping down to phase " & Integer'Image(steppers(stepper).phase) &
---                                ", A =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 1))) &
---                                ", B =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 2))) &
---                                ", C =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 3))) &
---                                ", D =" & Integer'Image(Integer(step_phase(steppers(stepper).phase, 4))));
-               discretes.pin(steppers(stepper).pin_a).all.set(step_phase(steppers(stepper).phase, 1));
-               discretes.pin(steppers(stepper).pin_b).all.set(step_phase(steppers(stepper).phase, 2));
-               discretes.pin(steppers(stepper).pin_c).all.set(step_phase(steppers(stepper).phase, 3));
-               discretes.pin(steppers(stepper).pin_d).all.set(step_phase(steppers(stepper).phase, 4));
-               delay until Ada.Real_Time.Clock + Ada.Real_Time.To_Time_Span(Duration(steppers(stepper).time)/1000.0);
-            end loop;
-         end if;
+         steppers(stepper).step(amount);
       else
          return (kind => BBS.lisp.E_ERROR);
       end if;
@@ -322,10 +281,7 @@ package body lisp.stepper is
          ok := False;
       end if;
       if ok then
-         discretes.pin(steppers(stepper).pin_a).all.set(0);
-         discretes.pin(steppers(stepper).pin_b).all.set(0);
-         discretes.pin(steppers(stepper).pin_c).all.set(0);
-         discretes.pin(steppers(stepper).pin_d).all.set(0);
+         steppers(stepper).stepper_off;
       else
          return (kind => BBS.lisp.E_ERROR);
       end if;
