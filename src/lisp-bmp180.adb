@@ -10,8 +10,8 @@ package body lisp.bmp180 is
    --
    --  Read the BMP180 sensor
    --
-   function read_bmp180(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
+   function read_bmp180(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
       err    : BBS.embed.i2c.err_code;
       flag   : Boolean;
       temperature : Integer;

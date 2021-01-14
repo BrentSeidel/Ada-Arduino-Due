@@ -12,8 +12,8 @@ package body lisp.stepper is
    --    Initializes stepper controller num and sets the pin numbers for pins a,
    --    b, c, and d.  Phase is set to 1 and the pins are set appropriately.
    --
-   function stepper_init(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function stepper_init(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       pin_elem : BBS.lisp.element_type;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
@@ -147,8 +147,8 @@ package body lisp.stepper is
    --    Set the delay between steps for the specified stepper to the specified
    --    number of milliseconds.  The default is 5mS.
    --
-   function stepper_delay(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function stepper_delay(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       delay_elem : BBS.lisp.element_type;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
@@ -191,7 +191,6 @@ package body lisp.stepper is
       end if;
       if ok then
          steppers(stepper).set_delay(delay_time);
---         steppers(stepper).time := delay_time;
       else
          return (kind => BBS.lisp.E_ERROR);
       end if;
@@ -204,8 +203,8 @@ package body lisp.stepper is
    --    Direction is indicated by the sign.  The actual direction depends on
    --    the wiring.
    --
-   function stepper_step(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function stepper_step(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       amount_elem : BBS.lisp.element_type;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
@@ -259,8 +258,8 @@ package body lisp.stepper is
    --  (stepper-off num)
    --    Turns the coils for the specified stepper off..
    --
-   function stepper_off(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function stepper_off(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
       ok : Boolean := True;

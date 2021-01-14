@@ -13,8 +13,8 @@ package body lisp.l3gd20 is
    --  (read-l3gd20) returns a list of three items containing the x, y, and z
    --  rotations in integer values of degrees per second.
    --
-   function read_l3gd20(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
+   function read_l3gd20(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
       err  : BBS.embed.i2c.err_code;
       flag : Boolean;
       rot  : BBS.embed.i2c.L3GD20H.rotations_dps;

@@ -6,5 +6,5 @@ package lisp.pca9685 is
    --    the PWM value to set (0-4095).  Sets the specified PCA9685 PWM channel
    --    to the specified value.  Returns NIL.
    --
-   function set_pca9685(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   function set_pca9685(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
 end;

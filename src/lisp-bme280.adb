@@ -15,9 +15,9 @@ package body lisp.bme280 is
    --  (read-bme280) returns a list of three items containing the x, y, and z
    --  rotations in integer values of degrees per second.
    --
-   function read_bme280(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
-      s : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+   function read_bme280(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
+      std : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       err  : BBS.embed.i2c.err_code;
       flag : Boolean;
       temp : BBS.units.temp_c;
@@ -57,11 +57,11 @@ package body lisp.bme280 is
          return (kind => BBS.lisp.E_ERROR);
       end if;
       temp := cli.BME280.get_temp;
-      s.put_line("BME280 Temperature " & Integer'Image(Integer(temp)));
+      std.put_line("BME280 Temperature " & Integer'Image(Integer(temp)));
       press := cli.BME280.get_press;
-      s.put_line("BME280 Pressure " & Integer'Image(Integer(press)));
+      std.put_line("BME280 Pressure " & Integer'Image(Integer(press)));
       hum := cli.BME280.get_hum;
-      s.put_line("BME280 Humidity " & Integer'Image(Integer(Float(hum)/102.4)));
+      std.put_line("BME280 Humidity " & Integer'Image(Integer(Float(hum)/102.4)));
       flag := BBS.lisp.memory.alloc(head);
       if not flag then
          BBS.lisp.error("read_bme280", "Unable to allocate cons for results");
@@ -97,9 +97,9 @@ package body lisp.bme280 is
    --    Reads the sensors and returns a list of three items containing the raw
    --    values for temperature, pressure, and humidity, in that order.
    --
-   function read_bme280_raw(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
-      s : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
+   function read_bme280_raw(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
+      std : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
       err  : BBS.embed.i2c.err_code;
       flag : Boolean;
       raw_temp : BBS.embed.uint32;
@@ -139,9 +139,9 @@ package body lisp.bme280 is
          return (kind => BBS.lisp.E_ERROR);
       end if;
       cli.BME280.get_raw(raw_temp, raw_press, raw_hum);
-      s.put_line("BME280 Temperature " & Integer'Image(Integer(raw_temp)));
-      s.put_line("BME280 Pressure " & Integer'Image(Integer(raw_press)));
-      s.put_line("BME280 Humidity " & Integer'Image(Integer(raw_hum)));
+      std.put_line("BME280 Temperature " & Integer'Image(Integer(raw_temp)));
+      std.put_line("BME280 Pressure " & Integer'Image(Integer(raw_press)));
+      std.put_line("BME280 Humidity " & Integer'Image(Integer(raw_hum)));
       flag := BBS.lisp.memory.alloc(head);
       if not flag then
          BBS.lisp.error("read_bme280-raw", "Unable to allocate cons for results");

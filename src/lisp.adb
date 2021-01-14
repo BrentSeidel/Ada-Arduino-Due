@@ -54,9 +54,9 @@ package body lisp is
    --
    --  Simple lisp function to set the number of times to quickly flash the LED.
    --
-   function due_flash(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   function due_flash(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
-      rest : BBS.lisp.element_type := e;
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
    begin
       --
       --  Get the first value
@@ -80,10 +80,10 @@ package body lisp is
    --
    --  Read the value of one of the analog inputs.
    --
-   function read_analog(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   function read_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
       pin : Integer;
-      rest : BBS.lisp.element_type := e;
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       el : BBS.lisp.element_type;
       value : BBS.embed.uint12;
       ok : Boolean := True;
@@ -133,16 +133,16 @@ package body lisp is
    --
    --  Read the value of one of the analog inputs.
    --
-   function set_analog(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
+   function set_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
    begin
       return BBS.lisp.NIL_ELEM;
    end;
    --
    --  Enable display of info messages
    --
-   function info_enable(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
+   function info_enable(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
    begin
       utils.info.enable;
       return BBS.lisp.NIL_ELEM;
@@ -150,8 +150,8 @@ package body lisp is
    --
    --  Disable display of info messages
    --
-   function info_disable(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      pragma Unreferenced (e);
+   function info_disable(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      pragma Unreferenced (s);
    begin
       utils.info.disable;
       return BBS.lisp.NIL_ELEM;

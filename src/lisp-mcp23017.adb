@@ -76,8 +76,8 @@ package body lisp.mcp23017 is
    --    dir is the direction (0-read, 1-write) bit encoded into a 16 bit
    --      unsigned integer
    --
-   function mcp23017_dir(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function mcp23017_dir(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -104,14 +104,8 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_dir(data, err);
       if err = BBS.embed.i2c.none then
---         data := MCP23017.get_dir(err);
---         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
---         end if;
---         BBS.lisp.error("mcp23017-dir", "Error getting direction: " &
---                       BBS.embed.i2c.err_code'Image(err));
---         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-dir", "Error setting direction: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -124,8 +118,8 @@ package body lisp.mcp23017 is
    --    dir is the pullup setting (0-disable, 1-enable) bit encoded into a 16 bit
    --      unsigned integer
    --
-   function mcp23017_pullup(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function mcp23017_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -152,14 +146,8 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_pullup(data, err);
       if err = BBS.embed.i2c.none then
---         data := MCP23017.get_pullup(err);
---         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
---         end if;
---         BBS.lisp.error("mcp23017-pullup", "Error getting pullup: " &
---                       BBS.embed.i2c.err_code'Image(err));
---         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-pullup", "Error setting pullup: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -172,8 +160,8 @@ package body lisp.mcp23017 is
    --    pol is the polarity (0-normal, 1-inverted) bit encoded into a 16 bit
    --      unsigned integer
    --
-   function mcp23017_polarity(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function mcp23017_polarity(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -200,14 +188,8 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_polarity(data, err);
       if err = BBS.embed.i2c.none then
---         data := MCP23017.get_polarity(err);
---         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
---         end if;
---         BBS.lisp.error("mcp23017-polarity", "Error getting polarity: " &
---                       BBS.embed.i2c.err_code'Image(err));
---         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-polarity", "Error setting polarity: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -219,8 +201,8 @@ package body lisp.mcp23017 is
    --    addr is the device address
    --    data is the output value as a 16 bit unsigned integer
    --
-   function mcp23017_data(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function mcp23017_data(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -247,14 +229,8 @@ package body lisp.mcp23017 is
       --
       MCP23017.set_data(data, err);
       if err = BBS.embed.i2c.none then
---         data := MCP23017.get_data(err);
---         if err = BBS.embed.i2c.none then
             return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
                                                  i => BBS.lisp.int32(data)));
---         end if;
---         BBS.lisp.error("mcp23017-data", "Error getting data: " &
---                       BBS.embed.i2c.err_code'Image(err));
---         return (kind => BBS.lisp.E_ERROR);
       end if;
       BBS.lisp.error("mcp23017-data", "Error setting data: " &
                        BBS.embed.i2c.err_code'Image(err));
@@ -266,8 +242,8 @@ package body lisp.mcp23017 is
    --    addr is the device address
    --    returns the bits read as a 16 bit unsigned integer
    --
-   function mcp23017_read(e : BBS.lisp.element_type) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := e;
+   function mcp23017_read(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;

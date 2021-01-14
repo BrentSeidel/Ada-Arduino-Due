@@ -11,12 +11,12 @@ package body lisp.gpio is
    --  parameter is the pin number (0 .. discretes.max_pin).  The second
    --  is the state (0 is low, 1 is high).
    --
-   function set_pin(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   function set_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       pin_elem : BBS.lisp.element_type;
       state_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.element_type := e;
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       ok : Boolean := True;
    begin
       --
@@ -79,10 +79,10 @@ package body lisp.gpio is
    --  parameter is the pin number (0 .. discretes.max_pin).  The second
    --  is the state (0 is low, 1 is high).
    --
-   function read_pin(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
       pin : Integer;
-      rest : BBS.lisp.element_type := e;
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       el : BBS.lisp.element_type;
       value : BBS.embed.Bit;
       ok : Boolean := True;
@@ -131,12 +131,12 @@ package body lisp.gpio is
    --  The first parameter is the pin number (0 .. discretes.max_pin).  The
    --  second is the mode (0 is input, 1 is output).
    --
-   function pin_mode(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   function pin_mode(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       pin_elem : BBS.lisp.element_type;
       mode_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.element_type := e;
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       ok : Boolean := True;
    begin
       --
@@ -209,12 +209,12 @@ package body lisp.gpio is
    --    The integer is the pin number range checked as above.
    --    The boolean enables or disables the pullup resistor for the specified pin.
    --
-   function pin_pullup(e : BBS.lisp.element_type) return BBS.lisp.element_type is
+   function pin_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       pin_elem : BBS.lisp.element_type;
       pullup_elem  : BBS.lisp.element_type;
       pin : Integer;
       pullup : Boolean;
-      rest : BBS.lisp.element_type := e;
+      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       ok : Boolean := True;
    begin
       --

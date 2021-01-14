@@ -10,7 +10,8 @@ package lisp.gpio is
    --    pin state.  The pin number is range checked to be between 0 and 53
    --    inclusive and not equal to 4.  The pin state is set to low for a
    --    value of 0 and high otherwise.  Returns NIL.
-   function set_pin(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   function set_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
    --
    --
    --  Set the state of a digital pin  Two parameters are read.  The first
@@ -22,7 +23,8 @@ package lisp.gpio is
    --    to set for the pin.  The pin number is range checked as above.  Mode 0
    --    sets the pin to input mode while any other value sets the pin to output
    --    mode.  Returns NIL.
-   function read_pin(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
    --
    --
    --  Set the mode (input or output) of a digital pin.  Two parameters are read.
@@ -33,7 +35,8 @@ package lisp.gpio is
    --    The integer is the pin number range checked as above.  Returns the state
    --    of the pin.  0 for low and 1 for high.  This may not work for pins set
    --    to output mode.
-   function pin_mode(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   --
+   function pin_mode(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
    --
    --
    --  Enable or disable the pullup resistor of a digital pin.  Two parameters are read.
@@ -44,6 +47,6 @@ package lisp.gpio is
    --    The integer is the pin number range checked as above.
    --    The boolean enables or disables the pullup resistor for the specified pin.
    --
-   function pin_pullup(e : BBS.lisp.element_type) return BBS.lisp.element_type;
+   function pin_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
    --
 end;
