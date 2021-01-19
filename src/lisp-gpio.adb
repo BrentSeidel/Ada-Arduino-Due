@@ -16,7 +16,8 @@ package body lisp.gpio is
       state_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
       --
@@ -82,7 +83,8 @@ package body lisp.gpio is
    function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
       pin : Integer;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       el : BBS.lisp.element_type;
       value : BBS.embed.Bit;
       ok : Boolean := True;
@@ -136,7 +138,8 @@ package body lisp.gpio is
       mode_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
       --
@@ -214,7 +217,8 @@ package body lisp.gpio is
       pullup_elem  : BBS.lisp.element_type;
       pin : Integer;
       pullup : Boolean;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
       --

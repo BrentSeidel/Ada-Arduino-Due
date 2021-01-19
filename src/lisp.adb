@@ -56,7 +56,8 @@ package body lisp is
    --
    function due_flash(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
    begin
       --
       --  Get the first value
@@ -83,7 +84,8 @@ package body lisp is
    function read_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
       param : BBS.lisp.element_type;
       pin : Integer;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       el : BBS.lisp.element_type;
       value : BBS.embed.uint12;
       ok : Boolean := True;

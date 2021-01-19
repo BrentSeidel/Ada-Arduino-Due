@@ -21,7 +21,8 @@ package body lisp.pca9685 is
       value_elem  : BBS.lisp.element_type;
       channel : Integer;
       value : Integer;
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
       --

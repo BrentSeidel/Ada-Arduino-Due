@@ -77,7 +77,8 @@ package body lisp.mcp23017 is
    --      unsigned integer
    --
    function mcp23017_dir(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -119,7 +120,8 @@ package body lisp.mcp23017 is
    --      unsigned integer
    --
    function mcp23017_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -161,7 +163,8 @@ package body lisp.mcp23017 is
    --      unsigned integer
    --
    function mcp23017_polarity(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -202,7 +205,8 @@ package body lisp.mcp23017 is
    --    data is the output value as a 16 bit unsigned integer
    --
    function mcp23017_data(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
@@ -243,7 +247,8 @@ package body lisp.mcp23017 is
    --    returns the bits read as a 16 bit unsigned integer
    --
    function mcp23017_read(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
       MCP23017 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;

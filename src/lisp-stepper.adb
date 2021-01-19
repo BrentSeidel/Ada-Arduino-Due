@@ -13,7 +13,8 @@ package body lisp.stepper is
    --    b, c, and d.  Phase is set to 1 and the pins are set appropriately.
    --
    function stepper_init(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       pin_elem : BBS.lisp.element_type;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
@@ -148,7 +149,8 @@ package body lisp.stepper is
    --    number of milliseconds.  The default is 5mS.
    --
    function stepper_delay(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       delay_elem : BBS.lisp.element_type;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
@@ -204,7 +206,8 @@ package body lisp.stepper is
    --    the wiring.
    --
    function stepper_step(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       amount_elem : BBS.lisp.element_type;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
@@ -259,7 +262,8 @@ package body lisp.stepper is
    --    Turns the coils for the specified stepper off..
    --
    function stepper_off(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
-      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+      rest : BBS.lisp.cons_index := s;
       stepper_elem  : BBS.lisp.element_type;
       stepper : Integer;
       ok : Boolean := True;
