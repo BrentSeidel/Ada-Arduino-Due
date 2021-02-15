@@ -15,13 +15,13 @@ package body lisp.pca9685 is
    --    the PWM value to set (0-4095).  Sets the specified PCA9685 PWM channel
    --    to the specified value.  Returns NIL.
    --
-   function set_pca9685(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function set_pca9685(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure set_pca9685(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       err    : BBS.embed.i2c.err_code;
       chan_elem : BBS.lisp.element_type;
       value_elem  : BBS.lisp.element_type;
       channel : Integer;
       value : Integer;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
@@ -30,7 +30,8 @@ package body lisp.pca9685 is
       --
       if cli.pca9685_found = cli.absent then
          BBS.lisp.error("set-pca9685", "PCA9685 not configured in system");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Get the first value
@@ -92,11 +93,14 @@ package body lisp.pca9685 is
                          BBS.embed.uint12(value), err);
          if err /= BBS.embed.i2c.none then
             BBS.lisp.error("set-pca9685", "PCA9685 Error: " & BBS.embed.i2c.err_code'Image(err));
+            e := (kind => BBS.lisp.E_ERROR);
+            return;
          end if;
       else
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
-      return BBS.lisp.NIL_ELEM;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
 end;

@@ -11,7 +11,8 @@ package lisp.gpio is
    --    inclusive and not equal to 4.  The pin state is set to low for a
    --    value of 0 and high otherwise.  Returns NIL.
    --
-   function set_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function set_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure set_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --
    --  Set the state of a digital pin  Two parameters are read.  The first
@@ -24,19 +25,20 @@ package lisp.gpio is
    --    sets the pin to input mode while any other value sets the pin to output
    --    mode.  Returns NIL.
    --
-   function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure read_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --
    --  Set the mode (input or output) of a digital pin.  Two parameters are read.
    --  The first parameter is the pin number (0 .. discretes.max_pin).  The
    --  second is the mode (0 is input, 1 is output).
    --
-   --  (read-pin integer)
-   --    The integer is the pin number range checked as above.  Returns the state
-   --    of the pin.  0 for low and 1 for high.  This may not work for pins set
-   --    to output mode.
+   --  (mode integer integer)
+   --    The integer is the pin number range checked as above.  The second is
+   --    the mode (0 is input, 1 is output).
    --
-   function pin_mode(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function pin_mode(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure pin_mode(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --
    --  Enable or disable the pullup resistor of a digital pin.  Two parameters are read.
@@ -47,6 +49,7 @@ package lisp.gpio is
    --    The integer is the pin number range checked as above.
    --    The boolean enables or disables the pullup resistor for the specified pin.
    --
-   function pin_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function pin_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure pin_pullup(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
 end;

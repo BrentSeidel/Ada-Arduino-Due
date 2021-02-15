@@ -54,9 +54,9 @@ package body lisp is
    --
    --  Simple lisp function to set the number of times to quickly flash the LED.
    --
-   function due_flash(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function due_flash(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure due_flash(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       param : BBS.lisp.element_type;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
    begin
       --
@@ -71,22 +71,26 @@ package body lisp is
             utils.flash_count := Integer(param.v.i);
          else
             BBS.lisp.error("due-flash", "Parameter must be integer.");
+            e := (kind => BBS.lisp.E_ERROR);
+            return;
          end if;
       else
          BBS.lisp.error("due-flash", "Parameter must be an element.");
          BBS.lisp.print(param, False, True);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
-      return BBS.lisp.NIL_ELEM;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --  Read the value of one of the analog inputs.
    --
-   function read_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function read_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure read_analog(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       param : BBS.lisp.element_type;
       pin : Integer;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
-      el : BBS.lisp.element_type;
+--      el : BBS.lisp.element_type;
       value : BBS.embed.uint12;
       ok : Boolean := True;
       ain  : BBS.embed.AIN.due.Due_AIN_record;
@@ -125,38 +129,41 @@ package body lisp is
       if ok then
          ain.channel := pin;
          value := ain.get;
-         el := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
+         e := (Kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
       else
-         el := (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
       end if;
-      return el;
+--      return el;
    end;
    --
    --
    --  Read the value of one of the analog inputs.
    --
-   function set_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function set_analog(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure set_analog(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pragma Unreferenced (s);
    begin
-      return BBS.lisp.NIL_ELEM;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --  Enable display of info messages
    --
-   function info_enable(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function info_enable(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure info_enable(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pragma Unreferenced (s);
    begin
       utils.info.enable;
-      return BBS.lisp.NIL_ELEM;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --  Disable display of info messages
    --
-   function info_disable(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function info_disable(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure info_disable(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pragma Unreferenced (s);
    begin
       utils.info.disable;
-      return BBS.lisp.NIL_ELEM;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
 end lisp;

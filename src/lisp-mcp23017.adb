@@ -76,8 +76,8 @@ package body lisp.mcp23017 is
    --    dir is the direction (0-read, 1-write) bit encoded into a 16 bit
    --      unsigned integer
    --
-   function mcp23017_dir(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--   function mcp23017_dir(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure mcp23017_dir(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index)is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
@@ -90,7 +90,8 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-dir", "Error occured processing address parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Process the second parameter.
@@ -98,19 +99,21 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-dir", "Error processing data parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Both parameters are valid and in range.  Perform the function
       --
       MCP23017.set_dir(data, err);
       if err = BBS.embed.i2c.none then
-            return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                                 i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
+                                               i => BBS.lisp.int32(data)));
+         return;
       end if;
       BBS.lisp.error("mcp23017-dir", "Error setting direction: " &
                        BBS.embed.i2c.err_code'Image(err));
-      return (kind => BBS.lisp.E_ERROR);
+      e := (kind => BBS.lisp.E_ERROR);
    end;
    --
    --  Enable/disable pull-up resistors for bits in the MCP23017 port.
@@ -119,8 +122,8 @@ package body lisp.mcp23017 is
    --    dir is the pullup setting (0-disable, 1-enable) bit encoded into a 16 bit
    --      unsigned integer
    --
-   function mcp23017_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--   function mcp23017_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure mcp23017_pullup(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
@@ -133,7 +136,8 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-pullup", "Error occured processing address parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Process the second parameter.
@@ -141,19 +145,21 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-pullup", "Error processing data parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Both parameters are valid and in range.  Perform the function
       --
       MCP23017.set_pullup(data, err);
       if err = BBS.embed.i2c.none then
-            return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                                 i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
+                                               i => BBS.lisp.int32(data)));
+         return;
       end if;
       BBS.lisp.error("mcp23017-pullup", "Error setting pullup: " &
                        BBS.embed.i2c.err_code'Image(err));
-      return (kind => BBS.lisp.E_ERROR);
+      e := (kind => BBS.lisp.E_ERROR);
    end;
    --
    --  Set polarity of bits in the MCP23017 port.
@@ -162,8 +168,8 @@ package body lisp.mcp23017 is
    --    pol is the polarity (0-normal, 1-inverted) bit encoded into a 16 bit
    --      unsigned integer
    --
-   function mcp23017_polarity(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--   function mcp23017_polarity(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure mcp23017_polarity(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
@@ -176,7 +182,8 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-polarity", "Error occured processing address parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Process the second parameter.
@@ -184,19 +191,21 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-polarity", "Error processing data parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Both parameters are valid and in range.  Perform the function
       --
       MCP23017.set_polarity(data, err);
       if err = BBS.embed.i2c.none then
-            return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                                 i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
+                                               i => BBS.lisp.int32(data)));
+         return;
       end if;
       BBS.lisp.error("mcp23017-polarity", "Error setting polarity: " &
                        BBS.embed.i2c.err_code'Image(err));
-      return (kind => BBS.lisp.E_ERROR);
+      e := (kind => BBS.lisp.E_ERROR);
    end;
    --
    --  Set output data of bits in the MCP23017 port.
@@ -204,8 +213,8 @@ package body lisp.mcp23017 is
    --    addr is the device address
    --    data is the output value as a 16 bit unsigned integer
    --
-   function mcp23017_data(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--   function mcp23017_data(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure mcp23017_data(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
@@ -218,7 +227,8 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-data", "Error occured processing address parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Process the second parameter.
@@ -226,19 +236,21 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_data(param, data) then
          BBS.lisp.error("mcp23017-data", "Error processing data parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       --
       --  Both parameters are valid and in range.  Perform the function
       --
       MCP23017.set_data(data, err);
       if err = BBS.embed.i2c.none then
-            return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                                 i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
+                                               i => BBS.lisp.int32(data)));
+         return;
       end if;
       BBS.lisp.error("mcp23017-data", "Error setting data: " &
                        BBS.embed.i2c.err_code'Image(err));
-      return (kind => BBS.lisp.E_ERROR);
+      e := (kind => BBS.lisp.E_ERROR);
    end;
    --
    --  Read data from a MCP23017 port
@@ -246,8 +258,8 @@ package body lisp.mcp23017 is
    --    addr is the device address
    --    returns the bits read as a 16 bit unsigned integer
    --
-   function mcp23017_read(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
+--   function mcp23017_read(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure mcp23017_read(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       rest : BBS.lisp.cons_index := s;
       param : BBS.lisp.element_type;
       data : BBS.embed.uint16;
@@ -260,15 +272,17 @@ package body lisp.mcp23017 is
       param := BBS.lisp.evaluate.first_value(rest);
       if not process_address(param, MCP23017) then
          BBS.lisp.error("mcp23017-data", "Error occured processing address parameter");
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
       data := mcp23017.get_data(err);
       if err = BBS.embed.i2c.none then
-         return (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
-                                                 i => BBS.lisp.int32(data)));
+         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER,
+                                               i => BBS.lisp.int32(data)));
+         return;
       end if;
       BBS.lisp.error("mcp23017-read", "Error getting data: " &
                        BBS.embed.i2c.err_code'Image(err));
-      return (kind => BBS.lisp.E_ERROR);
+      e := (kind => BBS.lisp.E_ERROR);
    end;
 end;

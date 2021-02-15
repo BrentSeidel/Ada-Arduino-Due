@@ -18,24 +18,28 @@ package lisp.stepper is
    --    Initializes stepper controller num and sets the pin numbers for pins a,
    --    b, c, and d.  Phase is set to 1 and the pins are set appropriately.
    --
-   function stepper_init(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function stepper_init(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure stepper_init(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --  (stepper-delay num delay)
    --    Set the delay between steps for the specified stepper to the specified
    --    number of milliseconds.  The default is 5mS.
    --
-   function stepper_delay(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function stepper_delay(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure stepper_delay(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --  (step num amount)
    --    Moves the specified stepper motor the specified number of steps.
    --    Direction is indicated by the sign.  The actual direction depends on
    --    the wiring.
    --
-   function stepper_step(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function stepper_step(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure stepper_step(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
    --
    --  (stepper-off num)
    --    Turns the coils for the specified stepper off..
    --
-   function stepper_off(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+--   function stepper_off(s : BBS.lisp.cons_index) return BBS.lisp.element_type;
+   procedure stepper_off(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index);
 
 end;

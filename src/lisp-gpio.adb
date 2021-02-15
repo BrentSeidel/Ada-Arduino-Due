@@ -11,12 +11,12 @@ package body lisp.gpio is
    --  parameter is the pin number (0 .. discretes.max_pin).  The second
    --  is the state (0 is low, 1 is high).
    --
-   function set_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function set_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure set_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pin_elem : BBS.lisp.element_type;
       state_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
@@ -71,21 +71,22 @@ package body lisp.gpio is
             discretes.pin(pin).all.set(1);
          end if;
       else
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
+         return;
       end if;
-      return BBS.lisp.NIL_ELEM;
+      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --  Set the state of a digital pin  Two parameters are read.  The first
    --  parameter is the pin number (0 .. discretes.max_pin).  The second
    --  is the state (0 is low, 1 is high).
    --
-   function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function read_pin(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure read_pin(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       param : BBS.lisp.element_type;
       pin : Integer;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
-      el : BBS.lisp.element_type;
+--      el : BBS.lisp.element_type;
       value : BBS.embed.Bit;
       ok : Boolean := True;
    begin
@@ -122,23 +123,23 @@ package body lisp.gpio is
       --
       if ok then
          value := discretes.pin(pin).all.get;
-         el := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
+         e := (kind => BBS.lisp.E_VALUE, v => (kind => BBS.lisp.V_INTEGER, i => BBS.lisp.int32(value)));
       else
-         el := (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
       end if;
-      return el;
+--      return el;
    end;
    --
    --  Set the mode (input or output) of a digital pin.  Two parameters are read.
    --  The first parameter is the pin number (0 .. discretes.max_pin).  The
    --  second is the mode (0 is input, 1 is output).
    --
-   function pin_mode(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function pin_mode(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure pin_mode(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pin_elem : BBS.lisp.element_type;
       mode_elem  : BBS.lisp.element_type;
       pin : Integer;
       state : Integer;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
@@ -197,10 +198,10 @@ package body lisp.gpio is
          else
             discretes.pin(pin).all.config(BBS.embed.GPIO.Due.gpio_output);
          end if;
+         e := BBS.lisp.NIL_ELEM;
       else
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
       end if;
-      return BBS.lisp.NIL_ELEM;
    end;
    --
    --
@@ -212,12 +213,12 @@ package body lisp.gpio is
    --    The integer is the pin number range checked as above.
    --    The boolean enables or disables the pullup resistor for the specified pin.
    --
-   function pin_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+--   function pin_pullup(s : BBS.lisp.cons_index) return BBS.lisp.element_type is
+   procedure pin_pullup(e : out BBS.lisp.element_type; s : BBS.lisp.cons_index) is
       pin_elem : BBS.lisp.element_type;
       pullup_elem  : BBS.lisp.element_type;
       pin : Integer;
       pullup : Boolean;
---      rest : BBS.lisp.element_type := (kind => BBS.lisp.E_CONS, ps => s);
       rest : BBS.lisp.cons_index := s;
       ok : Boolean := True;
    begin
@@ -276,9 +277,9 @@ package body lisp.gpio is
          else
             discretes.pin(pin).all.pullup(0);
          end if;
+         e := BBS.lisp.NIL_ELEM;
       else
-         return (kind => BBS.lisp.E_ERROR);
+         e := (kind => BBS.lisp.E_ERROR);
       end if;
-      return BBS.lisp.NIL_ELEM;
    end;
 end;
