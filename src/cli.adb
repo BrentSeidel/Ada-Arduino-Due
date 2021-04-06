@@ -5,6 +5,7 @@ with SAM3x8e;
 use type SAM3x8e.UInt12;
 with BBS.embed.AIN.due;
 with BBS.lisp;
+with BBS.lisp.info;
 with lisp;
 
 package body cli is
@@ -101,7 +102,9 @@ package body cli is
          elsif cmd.starts_with("STATUS") then
             show_status(stdout);
          elsif cmd.starts_with("LISP") then
-            stdout.Put_Line("Tiny lisp interpreter.");
+            stdout.Put_Line("Tiny lisp interpreter written in Ada.");
+            stdout.Put_Line(BBS.lisp.info.name & " " & BBs.lisp.info.version_string &
+                       " " & BBS.lisp.info.build_date);
             bbs.lisp.repl;
          else
             stdout.put_line("Unrecognized command <" & cmd.to_string & ">.");

@@ -21,8 +21,8 @@ difference()
   {
     hole = 5.56/2;
     translate([0, 0, -0.5]) bbs_NEMA17_holes(5);
-    translate([30, 10, -0.5]) cylinder(r=hole, h=5);
-    translate([30, -10, -0.5]) cylinder(r=hole, h=5);
+    translate([30, 10, -0.5]) cylinder(r=hole, h=5, $fn=12);
+    translate([30, -10, -0.5]) cylinder(r=hole, h=5, $fn=12);
   }
 }
 
