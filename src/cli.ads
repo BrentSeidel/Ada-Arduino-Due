@@ -7,12 +7,12 @@ use type bbs.embed.i2c.due.port_id;
 with BBS.embed;
 --use type BBS.embed.addr7;
 use type BBS.embed.uint8;
-with BBS.embed.i2c.BME280;
-with BBS.embed.i2c.BMP180;
 with BBS.embed.i2c.L3GD20H;
 with BBS.embed.i2c.MCP23017;
 with BBS.embed.i2c.PCA9685;
 with BBS.embed.due.serial.int;
+with BBS.lisp.embed;
+use type BBS.lisp.embed.i2c_device_location;
 --
 --  This package implementes a simple command line interpreter.
 --
@@ -22,26 +22,6 @@ package cli is
    --
    i2c_enable    : constant Boolean := True;
    analog_enable : constant Boolean := True;
-   --
-   type i2c_device_location is (absent, bus0, bus1);
-   bme280_found      : i2c_device_location := absent;
-   bmp180_found      : i2c_device_location := absent;
-   l3gd20_found      : i2c_device_location := absent;
-   pca9685_found     : i2c_device_location := absent;
-   lsm303dlhc_found  : i2c_device_location := absent;
-   mcp23017_0_found  : i2c_device_location := absent;
-   mcp23017_2_found  : i2c_device_location := absent;
-   mcp23017_6_found  : i2c_device_location := absent;
-   --
-   --  Device records
-   --
-   BMP180 : aliased BBS.embed.i2c.BMP180.BMP180_record;
-   BME280 : aliased BBS.embed.i2c.BME280.BME280_record;
-   L3GD20 : aliased BBS.embed.i2c.L3GD20H.L3GD20H_record;
-   PCA9685 : aliased BBS.embed.i2c.PCA9685.PS9685_record;
-   MCP23017_0 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
-   MCP23017_2 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
-   MCP23017_6 : aliased BBS.embed.i2c.MCP23017.MCP23017_record;
    --
    --  GPIO Pin to operate on
    --
@@ -82,12 +62,12 @@ private
    procedure probe_bme280_bmp180(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7);
    procedure probe_l3gd20(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
                             d : in out BBS.embed.i2c.L3GD20H.L3GD20H_record;
-                            f : in out i2c_device_location);
+                            f : in out BBS.lisp.embed.i2c_device_location);
    procedure probe_mcp23017(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
                             d : in out BBS.embed.i2c.MCP23017.MCP23017_record;
-                            f : in out i2c_device_location);
+                            f : in out BBS.lisp.embed.i2c_device_location);
    procedure probe_pca9685(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7;
                             d : in out BBS.embed.i2c.PCA9685.PS9685_record;
-                            f : in out i2c_device_location);
+                            f : in out BBS.lisp.embed.i2c_device_location);
    --
 end cli;

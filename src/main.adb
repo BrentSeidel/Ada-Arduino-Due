@@ -5,10 +5,10 @@ with BBS.embed.due.GPIO;
 with BBS.embed.AIN.due;
 with utils;
 with analogs;
-with discretes;
 with cli;
 with bbs.embed.i2c.due;
 with BBS.embed.log;
+with BBS.lisp.embed;
 
 
 procedure Main is
@@ -26,7 +26,7 @@ begin
    BBS.embed.log.debug := utils.dbg'Access;
    BBS.embed.log.error := utils.err'Access;
    BBS.embed.log.info  := utils.info'Access;
-   discretes.init;
+   BBS.lisp.embed.init_discretes;
    if cli.analog_enable then
       stdout.put_line("Analogs: Setting up inputs");
       BBS.embed.AIN.due.setup_ain;
@@ -51,14 +51,14 @@ begin
       stdout.put_line("I2C: Initialization");
       bbs.embed.i2c.due.init(0, bbs.embed.i2c.due.low100);
       bbs.embed.i2c.due.init(1, bbs.embed.i2c.due.low100);
-      cli.bme280_found     := cli.absent;
-      cli.bmp180_found     := cli.absent;
-      cli.l3gd20_found     := cli.absent;
-      cli.pca9685_found    := cli.absent;
-      cli.lsm303dlhc_found := cli.absent;
-      cli.mcp23017_0_found := cli.absent;
-      cli.mcp23017_2_found := cli.absent;
-      cli.mcp23017_6_found := cli.absent;
+      BBS.lisp.embed.bme280_found     := BBS.lisp.embed.absent;
+      BBS.lisp.embed.bmp180_found     := BBS.lisp.embed.absent;
+      BBS.lisp.embed.l3gd20_found     := BBS.lisp.embed.absent;
+      BBS.lisp.embed.pca9685_found    := BBS.lisp.embed.absent;
+      BBS.lisp.embed.lsm303dlhc_found := BBS.lisp.embed.absent;
+      BBS.lisp.embed.mcp23017_0_found := BBS.lisp.embed.absent;
+      BBS.lisp.embed.mcp23017_2_found := BBS.lisp.embed.absent;
+      BBS.lisp.embed.mcp23017_6_found := BBS.lisp.embed.absent;
       cli.i2c_probe(0);
       cli.i2c_probe(1);
    else
