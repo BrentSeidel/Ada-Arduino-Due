@@ -8,7 +8,7 @@ with BBS.embed.i2c.BME280;
 with BBS.embed.i2c.BMP180;
 with BBS.lisp;
 with BBS.lisp.info;
-
+with lisp;
 package body cli is
 
    --
@@ -59,6 +59,7 @@ package body cli is
                     BBS.embed.due.serial.int.New_Line'Access,
                     BBS.embed.due.serial.int.Get_Line'Access);
       BBS.lisp.embed.init;
+      lisp.init;
       loop
          stdout.put(username.to_string & "> ");
          stdin.get_line(s, l);
