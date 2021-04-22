@@ -391,7 +391,7 @@
 ;
 ;  Example command
 ;
-(bounce (lambda () (test-exit)) (lambda () (example-work2)))
+(bounce test-exit example-work2)
 ;
 ;  Display values.  This can be used to display sensor values on the LEDs for
 ;  test purposes.
