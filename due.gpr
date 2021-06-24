@@ -1,5 +1,5 @@
 with "../Ada-Lisp-Embedded/ada_lisp_embedded_due.gpr";
-with "../Ada-Lisp/bbs_lisp.gpr";
+with "../Ada-Lisp/bbs_lisp_raven.gpr";
 with "../BBS-BBB-Ada/bbs_embed_raven.gpr";
 with "../BBS-Ada/bbs_raven.gpr";
 
@@ -21,7 +21,7 @@ project Due is
    end Builder;
 
    package Linker is
-      for Switches ("ada") use ("-Wl,--defsym=__stack_size=0x1E00,--gc-sections", "-g");
+      for Switches ("ada") use ("-Wl,--defsym=__stack_size=0x1800,--gc-sections", "-g");
    end Linker;
 
    package Binder is
