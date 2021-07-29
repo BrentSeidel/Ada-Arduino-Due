@@ -103,8 +103,6 @@ package body cli is
             stop_task(rest);
          elsif cmd.starts_with("START") then
             start_task(rest);
-         elsif cmd.starts_with("GPIO") then
-            handle_gpio(rest);
          elsif cmd.starts_with("STATUS") then
             show_status(stdout);
          elsif cmd.starts_with("LISP") then
@@ -250,7 +248,6 @@ package body cli is
    --
    --  Stops/pauses a currently running task.  Currently defined tasks are:
    --    FLASHER
-   --    TOGGLE
    --
    procedure stop_task(r : strings.bounded) is
       stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
@@ -262,8 +259,6 @@ package body cli is
       cmd.uppercase;
       if cmd.starts_with("FLASHER") then
          utils.ctrl_flasher(False);
-      elsif cmd.starts_with("TOGGLE") then
-         utils.ctrl_toggle(False);
       else
          stdout.put_line("Unknown task <" & cmd.to_string & ">");
       end if;
@@ -271,7 +266,6 @@ package body cli is
    --
    --  Starts/continues a paused task.  Currently defined tasks are:
    --    FLASHER
-   --    TOGGLE
    --
    procedure start_task(r : strings.bounded) is
       stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
@@ -283,72 +277,8 @@ package body cli is
       cmd.uppercase;
       if cmd.starts_with("FLASHER") then
          utils.ctrl_flasher(True);
-      elsif cmd.starts_with("TOGGLE") then
-         utils.ctrl_toggle(True);
       else
          stdout.put_line("Unknown task <" & cmd.to_string & ">");
-      end if;
-   end;
-   --
-   --  Handle GPIO related commands.  Currently defined commands are:
-   --    SET
-   --    GET
-   --
-   procedure handle_gpio(r : strings.bounded) is
-      stdout : constant BBS.embed.due.serial.int.serial_port := BBS.embed.due.serial.int.get_port(0);
-      line   : aliased strings.bounded := r;
-      cmd    : aliased strings.bounded(80);
-      rest   : aliased strings.bounded(80);
-      pin    : aliased strings.bounded(80);
-      state  : aliased strings.bounded(80);
-      err    : Boolean := False;
-   begin
-      line.token(' ', cmd, rest);
-      cmd.uppercase;
-      rest.token(' ', pin, state);
-      parse_pin(pin, err);
-      if err then
-         stdout.put_line("<" & pin.to_string & "> is not a recognized pin");
-         return;
-      end if;
-      if cmd.starts_with("SET") then
-         gpio.config(BBS.embed.GPIO.Due.gpio_output);
-         if state.str(1) = '0' then
-            gpio.set(0);
-         elsif state.str(1) = '1' then
-            gpio.set(1);
-         else
-            stdout.put_line("Unknown state <" & state.to_string & ">");
-         end if;
-      elsif cmd.starts_with("GET") then
-         stdout.put_line("Pin value is " & BBS.embed.Bit'Image(gpio.get));
-      else
-         stdout.put_line("Unknown option <" & cmd.to_string & ">");
-      end if;
-   end;
-   --
-   procedure parse_pin(r : strings.bounded; err : out Boolean) is
-      temp : constant Character := r.str(1);
-   begin
-      err := False;
-      if (r.len < 2) or (r.len > 3) then
-         err := True;
-      end if;
-      case temp is
-         when 'A' | 'a' =>
-            gpio.ctrl := BBS.embed.GPIO.Due.PIOA'Access;
-         when 'B' | 'b' =>
-            gpio.ctrl := BBS.embed.GPIO.Due.PIOB'Access;
-         when 'C' | 'c' =>
-            gpio.ctrl := BBS.embed.GPIO.Due.PIOC'Access;
-         when 'D' | 'd' =>
-            gpio.ctrl := BBS.embed.GPIO.Due.PIOD'Access;
-         when others =>
-            err := True;
-      end case;
-      gpio.bit := integer'Value(r.str(2 .. r.len));
-      if (gpio.bit < 0) or (gpio.bit > 31) then
-         err := True;
       end if;
    end;
    --
@@ -498,15 +428,10 @@ package body cli is
       if err = BBS.embed.i2c.none then
          stdout.put_line("I2C: MCP23017 Found, configuring");
          d.configure(i2c_bus, a, err);
-         stdout.put_line("I2C: MCP23017 Configuration error code is " & BBS.embed.i2c.err_code'Image(err));
-         if err = BBS.embed.i2c.none then
-            if c = 0 then
-               f := BBS.lisp.embed.bus0;
-            else
-               f := BBS.lisp.embed.bus1;
-            end if;
+         if c = 0 then
+            f := BBS.lisp.embed.bus0;
          else
-            stdout.put_line("I2C: MCP23017 initialization failed - disabling.");
+            f := BBS.lisp.embed.bus1;
          end if;
       else
          stdout.put_line("I2C: No device found at address 16#" &
@@ -553,12 +478,6 @@ package body cli is
       s.put_line("Task List");
       s.put("FLASHER  ");
       if utils.state_flasher then
-         s.put_line("running");
-      else
-         s.put_line("paused");
-      end if;
-      s.put("TOGGLE   ");
-      if utils.state_toggle then
          s.put_line("running");
       else
          s.put_line("paused");

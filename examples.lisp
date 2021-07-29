@@ -325,7 +325,7 @@
 ;
 ;  A more elaborate work function.  This checks the light level on analog
 ;  channel 1.  If above a threshold, set the PWM channel output to the value
-;  from analog channel 3.  Then sleep for a tenth of the value of ananlog
+;  from analog channel 3.  Then sleep for a tenth of the value of analog
 ;  channel 2 in mS.
 ;
 (defun example-work2 ()

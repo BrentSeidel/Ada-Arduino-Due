@@ -53,10 +53,6 @@ private
    --
    procedure start_task(r : strings.bounded);
    --
-   procedure handle_gpio(r : strings.bounded);
-   --
-   procedure parse_pin(r : strings.bounded; err : out Boolean);
-   --
    procedure show_status(s : BBS.embed.due.serial.int.serial_port);
    --
    procedure probe_bme280_bmp180(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7);

@@ -13,7 +13,7 @@ project Due is
    for Exec_Dir use ".";
 
    package Compiler is
-      for Switches ("ada") use ("-gnat12", "-fcallgraph-info=su,da", "-g", "-gnato", "-gnatwfkru.X");
+      for Switches ("ada") use ("-gnat12", "-O", "-gnato", "-gnata", "-gnatw.Xfkru");
    end Compiler;
 
    package Builder is
@@ -21,11 +21,11 @@ project Due is
    end Builder;
 
    package Linker is
-      for Switches ("ada") use ("-Wl,--defsym=__stack_size=0x1800,--gc-sections", "-g");
+      for Switches ("ada") use ("-Wl,--defsym=__stack_size=0x1800,--gc-sections", "-g", "-Wl,--gc-sections");
    end Linker;
 
    package Binder is
-      for Switches ("ada") use ("-E", "-r");
+      for Switches ("ada") use ("-r");
    end Binder;
 
 end Due;

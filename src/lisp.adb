@@ -26,21 +26,13 @@ package body lisp is
       --
       --  Check if the first value is an integer element.
       --
-      if param.kind = BBS.lisp.E_VALUE then
-         if param.v.kind = BBS.lisp.V_INTEGER then
-            utils.flash_count := Integer(param.v.i);
-         else
-            BBS.lisp.error("due-flash", "Parameter must be integer.");
-            e := (kind => BBS.lisp.E_ERROR);
-            return;
-         end if;
+      if param.kind = BBS.lisp.V_INTEGER then
+         utils.flash_count := Integer(param.i);
       else
-         BBS.lisp.error("due-flash", "Parameter must be an element.");
-         BBS.lisp.print(param, False, True);
-         e := (kind => BBS.lisp.E_ERROR);
+         BBS.lisp.error("due-flash", "Parameter must be integer.");
+         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
          return;
       end if;
-      e := BBS.lisp.NIL_ELEM;
    end;
    --
    --  Enable display of info messages

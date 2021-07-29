@@ -1,5 +1,4 @@
 with BBS.lisp;
-use type BBS.lisp.ptr_type;
 use type BBS.lisp.value_type;
 package lisp is
    procedure init;

@@ -31,15 +31,6 @@ package utils is
    procedure ctrl_flasher(s : Boolean);
    function state_flasher return Boolean;
    --
-   --  Task to toggle pin 23.  Note that this task has to have a lower priority
-   --  than other tasks, otherwise it will block them when it runs.
-   --
-   task toggle is
-      pragma Priority(background);
-   end;
-   procedure ctrl_toggle(s : Boolean);
-   function state_toggle return Boolean;
-   --
    --  Print some information about the CPU
    --
    procedure cpu_info;
@@ -81,8 +72,6 @@ private
    --  Suspension objects and booleans to control tasks
    --
    enable_flasher : Ada.Synchronous_Task_Control.Suspension_Object;
-   enable_toggle  : Ada.Synchronous_Task_Control.Suspension_Object;
    run_flasher : Boolean;
-   run_toggle  : Boolean;
    --
 end utils;
