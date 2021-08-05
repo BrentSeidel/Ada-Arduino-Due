@@ -30,7 +30,7 @@ package body lisp is
          utils.flash_count := Integer(param.i);
       else
          BBS.lisp.error("due-flash", "Parameter must be integer.");
-         e := BBS.lisp.make_error(BBS.lisp.ERR_UNKNOWN);
+         e := BBS.lisp.make_error(BBS.lisp.ERR_WRONGTYPE);
          return;
       end if;
    end;

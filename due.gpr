@@ -13,15 +13,15 @@ project Due is
    for Exec_Dir use ".";
 
    package Compiler is
-      for Switches ("ada") use ("-gnat12", "-O", "-gnato", "-gnata", "-gnatw.Xfkru");
+      for Switches ("ada") use ("-gnat12", "-O", "-gnato", "-gnata", "-g", "-gnatw.Xfkru");
    end Compiler;
 
    package Builder is
-      for Switches ("ada") use ("-s", "-j4", "-g");
+      for Switches ("ada") use ("-s", "-j4", "-g", "--create-map-file");
    end Builder;
 
    package Linker is
-      for Switches ("ada") use ("-Wl,--defsym=__stack_size=0x1800,--gc-sections", "-g", "-Wl,--gc-sections");
+      for Switches ("ada") use ("-Wl,--defsym=__stack_size=0x2000,--gc-sections", "-g", "-Wl,--gc-sections");
    end Linker;
 
    package Binder is
