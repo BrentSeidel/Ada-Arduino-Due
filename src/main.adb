@@ -56,9 +56,9 @@ begin
       BBS.lisp.embed.l3gd20_found     := BBS.lisp.embed.absent;
       BBS.lisp.embed.pca9685_found    := BBS.lisp.embed.absent;
       BBS.lisp.embed.lsm303dlhc_found := BBS.lisp.embed.absent;
-      BBS.lisp.embed.mcp23017_0_found := BBS.lisp.embed.absent;
-      BBS.lisp.embed.mcp23017_2_found := BBS.lisp.embed.absent;
-      BBS.lisp.embed.mcp23017_6_found := BBS.lisp.embed.absent;
+      for i in BBS.lisp.embed.MCP23017_found'Range loop
+         BBS.lisp.embed.MCP23017_found(i) := BBS.lisp.embed.absent;
+      end loop;
       cli.i2c_probe(0);
       cli.i2c_probe(1);
    else

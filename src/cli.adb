@@ -3,6 +3,8 @@ with utils;
 with analogs;
 with SAM3x8e;
 use type SAM3x8e.UInt12;
+with BBS.embed;
+use type BBS.embed.addr7;
 with BBS.embed.AIN.due;
 with BBS.embed.i2c.BME280;
 with BBS.embed.i2c.BMP180;
@@ -192,9 +194,9 @@ package body cli is
          BBS.lisp.embed.l3gd20_found     := BBS.lisp.embed.absent;
          BBS.lisp.embed.pca9685_found    := BBS.lisp.embed.absent;
          BBS.lisp.embed.lsm303dlhc_found := BBS.lisp.embed.absent;
-         BBS.lisp.embed.mcp23017_0_found := BBS.lisp.embed.absent;
-         BBS.lisp.embed.mcp23017_2_found := BBS.lisp.embed.absent;
-         BBS.lisp.embed.mcp23017_6_found := BBS.lisp.embed.absent;
+         for i in BBS.lisp.embed.MCP23017_found'Range loop
+            BBS.lisp.embed.MCP23017_found(i) := BBS.lisp.embed.absent;
+         end loop;
          i2c_probe(0);
          i2c_probe(1);
       elsif cmd.starts_with("READ") then
@@ -317,9 +319,9 @@ package body cli is
       probe_l3gd20(c, BBS.embed.i2c.L3GD20H.addr, BBS.lisp.embed.L3GD20_info, BBS.lisp.embed.l3gd20_found);
       probe_bme280_bmp180(c, BBS.embed.i2c.BME280.addr);
       probe_pca9685(c, BBS.embed.i2c.PCA9685.addr_0, BBS.lisp.embed.PCA9685_info, BBS.lisp.embed.pca9685_found);
-      probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_6, BBS.lisp.embed.MCP23017_6_info, BBS.lisp.embed.mcp23017_6_found);
-      probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_2, BBS.lisp.embed.MCP23017_2_info, BBS.lisp.embed.mcp23017_2_found);
-      probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_0, BBS.lisp.embed.MCP23017_0_info, BBS.lisp.embed.mcp23017_0_found);
+      for i in BBS.lisp.embed.MCP23017_found'Range loop
+         probe_mcp23017(c, BBS.embed.i2c.MCP23017.addr_0 + BBS.embed.addr7(i), BBS.lisp.embed.MCP23017_info(i), BBS.lisp.embed.mcp23017_found(i));
+      end loop;
    end;
    --
    procedure probe_bme280_bmp180(c : bbs.embed.i2c.due.port_id; a : BBS.embed.addr7) is
@@ -489,9 +491,9 @@ package body cli is
       s.put_line("L3GD20     " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.l3gd20_found));
       s.put_line("LSM303DLHC " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.lsm303dlhc_found));
       s.put_line("PCA9685    " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.pca9685_found));
-      s.put_line("MCP23017-0 " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.mcp23017_0_found));
-      s.put_line("MCP23017-2 " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.mcp23017_2_found));
-      s.put_line("MCP23017-6 " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.mcp23017_6_found));
+      for i in BBS.lisp.embed.MCP23017_found'Range loop
+         s.put_line("MCP23017(" & Integer'Image(i) & ") " & BBS.lisp.embed.i2c_device_location'Image(BBS.lisp.embed.mcp23017_found(i)));
+      end loop;
    end;
    --
 

@@ -28,6 +28,11 @@ module panel_switch(start)
         {
           y = a*(width - 30)/8;
           translate([15, y, -0.1]) bbs_spdt_switch_cutout(2.2);
+          if(a < 8)
+          {
+            translate([43, y + 10, -0.1]) cube([2, 5, 2.2]);
+            translate([35, y + 10, -0.1]) cube([2, 5, 2.2]);
+          }
           translate([40, y, -0.1]) bbs_led_cutout(5, 2.2);
           translate([28, y, 1.5]) linear_extrude(height = 0.6) rotate([0, 0, -90])
               text(str(a + start), halign="center", valign="center", size=6);
@@ -93,10 +98,11 @@ module panel_lcd20x4()
 rotate([0, 0, 90])
 {
 //  panel_switch(0);
-//  translate([70, 0, 0]) panel_switch(8);
+  translate([70, 0, 0]) panel_switch(8);
+  translate([00, 0, 0]) panel_switch(0);
 //  translate([140, 0, 0]) panel_lcd7();
 //  translate([0, 0, 0]) panel_lcd20x4();
-    bbs_pot2_knob();
+//    bbs_pot2_knob();
 //  translate([40, 150, -0.1]) rotate([0, 0, 270]) color("red") bbs_pot2();
 //  translate([40, 185, -0.1]) rotate([0, 0, 270]) color("red") bbs_pot2();
 //  translate([15, 150, -0.1]) color("red") bbs_spdt_switch();
