@@ -393,6 +393,24 @@
 ;
 (bounce test-exit example-work2)
 ;
+;  Pseudo-Random Fibonacci sequence using lambdas.  Functions passed in
+;  for the test to continue processing and the work.
+;
+(defun fib (test-fun work-fun)
+  (let ((v1 1) (v2 1) (temp 0))
+    (dowhile (test-fun)
+      (mcp23017-set 0 temp)
+      (setq temp (and #xFFFF (+ v1 v2)))
+      (setq v1 v2)
+      (setq v2 temp)
+      (work-fun)))
+  (mcp23017-set 0 0)
+  (mcp23017-read 2))
+;
+;  Example command
+;
+(fib test-exit example-work2)
+;
 ;  Display values.  This can be used to display sensor values on the LEDs for
 ;  test purposes.
 ;

@@ -1,7 +1,7 @@
 with "../Ada-Lisp-Embedded/ada_lisp_embedded_due.gpr";
-with "../Ada-Lisp/bbs_lisp_raven.gpr";
-with "../BBS-BBB-Ada/bbs_embed_raven.gpr";
-with "../BBS-Ada/bbs_raven.gpr";
+with "../Ada-Lisp/bbs_lisp.gpr";
+with "../BBS-BBB-Ada/bbs_embed.gpr";
+with "../BBS-Ada/bbs.gpr";
 
 project Due is
 
